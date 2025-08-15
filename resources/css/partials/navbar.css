@@ -1,0 +1,44 @@
+.guest_nav {
+    @apply sticky top-0 left-0 right-0 z-50 bg-white text-gray-900 font-semibold;
+
+    .container {
+        @apply flex items-center justify-between flex-wrap py-4 px-4 md:px-16 mx-auto;
+
+        .branding a {
+            @apply flex items-center gap-2 text-lg font-bold text-gray-900;
+        }
+
+        .nav_links {
+            @apply w-full md:w-auto hidden md:flex md:items-center md:space-x-8 mt-6 md:mt-0;
+
+            .main_links a,
+            .other_links a {
+                @apply block md:inline-block text-gray-900 py-2 md:py-0 font-semibold hover:text-blue-800 transition-colors;
+            }
+
+            .main_links {
+                @apply md:flex md:space-x-8;
+            }
+
+            .other_links {
+                @apply mt-4 md:mt-0 lg:flex lg:items-center lg:gap-4;
+
+                a.btn {
+                    @apply md:bg-gray-900 md:text-white hover:text-blue-400 md:rounded-full md:py-2 md:px-6;
+                }
+            }
+        }
+
+        .nav_links.open {
+            @apply block;
+        }
+
+        .burger_menu {
+            @apply flex flex-col justify-center items-center space-y-1 cursor-pointer md:hidden;
+
+            span {
+                @apply w-6 h-0.5 bg-gray-900 block transition duration-300 ease-in-out;
+            }
+        }
+    }
+}

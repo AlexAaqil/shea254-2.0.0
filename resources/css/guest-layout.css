@@ -1,0 +1,12 @@
+@import "./globals.css";
+
+.container {
+    @apply py-2 px-16 mx-auto;
+}
+
+@import "./components/cards.css";
+
+@import "./partials/navbar.css";
+@import "./partials/footer.css";
+
+@import "./pages/general/HomePage.css";

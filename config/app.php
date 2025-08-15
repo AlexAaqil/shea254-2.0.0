@@ -13,7 +13,12 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Shea254'),
+    'slogan' => "Skin Care Experts",
+    'email' => "info@shea254.com",
+    'phone_number' => "+254 711 894 267",
+    'address' => "Sasa Mall, Moi Avenue, Shop G20",
+    'location' => "Nairobi CBD",
 
     /*
     |--------------------------------------------------------------------------

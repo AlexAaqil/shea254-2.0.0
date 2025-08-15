@@ -1,0 +1,26 @@
+.product_card {
+    *{border: 1px solid red}
+    .image {
+        @apply h-[40dvh];
+    }
+
+    .content {
+        .extra_details {
+            @apply my-4;
+
+            span {
+                @apply text-sm font-semibold text-[var(--theme-bg)];
+            }
+        }
+
+        .details {
+            .title {
+                @apply font-bold text-xl mb-2;
+            }
+
+            .price {
+                @apply font-semibold text-xl text-[var(--theme-bg)];
+            }
+        }
+    }
+}

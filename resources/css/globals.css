@@ -1,0 +1,24 @@
+@import "./tailwind.css";
+
+* {
+    font-family: -apple-system,Roboto,sans-serif,Arial,Helvetica Neue;
+}
+
+:root {
+    --theme-bg: #1A237E;
+    --theme-bg-color: #fff;
+}
+
+p {
+    line-height: 1.5;
+}
+
+.image,
+img {
+    @apply rounded-lg;
+}
+.image {
+    img {
+        @apply object-cover w-full h-full;
+    }
+}

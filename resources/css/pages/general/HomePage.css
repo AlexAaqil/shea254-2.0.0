@@ -1,0 +1,165 @@
+.HomePage {
+    :root {
+        --primary-color: #002d86;
+        --text-color: #2d3748;
+        --background-light: #f8f9fa;
+        --shadow-sm: 0 2px 15px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .Categories {
+        .categories_list {
+            @apply flex flex-row overflow-x-auto overflow-y-hidden gap-6 p-6 bg-[#f8f9fa] rounded-[16px] mt-[20px] items-center h-[200px] shadow-[0_2px_15px_rgba(0,0,0,0.05)] [scrollbar-width:thin] [-webkit-overflow-scrolling:touch];
+
+            &::-webkit-scrollbar {
+                height: 6px;
+            }
+            &::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: var(--primary-color);
+                border-radius: 10px;
+            }
+
+            .categories_group {
+                @apply grid gap-4;
+            }
+
+            .category {
+                @apply flex-shrink-0 px-6 py-3 border border-[rgba(0,45,134,0.1)] rounded-[12px] bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative overflow-hidden;
+
+                &::before {
+                    content: '';
+                    @apply absolute inset-0 bg-[var(--primary-color)] opacity-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0;
+                }
+
+                &:hover {
+                    @apply -translate-y-[2px] shadow-[0_4px_20px_rgba(0,0,0,0.07)];
+
+                    &::before {
+                        @apply opacity-100;
+                    }
+
+                    a {
+                        @apply text-white;
+                    }
+                }
+
+                a {
+                    @apply relative z-10 no-underline text-[var(--primary-color)] font-medium whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)];
+
+                    h3 {
+                        @apply text-[0.95em] capitalize tracking-[0.01em] m-0;
+                    }
+                }
+            }
+        }
+    }
+
+    .Hero {
+        @apply py-6 px-0;
+
+        .container {
+            @apply px-0;
+
+            .hero_wrapper {
+                @apply relative px-0 mx-auto h-[40dvh] md:h-[70dvh] rounded-[24px];
+
+                .overlay {
+                    @apply rounded-lg absolute inset-0 bg-black/60 z-10;
+                }
+
+                .text {
+                    @apply absolute z-10 top-0 left-0 w-full h-full flex flex-col justify-center items-center gap-4 md:gap-6 text-center px-4 text-white;
+
+                    h1 {
+                        @apply font-extrabold text-8xl uppercase;
+                    }
+
+                    .sub_title {
+                        @apply text-lg md:text-4xl font-bold;
+                    }
+
+                    img {
+                        @apply h-[120px] w-[120px];
+                        animation: spin 35s linear infinite;
+                    }
+                }
+
+                img {
+                    @apply rounded-lg object-cover w-full h-full;
+                }
+
+                .slideshow {
+                    @apply relative w-full h-[40dvh] md:h-[70dvh] overflow-hidden z-0;
+                }
+            }
+        }
+    }
+
+    .About {
+        @apply py-16;
+
+        .container {
+            @apply lg:w-[60dvw] mx-auto text-center leading-[1.5];
+
+            h2 {
+                @apply text-[var(--theme-bg)] font-extrabold text-4xl lg:w-[35dvw] lg:mx-auto mb-6;
+            }
+
+            p {
+                @apply lg:w-[35dvw] lg:mx-auto mb-6;
+            }
+
+            .about_actions {
+                @apply mt-12;
+
+                a {
+                    @apply py-[16px] px-[24px] tracking-wide font-bold bg-[var(--theme-bg)] text-[var(--theme-bg-color)] rounded-full;
+                }
+            }
+        }
+    }
+
+    .FeaturedProducts {
+        .container {
+            .products_list {
+                @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+            }
+        }
+    }
+
+    .CTA {
+        background: linear-gradient(135deg, #1a237e, #5c6bc0);
+        @apply text-[var(--theme-bg-color)] py-16;
+
+        .container {
+            @apply lg:w-[60dvw] mx-auto text-center leading-[1.5];
+
+            h2 {
+                @apply font-extrabold text-4xl lg:w-[35dvw] lg:mx-auto tracking-wide leading-[1.5] mb-6;
+            }
+
+            p {
+                @apply lg:w-[35dvw] lg:mx-auto mb-6;
+            }
+
+            .cta_actions {
+                @apply mt-12;
+
+                a {
+                    @apply py-[16px] px-[24px] tracking-wide font-bold bg-[var(--theme-bg-color)] text-[var(--theme-bg)] rounded-full;
+                }
+            }
+        }
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
