@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use App\Models\Products\ProductReview;
 
 class User extends Authenticatable
 {
@@ -18,8 +20,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
+        'phone_number',
+        'user_level',
+        'user_status',
         'password',
     ];
 
@@ -44,5 +50,35 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    static public function getAdmins()
+    {
+        return DB::table('users')
+        ->select('users.*')
+        ->where('user_level', 1)
+        ->where('user_status', 1)
+        ->orderByDesc('id')
+        ->get();
+    }
+
+    static public function getUsers()
+    {
+        return DB::table('users')
+        ->select('users.*')
+        ->where('user_level', 2)
+        ->where('user_status', 1)
+        ->orderByDesc('id')
+        ->get();
+    }
+
+    public function productReviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function hasReviewedProduct($product_id)
+    {
+        return $this->productReviews()->where('product_id', $product_id)->exists();
     }
 }

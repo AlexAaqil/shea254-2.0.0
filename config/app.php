@@ -14,6 +14,11 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'slogan' => "Skin Care Experts",
+    'email' => "info@shea254.com",
+    'phone_number' => "+254 711 894 267",
+    'address' => "Nairobi CBD <br> Sasa Mall, Moi Avenue <br> Shop G20",
+    'location' => "Nairobi, Kenya",
 
     /*
     |--------------------------------------------------------------------------

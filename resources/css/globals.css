@@ -1,0 +1,19 @@
+@import "./tailwind.css";
+
+*{
+    outline: 1px solid hsl(0, 0%, 88%);
+}
+
+:root {
+    --theme-bg: #1a237e;
+    --theme-bg-text: #fff;
+    --theme-light-bg: #f8f9fa;
+}
+
+.image {
+    @apply rounded-lg;
+
+    img {
+        @apply w-full h-full object-cover rounded-lg;
+    }
+}

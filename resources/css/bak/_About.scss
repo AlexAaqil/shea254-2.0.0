@@ -1,0 +1,241 @@
+.about-main {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    overflow: hidden;
+
+    // Hero Section
+    .about-hero {
+        position: relative;
+        min-height: 30vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6em 2em;
+        overflow: hidden;
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+
+            h1 {
+                font-size: clamp(2.5em, 5vw, 4em);
+                font-weight: 800;
+                margin-bottom: 0.5em;
+                color: #1a237e;
+
+                .gradient-text {
+                    background: linear-gradient(135deg, #1a237e, #5c6bc0);
+                    -webkit-background-clip: text;
+                    color: transparent;
+                }
+            }
+
+            .subtitle {
+                font-size: 1.2em;
+                color: #64748b;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
+        .hex-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(120deg, #ffffff 0%, #ffffff 100%) center center / cover no-repeat,
+                radial-gradient(circle, rgba(92, 107, 192, 0.1) 0%, rgba(26, 35, 126, 0.05) 100%);
+            opacity: 0.5;
+        }
+    }
+
+    // Mission Section
+    .mission-section {
+        // padding: 6em 2em;
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mission-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2em;
+            padding: 1em;
+        }
+
+        .mission-card {
+            position: relative;
+            background: white;
+            padding: 2em;
+            border-radius: 24px;
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 
+                    0 8px 40px rgba(0, 0, 0, 0.08),
+                    0 4px 8px rgba(0, 0, 0, 0.03);
+
+                .card-icon {
+                    transform: scale(1.1);
+                }
+
+                .card-decoration {
+                    transform: translate(20%, -20%) rotate(45deg);
+                }
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #1a237e, #5c6bc0);
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.5em;
+                transition: transform 0.3s ease;
+
+                i {
+                    font-size: 1.5em;
+                    color: white;
+                }
+            }
+
+            h2 {
+                font-size: 1.5em;
+                color: #1a237e;
+                margin-bottom: 0.8em;
+            }
+
+            p {
+                color: #64748b;
+                line-height: 1.6;
+            }
+
+            .card-decoration {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 150px;
+                height: 150px;
+                background: linear-gradient(135deg, rgba(92, 107, 192, 0.1), rgba(26, 35, 126, 0.05));
+                border-radius: 30px;
+                transform: translate(50%, -50%) rotate(45deg);
+                transition: transform 0.3s ease;
+                z-index: 0;
+            }
+        }
+    }
+
+    // Location Section
+    .location-section {
+        // padding: 6em 2em;
+        background: linear-gradient(180deg, #f8fafc, #ffffff);
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3em;
+
+            @media (min-width: 768px) {
+                grid-template-columns: 1fr 1.5fr;
+                align-items: center;
+            }
+        }
+
+        .location-content {
+            h2 {
+                font-size: 2em;
+                color: #1a237e;
+                margin-bottom: 1.5em;
+            }
+
+            .info-card {
+                background: white;
+                padding: 2em;
+                border-radius: 24px;
+                box-shadow: 
+                    0 4px 30px rgba(0, 0, 0, 0.05),
+                    0 2px 4px rgba(0, 0, 0, 0.02);
+            }
+
+            .info-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 1em;
+                padding: 1em 0;
+
+                &:not(:last-child) {
+                    border-bottom: 1px solid #e2e8f0;
+                }
+
+                i {
+                    font-size: 1.2em;
+                    color: #5c6bc0;
+                    margin-top: 0.2em;
+                }
+
+                p {
+                    color: #64748b;
+                    line-height: 1.6;
+                }
+            }
+        }
+
+        .map-container {
+            position: relative;
+            padding-top: 56.25%;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.02);
+
+            iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+        }
+    }
+}
+
+// Animation Keyframes
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(26, 35, 126, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(26, 35, 126, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(26, 35, 126, 0);
+    }
+}

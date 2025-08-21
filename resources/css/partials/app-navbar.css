@@ -1,0 +1,63 @@
+.app_navbar {
+    @apply sticky top-0 left-0 right-0 z-50 bg-gray-900 text-white font-semibold;
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    .nav_container {
+        @apply flex items-center justify-between flex-wrap py-4 px-4 md:py-6 md:px-4;
+    }
+
+    .branding a {
+        @apply text-lg font-bold text-white;
+    }
+
+    .burger_menu {
+        @apply flex flex-col justify-center items-center space-y-1 cursor-pointer md:hidden;
+
+        span {
+            @apply w-6 h-0.5 bg-white block transition duration-300 ease-in-out;
+        }
+    }
+
+    .nav_links {
+        @apply w-full md:flex md:flex-1 md:justify-center hidden md:flex md:items-center mt-4 md:mt-0;
+
+        &.open {
+            @apply block;
+        }
+
+        .main_links {
+            @apply flex flex-col md:flex-row md:space-x-6;
+
+            a, button {
+                @apply block py-2 md:py-0 text-white font-semibold hover:text-blue-200 transition-colors;
+            }
+
+            .mobile_only {
+                @apply md:hidden space-y-2 mt-4;
+            }
+        }
+    }
+
+    .user_dropdown {
+        @apply relative;
+
+        .user_dropdown_toggle {
+            @apply flex items-center space-x-2 bg-white text-gray-800 rounded-full py-2 px-4 hover:bg-gray-100 transition;
+        }
+
+        .caret {
+            @apply w-4 h-4 transform transition-transform duration-300;
+        }
+
+        .dropdown_menu {
+            @apply absolute right-0 mt-2 w-48 bg-white rounded shadow-lg overflow-hidden z-50 text-gray-800;
+
+            a, button {
+                @apply block w-full text-left px-4 py-2;
+            }
+        }
+    }
+}

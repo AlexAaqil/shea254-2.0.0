@@ -1,0 +1,86 @@
+.HomePage {
+    @apply min-h-screen bg-white;
+
+    section {
+        &:not(:first-of-type) {
+            @apply py-8 md:py-8;
+        }
+
+        .container {
+            .section_header {
+                @apply flex justify-between items-center mb-8;
+
+                h2 {
+                    @apply font-bold text-3xl text-center uppercase tracking-wide;
+                }
+            }
+        }
+    }
+
+    .Categories {
+        .container {
+            @apply bg-[var(--theme-light-bg)] grid grid-cols-2 lg:grid-cols-4 gap-8 rounded-lg;
+
+            .category {
+                @apply w-[80%];
+
+                a {
+                    @apply bg-white text-[var(--theme-bg)] font-bold py-[12px] px-[16px] rounded-lg hover:bg-[var(--theme-bg)] hover:text-white block;
+                }
+            }
+        }
+    }
+
+    .Hero {
+        @apply py-6 px-0;
+
+        .container {
+            @apply px-0;
+
+            .hero_wrapper {
+                @apply relative px-0 mx-auto h-[40dvh] md:h-[60dvh] rounded-2xl;
+
+                .overlay {
+                    @apply rounded-lg absolute inset-0 bg-black/60 z-10;
+                }
+
+                .text {
+                    @apply absolute z-10 top-0 left-0 w-full h-full flex flex-col justify-center items-center gap-4 md:gap-6 text-center px-4 text-white;
+
+                    .image {
+                        @apply h-[100px] w-[100px];
+
+                        img {
+                            animation: spin 35s linear infinite;
+                        }
+                    }
+
+                    h1 {
+                        @apply font-extrabold tracking-wide uppercase;
+                        font-size: clamp(2.5em, 5vw, 4em);
+                    }
+
+                    .sub_title {
+                        @apply font-bold;
+                        font-size: clamp(1.2em, 2vw, 1.6em);
+                    }
+                }
+
+                .slideshow {
+                    @apply relative w-full h-full overflow-hidden z-0;
+                }
+            }
+        }
+    }
+
+    /* .FeaturedProducts {
+        .container {
+
+        }
+    } */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}

@@ -1,0 +1,35 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, Roboto, sans-serif, Arial, 'Helvetica Neue';
+}
+
+.container {
+    padding: 10px 5%;
+}
+
+.fa-star {
+    color: #ffd600;
+    font-size: 0.85em;
+}
+
+img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.update_link {
+    text-decoration: none;
+    color: $link_color;
+}
+
+.active {
+    color: $success;
+}
+
+.inactive,
+.unverified {
+    color: $danger;
+}

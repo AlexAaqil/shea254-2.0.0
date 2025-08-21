@@ -1,0 +1,160 @@
+.card {
+    box-shadow: 2px 2px 8px #c9c9c9;
+    border-radius: 8px;
+
+    a {
+        text-decoration: none;
+    }
+
+    .image {
+        position: relative;
+        height: 200px;
+        border-radius: 8px;
+    }
+
+    .details {
+        padding: 4px 12px 8px;
+
+        .extra_details {
+            margin: 6px 0;
+
+            .in_stock,
+            .featured {
+                color: green;
+            }
+
+            .out_of_stock,
+            .not_featured {
+                color: $danger;
+            }
+
+            span {
+                font-size: 0.75em;
+
+                &:not(:last-of-type) {
+                    margin-right: 12px;
+                }
+
+                a {
+                    text-decoration: none;
+                    color: $theme-2;
+                }
+            }
+        }
+
+        .content {
+            .info {
+                display: grid;
+                gap: 6px;
+
+                .title {
+                    margin: 6px 0;
+
+                    a {
+                        color: #000;
+                        font-size: 1.12em;
+                        font-weight: bold;
+                    }
+                }
+
+
+            }
+        }
+    }
+}
+
+.product_card {
+    .image {
+        img {
+            object-fit: contain;
+        }
+
+        .percentage_discount {
+            position: absolute;
+            top: 10px;
+            left: 6.5px;
+            font-size: 0.75em;
+            background: $price_color;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-weight: bold;
+        }
+
+        .actions {
+            position: absolute;
+            bottom: -5px;
+            right: 16px;
+
+            form {
+                button {
+                    @include flex_center;
+                    height: 45px;
+                    width: 45px;
+                    background: $theme-1;
+                    color: $text-color;
+                    padding: 12px;
+                    border-radius: 50%;
+                    outline: none;
+                    border: none;
+                    font-size: 1.45em;
+                }
+            }
+        }
+    }
+
+    .price_rating {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .price,
+        .rating {
+            display: flex;
+            gap: 6px;
+        }
+
+        .price {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+
+            .new_price {
+                color: $price_color;
+                font-size: 1.15em;
+            }
+
+            .old_price {
+                color: $danger;
+                font-size: 0.8em;
+            }
+        }
+
+        .rating {
+            span {
+                i {
+                    color: #fbbf24;
+                }
+
+                font-size: 0.75em;
+            }
+        }
+    }
+}
+
+.blog_card {
+    .blog_content {
+        color: $theme-2;
+        p{
+            line-height: 1.2;
+        }
+    }
+
+    .link {
+        a {
+            color: blue;
+            font-size: 0.8em;
+            text-decoration: underline;
+        }
+    }
+}

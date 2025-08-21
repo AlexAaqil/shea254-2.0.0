@@ -1,0 +1,64 @@
+.table {
+    @apply w-full overflow-x-auto rounded-lg shadow-sm;
+
+    table {
+        @apply w-full min-w-full text-left text-gray-700;
+        border-collapse: collapse;
+        border-spacing: 0;
+
+        thead th.numbering,
+        thead th.actions,
+        tbody td.numbering,
+        tbody td.action {
+            @apply text-center;
+        }
+
+        thead th,
+        tbody td {
+            @apply p-2;
+        }
+
+        thead {
+            @apply bg-gray-800 text-white;
+
+            th {
+                @apply text-base font-semibold;
+
+                &:first-of-type {
+                    @apply rounded-tl-lg;
+                }
+
+                &:last-of-type {
+                    @apply rounded-tr-lg;
+                }
+            }
+
+            .action {
+                @apply text-center;
+            }
+        }
+
+        tbody {
+            tr {
+                @apply border-b border-gray-200 transition duration-150 ease-in-out;
+
+                &:nth-of-type(odd) {
+                    @apply bg-gray-50;
+                }
+
+                &:hover {
+                    @apply bg-gray-100;
+                }
+
+                .numbering {
+                    @apply flex justify-center items-center gap-1;
+                }
+
+                .actions {
+                    @apply flex items-baseline justify-center gap-4 mt-0;
+                }
+            }
+
+        }
+    }
+}

@@ -1,0 +1,155 @@
+.Authentication {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    background: linear-gradient(135deg, rgba(0, 45, 134, 0.03), rgba(59, 130, 246, 0.05));
+    padding: 2em 1em;
+
+    .container {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 
+            0 4px 30px rgba(0, 0, 0, 0.05),
+            0 2px 4px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+        position: relative;
+        width: 90%;
+        max-width: 420px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 8px 40px rgba(0, 0, 0, 0.08),
+                0 4px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .header {
+            text-align: center;
+            padding: 2em 1em;
+            background: linear-gradient(135deg, rgba(0, 45, 134, 0.02), rgba(59, 130, 246, 0.03));
+
+            img {
+                width: 80px;
+                height: 80px;
+                border-radius: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+
+                &:hover {
+                    transform: scale(1.05);
+                }
+            }
+        }
+
+        .custom_form {
+            padding: 2em;
+
+            form {
+                .input_group {
+                    margin-bottom: 1.5em;
+
+                    label {
+                        display: block;
+                        margin-bottom: 0.5em;
+                        font-weight: 500;
+                        color: #2d3748;
+                        font-size: 0.95em;
+                    }
+
+                    input {
+                        width: 100%;
+                        padding: 0.8em 1em;
+                        border: 1.5px solid #e2e8f0;
+                        border-radius: 12px;
+                        font-size: 1em;
+                        transition: all 0.3s ease;
+                        background: #f8fafc;
+
+                        &:focus {
+                            outline: none;
+                            border-color: #002d86;
+                            background: white;
+                            box-shadow: 0 2px 15px rgba(0, 45, 134, 0.1);
+                        }
+
+                        &::placeholder {
+                            color: #a0aec0;
+                        }
+                    }
+
+                    a {
+                        color: #002d86;
+                        text-decoration: none;
+                        font-size: 0.9em;
+                        transition: color 0.3s ease;
+
+                        &:hover {
+                            color: #001f5e;
+                        }
+                    }
+
+                    .inline_alert {
+                        display: block;
+                        margin-top: 0.5em;
+                        color: #ef4444;
+                        font-size: 0.85em;
+                    }
+                }
+
+                button {
+                    width: 100%;
+                    padding: 1em;
+                    background: #002d86;
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-weight: 500;
+                    font-size: 1em;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(0, 45, 134, 0.15);
+
+                    &:hover {
+                        background: #001f5e;
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 15px rgba(0, 45, 134, 0.2);
+                    }
+                }
+            }
+
+            p {
+                text-align: center;
+                margin-top: 1.5em;
+                color: #4a5568;
+                font-size: 0.95em;
+
+                a {
+                    color: #002d86;
+                    font-weight: 500;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+
+                    &:hover {
+                        color: #001f5e;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (width >= 726px) {
+    .Authentication {
+        .login,
+        .verify_email,
+        .forgot_password {
+            width: 400px;
+        }
+
+        .signup {
+            width: 450px;
+        }
+    }
+}

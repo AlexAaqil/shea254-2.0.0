@@ -1,0 +1,114 @@
+.Dashboard {
+    .container {
+        .actions {
+            display: flex;
+            gap: 1em;
+        }
+    }
+}
+
+.Admin_dashboard {
+    .hero {
+        margin: 0 0 0.5em;
+
+        p {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    }
+
+    .stats {
+        @include grid(6);
+
+        .stat {
+            background: #cadaff;
+            border-radius: 8px;
+            padding: 6px 8px;
+            display: grid;
+            grid-template-columns: 20% auto;
+            gap: 1em;
+            align-items: center;
+
+            .icon {
+                @include flex_center;
+                font-size: 1.1em;
+                background: #7c9fec;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                padding: 16px;
+            }
+
+            .text {
+                a {
+                    text-decoration: none;
+                    color: #000;
+                }
+            }
+        }
+    }
+
+    .analytics_wrapper {
+        margin: 1.5em 0;
+        .analytics {
+            @include grid(4);
+    
+            .analytic {
+                background: rgb(198, 250, 193);
+                border-radius: 8px;
+                padding: 6px 12px;
+                display: grid;
+                grid-template-columns: auto 20%;
+                align-items: center;
+    
+                .text {
+                    p {
+                        &:first-of-type {
+                            font-size: 1.45em;
+                            font-weight: bold;
+                        }
+    
+                        font-size: 0.8em;
+                    }
+                }
+    
+                .icon {
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (width >= 726px) {
+    .Admin_dashboard {
+        .analytics_wrapper {
+            .custom_form {
+                display: flex;
+                justify-content: flex-end;
+
+                form {
+                    width: 15%;
+                }
+            }
+        }
+    }
+}
+
+
+@media screen and (width >= 726px) {
+    .charts {
+        margin: 0 0 4em;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+
+        .chart {
+            height: 40vh;
+
+            h2 {
+                font-size: 1.2em;
+            }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+$theme-1: #222831;
+$theme-2: #393e46;
+$theme-3: #00adb5;
+$theme-4: #00fff5;
+$theme-5: #efefef;
+
+$text-color: #eeeeee;
+$price_color: green;
+$dark_text: #000;
+$light_text: #eee;
+
+$faded: grey;
+$danger: #eb0404;
+$success: #02a81d;
+$warning: #c28005;
+
+$link_color: rgb(5, 59, 236);
+
+$sides_padding: 5%;
+
+.text-success {
+    color: green;
+}
+
+.danger {
+    color: $danger;
+}
+
+.warning {
+    color: $warning;
+}
+
+.success {
+    color: $success;
+}
+
+.bold {
+    font-weight: bold;
+}

@@ -1,0 +1,84 @@
+.Shop {
+    .search {
+        padding: 1.2em 0 0;
+        display: flex;
+        justify-content: center;
+
+        form {
+            position: relative;
+            width: 80%;
+            margin: auto;
+
+            input,
+            button {
+                height: 35px;
+            }
+
+            input {
+                border-radius: 32px;
+                margin: 0;
+            }
+
+            button {
+                position: absolute;
+                background: #000;
+                color: #fff;
+                border: none;
+                right: 0;
+                border-radius: 0 32px 32px 0;
+                padding: 0.5em 0.7em;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3em 0.5em;
+        a {
+            text-decoration: none;
+            color: #202020;
+            background: #e6e6e6;
+            border-radius: 32px;
+            padding: 1px 10px;
+        }
+    }
+
+    .shop_products {
+        .card_wrapper {
+            @include grid(3);
+            
+            .card {
+                .text {
+                    .content {
+                        grid-template-columns: 80% auto;
+                        gap: 1em;
+
+                        .title {
+                            a {
+                                font-size: 1.1em;
+                            }
+                        }
+
+                        .price {
+                            color: green;
+                            font-weight: bold;
+                            font-size: 1.15em;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (width >= 726px) {
+    .Shop {
+        .search {
+            form {
+                width: 30%;
+            }
+        }
+    }
+}

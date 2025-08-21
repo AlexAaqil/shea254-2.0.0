@@ -1,0 +1,120 @@
+.custom_cards {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+
+    .card {
+        @apply rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-2;
+
+        .image {
+            @apply h-[300px];
+        }
+
+        .content {
+            @apply mt-4 space-y-2;
+
+            .title {
+                @apply font-semibold;
+            }
+
+            .price_range,
+            a {
+                @apply text-gray-500;
+            }
+
+            a {
+                @apply hover:text-gray-900 hover:underline hover:decoration-solid transition duration-300;
+            }
+        }
+    }
+}
+
+.small_cards {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+
+    .card {
+        @apply rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-2;
+
+        .details {
+            @apply flex gap-6;
+
+            .info {
+                @apply space-y-1;
+
+                h3 {
+                    @apply text-lg font-semibold;
+                }
+            }
+
+            .image {
+                @apply h-20 w-20;
+
+                img {
+                    @apply rounded-lg;
+                }
+
+                span {
+                    @apply bg-gray-200 text-lg text-gray-700 rounded-lg w-20 h-20 flex items-center justify-center font-semibold uppercase;
+                }
+            }
+        }
+
+        .actions {
+            span {
+                @apply cursor-pointer;
+            }
+
+            .others {
+                @apply flex gap-2;
+            }
+
+            .crud {
+                @apply mt-0 gap-2;
+            }
+        }
+    }
+}
+
+.product_card {
+    .image {
+        @apply relative;
+
+        .cart_btn {
+            @apply absolute right-2 bottom-2;
+
+            button {
+                @apply bg-[var(--theme-bg)] p-3 rounded-lg;
+
+                svg {
+                    @apply w-8 h-8 text-white;
+                }
+            }
+
+        }
+    }
+
+    .content {
+        @apply px-2;
+
+        .title {
+            a,
+            span {
+                @apply text-[var(--theme-bg)];
+            }
+        }
+
+        .title {
+            @apply font-bold text-lg;
+        }
+
+        .product_price {
+            @apply font-bold text-lg;
+        }
+
+        .extras {
+            @apply flex gap-4;
+
+            span {
+                @apply text-sm;
+            }
+        }
+    }
+}
