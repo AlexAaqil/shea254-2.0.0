@@ -1,5 +1,5 @@
 footer {
-    @apply bg-slate-200 text-gray-900 py-12;
+    @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)] py-12;
 
     .container {
         @apply px-4 md:px-16 mx-auto;
@@ -12,7 +12,7 @@ footer {
             }
 
             p {
-                @apply text-gray-600 mb-4;
+                @apply text-gray-200 mb-4;
             }
 
             div {
@@ -22,10 +22,22 @@ footer {
             }
 
             .branding {
-                @apply md:col-span-1;
+                @apply md:col-span-2;
+
+                .image {
+                    @apply h-[150px] w-[150px] mb-6;
+
+                    img {
+                        @apply rounded-full;
+                    }
+                }
 
                 .info {
-                    @apply space-y-2;
+                    @apply space-y-2 w-[75%];
+
+                    h3 {
+                        @apply text-2xl font-extrabold tracking-wide;
+                    }
 
                     p {
                         @apply flex items-center;
@@ -37,17 +49,23 @@ footer {
                 @apply grid gap-2;
 
                 a {
-                    @apply text-gray-600 hover:text-gray-900 transition-colors duration-300;
+                    @apply text-gray-200 hover:text-gray-900 transition-colors duration-300 font-semibold;
                 }
             }
 
             .connect {
                 .socials {
                     @apply flex space-x-4 mb-4;
+
+                    svg {
+                        @apply fill-white;
+                    }
+
+
                 }
 
                 p {
-                    @apply text-gray-600;
+                    @apply text-gray-200 font-semibold;
                 }
             }
         }
@@ -57,7 +75,7 @@ footer {
 
             .text,
             .documents a {
-                @apply text-gray-600 text-sm;
+                @apply text-gray-200 text-sm;
             }
 
             .documents {

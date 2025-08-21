@@ -12,5 +12,6 @@
 @import "./components/tables.css";
 
 @import "./partials/navbar.css";
+@import "./partials/footer.css";
 
 @import "./pages/general/HomePage.css";

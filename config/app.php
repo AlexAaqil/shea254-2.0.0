@@ -19,6 +19,10 @@ return [
     'phone_number' => "+254 711 894 267",
     'address' => "Nairobi CBD <br> Sasa Mall, Moi Avenue <br> Shop G20",
     'location' => "Nairobi, Kenya",
+    'whatsapp' => "https://wa.me/254711894267",
+    'instagram' => "https://www.instagram.com/shea.254",
+    'facebook' => "https://www.facebook.com/profile.php?id=100056436834853",
+    'tiktok' => "https://www.tiktok.com/@shea.254?_t=8gJ9b2q8TP4&_r=1",
 
     /*
     |--------------------------------------------------------------------------

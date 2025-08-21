@@ -2,43 +2,39 @@
     <div class="container">
         <div class="content">
             <div class="branding">
-                <h3>{{ config('app.name') }}</h3>
-                <p>{{ config('app.slogan') }}</p>
+                <div class="image">
+                    <img src="{{ asset('assets/images/logo.jpg') }}" alt="{{ config('app.name') }} Logo">
+                </div>
+
                 <div class="info">
-                    <p>
-                        <x-svgs.location class="w-5 h-5 mr-2" />
-                        {{ config('app.address') }}
-                    </p>
-                    <p>
-                        <x-svgs.email class="w-5 h-5 mr-2" />
-                        {{ config('app.email') }}
-                    </p>
+                    <h3>Shea.254</h3>
+                    <p>Suppliers of Raw Shea, Body butter, Cocoa Butter, Black Soap, Essential & Carrier Oils</p>
+                    <div class="info">
+                        <p>
+                            {!! config('app.address') !!}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <div class="quick_links">
-                <h3>Quick Links</h3>
+                <h3>Explore</h3>
                 <div class="links">
+                    <a href="{{ Route::has('home-page') ? route('home-page') : '#' }}" wire:navigate>Home</a>
+                    <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" wire:navigate>Shop</a>
                     <a href="{{ Route::has('about-page') ? route('about-page') : '#' }}" wire:navigate>About</a>
-                    <a href="{{ Route::has('about-page') ? route('about-page') : '#' }}" wire:navigate>Packages</a>
-                    <a href="{{ Route::has('about-page') ? route('about-page') : '#' }}" wire:navigate>Tours</a>
                     <a href="{{ Route::has('contact-page') ? route('contact-page') : '#' }}" wire:navigate>Contact</a>
-                </div>
-            </div>
-
-            <div class="products">
-                <h3>Products</h3>
-                <div class="links">
-                    @forelse($categories as $category)
-                        <a href="#">{{ $category->title }}</a>
-                    @empty
-                        <p>Explore Our Products</p>
-                    @endforelse
+                    <a href="{{ Route::has('blogs-page') ? route('blogs-page') : '#' }}" wire:navigate>Blogs</a>
                 </div>
             </div>
 
             <div class="connect">
                 <h3>Connect With Us</h3>
+                <div class="contacts">
+                    <p>{{ config('app.phone_number') }}</p>
+                    <p>{{ config('app.email') }}</p>
+                </div>
+
                 <div class="socials">
                     <a href="{{ config('app.instagram') }}">
                         <x-svgs.instagram />
@@ -53,7 +49,6 @@
                         <x-svgs.tiktok />
                     </a>
                 </div>
-                <p>Follow us for updates and insights</p>
             </div>
         </div>
 
