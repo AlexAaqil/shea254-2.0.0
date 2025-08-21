@@ -44,7 +44,7 @@
         }
 
         a.btn_login {
-            @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)] hover:bg-blue-600 font-semibold tracking-wide py-[8px] px-[12px] rounded-lg;
+            @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)] hover:bg-blue-600 font-semibold tracking-wide py-[12px] px-[16px] rounded-lg;
         }
     }
 }

@@ -75,7 +75,7 @@
 
 .product_card {
     .image {
-        @apply relative;
+        @apply relative bg-blue-50;
 
         .cart_btn {
             @apply absolute right-2 bottom-2;

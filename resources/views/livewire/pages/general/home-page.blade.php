@@ -97,11 +97,23 @@
         </div>
     </section>
 
+    <section class="About">
+        <div class="container">
+            <h2>Discover the Power of Natural Skincare</h2>
+            <p>
+                At Shea.254, we believe in the transformative power of natural ingredients. Our carefully curated
+                collection of shea butters, whipped body butters, toners, and creams are designed to nourish and
+                rejuvenate your skin, leaving you with a radiant, healthy glow.
+            </p>
+            <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">Explore Our Collection</a>
+        </div>
+    </section>
+
     <section class="FeaturedProducts">
         <div class="container">
             <div class="section_header">
                 <h2>Most Popular</h2>
-                <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">View All</a>
+                <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">Shop All</a>
             </div>
 
             <div class="products_list custom_cards">
@@ -111,6 +123,14 @@
                     <p>No products yet.</p>
                 @endforelse
             </div>
+        </div>
+    </section>
+
+    <section class="CTA">
+        <div class="container">
+            <h2>Explore Our Wide Range of Products</h2>
+            <p>From nourishing shea butters to rejuvenating toners and serums, our collection has something for every skin type and concern. Discover the perfect products to elevate your skincare routine.</p>
+            <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">Explore Our Collection</a>
         </div>
     </section>
 </div>
