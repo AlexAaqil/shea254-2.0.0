@@ -8,7 +8,7 @@ footer {
             @apply grid grid-cols-1 lg:grid-cols-4 gap-8 items-start;
 
             h3 {
-                @apply text-xl font-bold mb-4;
+                @apply text-xl lg:text-2xl font-bold mb-4;
             }
 
             p {
@@ -36,7 +36,7 @@ footer {
                     @apply space-y-2 w-[75%];
 
                     h3 {
-                        @apply text-2xl font-extrabold tracking-wide;
+                        @apply text-4xl font-extrabold tracking-wide uppercase;
                     }
 
                     p {
