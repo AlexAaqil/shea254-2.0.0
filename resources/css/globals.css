@@ -2,6 +2,11 @@
 
 *{
     outline: 1px solid hsl(0, 0%, 88%);
+    font-family: -apple-system, Roboto, sans-serif, 'Open Sans', 'Helvetica Neue';
+}
+
+body {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
 }
 
 :root {
