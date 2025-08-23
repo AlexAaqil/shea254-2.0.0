@@ -1,0 +1,96 @@
+.ContactPage {
+    .Hero {
+        @apply min-h-[15dvh] flex items-center justify-center py-[0.8em] px-[2em] overflow-hidden;
+
+        .container {
+            @apply text-center;
+
+            h1 {
+                font-size: clamp(2.4em, 3.6vw, 3.6em);
+                @apply font-extrabold mb-[0.4em] text-[var(--theme-bg)];
+                background: linear-gradient(135deg, #1a237e, #5c6bc0);
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+
+            p {
+                @apply text-[1.2em] text-[#64748b] max-w-[600px] mx-auto;
+            }
+        }
+    }
+
+    .Contact {
+        .container {
+            @apply grid grid-cols-1 lg:grid-cols-12 gap-8;
+
+            .contact_info {
+                @apply col-span-4;
+
+                .info {
+                    @apply flex items-center gap-2 mb-6 bg-blue-50 lg:w-[75%] lg:mx-auto rounded-lg p-[8px];
+
+                    .icon {
+                        @apply w-[40px] h-[40px] rounded-full p-[8px] bg-[var(--theme-bg)];
+
+                        svg {
+                            @apply stroke-white w-full h-full;
+                        }
+                    }
+
+                    p {
+                        @apply grid gap-2;
+
+                        span {
+                            &:first-of-type {
+                                @apply font-bold;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .contact_form {
+                @apply col-span-8 p-[1em];
+
+                .inputs_group {
+                    @apply md:grid md:grid-cols-2 md:gap-6 md:items-start;
+                }
+
+                .inputs {
+                    @apply mb-[1.5em];
+
+                    label {
+                        @apply block mb-[0.5em] font-semibold text-[#2d3748];
+                    }
+
+                    input,
+                    textarea {
+                        @apply w-full py-[0.8em] px-[1em] rounded-lg text-[1em] bg-[#f8fafc];
+                        border: 1.5px solid #e2e8f0;
+                        transition: all 0.3s ease;
+
+                        &:focus {
+                            outline: none;
+                            border-color: #002d86;
+                            background: white;
+                            box-shadow: 0 2px 15px rgba(0, 45, 134, 0.1);
+                        }
+                    }
+                }
+
+                button {
+                    @apply w-full p-[1em] bg-[var(--theme-bg)] text-[var(--theme-bg-text)] rounded-lg font-bold tracking-wide;
+                    border: none;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(0, 45, 134, 0.15);
+
+                    &:hover {
+                        background: #001f5e;
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 15px rgba(0, 45, 134, 0.2);
+                    }
+                }
+            }
+        }
+    }
+}
