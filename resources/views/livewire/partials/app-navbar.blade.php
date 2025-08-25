@@ -1,30 +1,67 @@
 <nav x-data="{ open: false }" class="app_navbar">
     <div class="nav_container">
-        <!-- Branding -->
         <div class="branding">
             <a href="/" wire:navigate>
                 <x-app-logo width="35" />
             </a>
         </div>
 
-        <!-- Burger (Mobile) -->
         <div class="burger_menu md:hidden" @click="open = !open">
             <span :class="open ? 'rotate-45 translate-y-1.5' : ''"></span>
             <span :class="open ? 'opacity-0' : ''"></span>
             <span :class="open ? '-rotate-45 -translate-y-1.5' : ''"></span>
         </div>
 
-        <!-- Nav Links -->
         <div :class="{ 'open': open }" class="nav_links" x-cloak>
             <div class="main_links">
-                <a href="{{ Route::has('dashboard') ? route('dashboard') : '#' }}">Dashboard</a>
-                <a href="{{ Route::has('users.index') ? route('users.index') : '#' }}" wire:navigate>Users</a>
-                <a href="{{ Route::has('sales.index') ? route('sales.index') : '#' }}" wire:navigate>Sales</a>
-                <a href="{{ Route::has('products.index') ? route('products.index') : '#' }}" wire:navigate>Products</a>
-                <a href="{{ Route::has('delivery-regions.index') ? route('delivery-regions.index') : '#' }}" wire:navigate>Locations</a>
-                <a href="{{ Route::has('blogs.index') ? route('blogs.index') : '#' }}" wire:navigate>Blogs</a>
-                {{-- <a href="{{ Route::has('ratings.index') ? route('ratings.index') : '#' }}" wire:navigate>Ratings</a> --}}
-                <a href="{{ Route::has('contact-messages.index') ? route('contact-messages.index') : '#' }}" wire:navigate>Messages</a>
+                @php
+                    use App\Enums\UserRoles;
+
+                    $user = auth()->user();
+
+                    $nav_items = [
+                        [
+                            'route' => 'dashboard',
+                            'label' => 'Dashboard',
+                            'navigate' => false,
+                        ],
+                        [
+                            'route' => 'users.index',
+                            'label' => 'Users',
+                            'can' => $user && $user->isAdmin(),
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'tours.index',
+                            'label' => 'Tours',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'bookings.index',
+                            'label' => 'Bookings',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'contact-messages.index',
+                            'label' => 'Messages',
+                            'navigate' => true,
+                        ],
+                    ];
+
+                    $currentRoute = Route::currentRouteName();
+                @endphp
+
+                @foreach ($nav_items as $item)
+                    @if (!isset($item['can']) || $item['can'])
+                        <a
+                            href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}"
+                            @if($item['navigate'] ?? true) wire:navigate @endif
+                            class="{{ $currentRoute === $item['route'] ? 'active' : '' }}"
+                        >
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
+                @endforeach
 
                 @auth
                     <!-- Mobile view -->

@@ -4,43 +4,33 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <link rel="shortcut icon" href="{{ asset('assets/images/logo.jpg') }}" type="image/x-icon">
-
-        @vite(['resources/css/guest-layout.css', 'resources/js/app.js'])
+        <link rel="icon" href="{{ asset('assets/images/app-logo.ico') }}" type="image/x-icon">
 
         @livewireStyles
+
+        @vite(['resources/css/guest-layout.css', 'resources/js/app.js'])
 
         @isset($head)
             {{ $head }}
         @else
-            <title>{{ config('app.name') }}</title>
+            <title>{{ config('app.name') }} | Skin Care Experts</title>
         @endisset
-        @stack('head')
     </head>
-    <body class="font-sans antialiased bg-white text-gray-900">
-        <livewire:partials.navbar />
-
+    <body class="antialiased">
         <livewire:partials.flash-messages />
 
-        <div class="guest_layout">
-            {{ $slot ?? '' }}
-            @yield('content')
-        </div>
+        <main class="guest_layout">
+            <livewire:partials.navbar />
 
-        <livewire:partials.footer />
+            <div class="guest_layout_container">
+                {{ $slot }}
+            </div>
+
+            <livewire:partials.footer />
+        </main>
 
         @livewireScripts
 
-        @isset($scripts)
-            {{ $scripts }}
-        @endisset
         @stack('scripts')
-
-        @isset($afterScripts)
-            {{ $afterScripts }}
-        @endisset
-        @stack('after-scripts')
     </body>
 </html>

@@ -1,10 +1,6 @@
 <div class="product_card card">
     <div class="image">
-        @if($product->image_url)
-            <img src="{{ $product->image_url }}" alt="{{ $product->slug }}">
-        @else
-            <img src="{{ asset('assets/images/default-image.jpg') }}" alt="{{ $product->slug }}">
-        @endif
+        <img src="{{ $product->image_url }}" alt="{{ $product->slug }}">
 
         @if ($product->stock_count > 0)
             <div class="cart_btn">

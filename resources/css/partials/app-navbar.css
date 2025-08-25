@@ -22,17 +22,21 @@
     }
 
     .nav_links {
-        @apply w-full md:flex md:flex-1 md:justify-center hidden md:flex md:items-center mt-4 md:mt-0;
+        @apply w-full md:flex md:flex-1 md:items-center md:justify-center md:gap-8 hidden mt-4 md:mt-0;
 
         &.open {
             @apply block;
         }
 
         .main_links {
-            @apply flex flex-col md:flex-row md:space-x-6;
+            @apply flex flex-col md:flex-row md:space-x-12;
 
             a, button {
                 @apply block py-2 md:py-0 text-white font-semibold hover:text-blue-200 transition-colors;
+            }
+
+            a.active {
+                @apply font-bold border-b-2 border-white;
             }
 
             .mobile_only {

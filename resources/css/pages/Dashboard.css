@@ -1,0 +1,29 @@
+.Dashboard {
+    .stats {
+        .stat {
+            @apply flex flex-col py-4 px-6 rounded-lg bg-blue-50;
+
+            p:first-of-type {
+                @apply text-xl font-semibold tracking-wider;
+            }
+
+            p:last-of-type {
+                @apply text-sm text-gray-700;
+            }
+        }
+    }
+
+    .Hero {
+        .container {
+            p {
+                @apply font-bold text-lg;
+            }
+        }
+    }
+
+    .Statistics {
+        .stats {
+            @apply grid grid-cols-1 md:grid-cols-6 gap-4;
+        }
+    }
+}

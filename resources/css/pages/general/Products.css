@@ -1,0 +1,115 @@
+.product_price {
+    .discount_price {
+        @apply line-through text-gray-600 text-sm ml-2;
+    }
+
+    .discount_percentage {
+        @apply text-red-600 font-semibold ml-2;
+    }
+
+    .selling_price {
+        @apply text-[var(--theme-bg)] text-lg font-semibold;
+    }
+}
+
+.ProductDetails {
+    .details {
+        @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+
+        .images {
+            .main_image {
+                .image {
+                    @apply h-[500px];
+
+                    img {
+                        @apply transition duration-300;
+                    }
+                }
+            }
+
+            .other_images {
+                @apply flex gap-6 mt-4;
+
+                .image {
+                    @apply w-[100px] h-[100px] cursor-pointer overflow-hidden transition-transform hover:scale-105;
+
+                    img {
+                        @apply border-2 border-transparent transition duration-200;
+                    }
+
+                    img.active {
+                        @apply border-blue-500;
+                    }
+                }
+            }
+        }
+
+        .content {
+            @apply md:p-2;
+
+            .title {
+                @apply text-[var(--theme-bg)] font-black text-2xl lg:text-3xl mb-2;
+            }
+
+            .product_price {
+                @apply mt-2;
+
+                .selling_price {
+                    @apply text-xl lg:text-2xl;
+                }
+            }
+
+            .actions {
+                button {
+                    @apply bg-[var(--theme-bg)] text-white font-semibold;
+                }
+            }
+
+            .extras {
+                @apply mt-6;
+
+                p {
+                    @apply grid grid-cols-12;
+
+                    span {
+                        &:first-of-type {
+                            @apply col-span-2 text-gray-600;
+                        }
+
+                        &:last-of-type {
+                            @apply col-span-8;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.RelatedProducts {
+    .container {
+        .related_products_title {
+            @apply font-bold text-2xl lg:text-3xl mb-4;
+        }
+    }
+}
+
+.CategorizedProducts {
+    .HeroSection {
+        .container {
+            @apply text-center space-y-2;
+
+            .breadcrumbs {
+                @apply justify-center;
+            }
+
+            .title {
+                @apply font-bold text-2xl lg:text-4xl;
+            }
+
+            p {
+                @apply text-base lg:text-lg;
+            }
+        }
+    }
+}

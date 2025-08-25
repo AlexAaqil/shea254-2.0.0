@@ -1,0 +1,82 @@
+.Authentication {
+    @apply min-h-[90dvh] flex items-center justify-center;
+
+    .custom_form {
+        .header {
+            @apply text-xl font-bold text-center uppercase tracking-wide mb-4 border-b-2 border-gray-200 pb-2;
+        }
+
+        a {
+            @apply text-blue-500;
+        }
+
+        button {
+            @apply w-full;
+        }
+
+        .extra_inputs {
+            @apply mt-2 mb-2;
+        }
+
+        .extra_links {
+            @apply mt-4;
+        }
+    }
+
+    .Login,
+    .Signup,
+    .ForgotPassword,
+    .ResetPassword {
+        @apply w-[90%] md:w-[550px] mx-auto;
+    }
+
+    .ForgotPassword {
+        p {
+            @apply mb-4;
+        }
+    }
+
+    .VerifyEmail {
+        @apply w-[90%] md:w-[700px] mx-auto;
+
+        .buttons_group {
+            @apply mt-4;
+        }
+    }
+
+    .Profile {
+        @apply pt-12;
+
+        section {
+            @apply mb-20;
+
+            header {
+                h2 {
+                    @apply text-lg font-medium text-gray-900;
+                }
+
+                p {
+                    @apply mt-2 mb-4 text-sm text-gray-600 dark:text-gray-400;
+                }
+            }
+
+            .custom_form {
+                .inputs {
+                    @apply md:w-[50%];
+                }
+
+                button {
+                    @apply w-[unset];
+                }
+            }
+        }
+
+        .delete_user {
+            .custom_form {
+               .inputs {
+                    @apply w-full;
+                }
+            }
+        }
+    }
+}

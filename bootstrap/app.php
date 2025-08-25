@@ -11,7 +11,31 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+            'active' => \App\Http\Middleware\ActiveMiddleware::class,
+        ]);
+
+        $middleware->group('authenticated_user', [
+            'auth',
+            'active',
+            'verified',
+        ]);
+
+        $middleware->group('admin_only', [
+            'auth',
+            'active',
+            'verified',
+            'admin',
+        ]);
+
+        $middleware->group('super_admin_only', [
+            'auth',
+            'active',
+            'verified',
+            'super_admin',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

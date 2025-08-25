@@ -29,6 +29,10 @@ class Product extends Model
         return $this->product_reviews()->avg('rating');
     }
 
+    public function product_images() {
+        return $this->hasMany(ProductImage::class, 'product_id')->orderBy('image_order', 'asc');
+    }
+
     public function getProductImages() {
         return $this->hasMany(ProductImage::class, 'product_id')->orderBy('image_order', 'asc');
     }
@@ -69,6 +73,20 @@ class Product extends Model
         } else {
             return asset('assets/images/default_image.jpg');
         }
+    }
+
+    public function getImageUrlAttribute()
+    {
+        $image = $this->relationLoaded('product_images')
+            ? $this->product_images->sortBy('image_order')->first()
+            : $this->product_images()->orderBy('image_order')->first();
+
+        if ($image && Storage::disk('public')->exists("{$image->image}")) {
+            return Storage::url("{$image->image}");
+        }
+
+        // Always return a fallback instead of null
+        return asset('assets/images/default-image.jpg');
     }
 
     public function calculateDiscount()

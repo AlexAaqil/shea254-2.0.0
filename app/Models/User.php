@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use App\Models\Products\ProductReview;
+use App\Enums\UserRoles;
 
 class User extends Authenticatable
 {
@@ -49,6 +50,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'user_level' => UserRoles::class,
+            'user_status' => 'boolean',
         ];
     }
 
@@ -80,5 +83,43 @@ class User extends Authenticatable
     public function hasReviewedProduct($product_id)
     {
         return $this->productReviews()->where('product_id', $product_id)->exists();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->user_status;
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->user_status ? 'Active' : 'Inactive';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->user_level === UserRoles::SUPER_ADMIN;
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->user_level, [
+            UserRoles::SUPER_ADMIN,
+            UserRoles::ADMIN,
+        ]);
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getInitialsAttribute(): string
+    {
+        return strtoupper(substr($this->first_name, 0, 1).substr($this->last_name, 0, 1));
+    }
+
+    public function getPhoneNumbersAttribute(): string
+    {
+        return $this->phone_number.''. $this->secondary_phone_number;
     }
 }
