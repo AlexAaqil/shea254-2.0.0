@@ -3,119 +3,114 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Session;
-use App\Models\Sales\OrderItem;
 use App\Models\Products\Product;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sales\Sale;
+use App\Models\Sales\OrderItem;
+use App\Models\Sales\OrderDelivery;
+use Illuminate\Support\Str;
 
 class CartService
 {
-    public function add(int $product_id, int $quantity =1): void
+    public function add(int $product_id, int $quantity = 1): void
     {
-        if (auth()->check()) {
-            $item = OrderItem::firstOrCreate(
-                ['user_id' => auth()->id(), 'product_id' => $product_id],
-                ['quantity' => 0]
-            );
-            $item->increment('quantity', $quantity);
-        }
-        else {
-            $cart = Session::get('cart', []);
-            $cart[$product_id] = ($cart[$product_id] ?? 0) + $quantity;
-            Session::put('cart', $cart);
-        }
-    }
+        $cart = Session::get('cart', []);
 
-    public function count()
-    {
-        if (auth()->check()) {
-            return OrderItem::where('user_id', auth()->id())->sum('quantity');
-        }
-        else {
-            return collect(Session::get('cart', []))->sum();
-        }
-    }
+        $cart[$product_id] = ($cart[$product_id] ?? 0) + $quantity;
 
-    public function getItems()
-    {
-        if (auth()->check()) {
-            return OrderItem::with(['product' => function($query) {
-                    $query->where('is_visible', true);
-                }])
-                ->where('user_id', auth()->id())->get();
-        }
-        else {
-            $productIds = array_keys(Session::get('cart', []));
-            $products = Product::whereIn('id', $productIds)->get();
-            return $products->map(function ($product) {
-                return (object)[
-                    'product' => $product,
-                    'quantity' => Session::get("cart")[$product->id],
-                ];
-            });
-        }
+        Session::put('cart', $cart);
     }
 
     public function update(int $product_id, int $quantity): void
     {
-        if(auth()->check()) {
-            if ($quantity <= 0) {
-                $this->remove($product_id);
-            }
-            else {
-                OrderItem::updateOrCreate(
-                    ['user_id' => auth()->id(), 'product_id' => $product_id],
-                    ['quantity' => $quantity]
-                );
-            }
-        }
-        else {
-            $cart = Session::get('cart', []);
-            if ($quantity <= 0) {
-                unset($cart[$product_id]);
-            }
-            else {
-                $cart[$product_id] = $quantity;
-            }
+        $cart = Session::get('cart', []);
 
-            Session::put('cart', $cart);
+        if ($quantity <= 0) {
+            unset($cart[$product_id]);
+        } else {
+            $cart[$product_id] = $quantity;
         }
+
+        Session::put('cart', $cart);
     }
 
     public function remove(int $product_id): void
     {
-        if (auth()->check()) {
-            OrderItem::where('user_id', auth()->id())
-                ->where('product_id', $product_id)
-                ->delete();
-        }
-        else {
-            $cart = Session::get('cart', []);
-            unset($cart[$product_id]);
-            Session::put('cart', $cart);
-        }
+        $cart = Session::get('cart', []);
+        unset($cart[$product_id]);
+        Session::put('cart', $cart);
     }
 
     public function clear(): void
     {
-        if (auth()->check()) {
-            OrderItem::where('user_id', auth()->id())->delete();
-        }
-        else {
-            Session::forget('cart');
-        }
+        Session::forget('cart');
     }
 
-    public function mergeSessionCartIntoDatabase(int $user_id): void
+    public function count(): int
     {
-        $session_cart = Session::get('cart', []);
+        return collect(Session::get('cart', []))->sum();
+    }
 
-        foreach ($session_cart as $product_id => $quantity) {
-            OrderItem::updateOrCreate(
-                ['user_id' => $user_id, 'product_id' => $product_id],
-                ['quantity' => DB::raw("quantity + {$quantity}")]
-            );
+    public function getItems()
+    {
+        $cart = Session::get('cart', []);
+        if (empty($cart)) return collect();
+
+        $products = Product::whereIn('id', array_keys($cart))->get();
+
+        return $products->map(function ($product) use ($cart) {
+            return (object) [
+                'product'  => $product,
+                'quantity' => $cart[$product->id],
+                'subtotal' => $cart[$product->id] * $product->selling_price,
+            ];
+        });
+    }
+
+    public function getTotal(): float
+    {
+        return $this->getItems()->sum('subtotal');
+    }
+
+    /**
+     * Checkout: create Sale + OrderItems + OrderDelivery
+     */
+    public function checkout(array $deliveryData, ?int $user_id = null): Sale
+    {
+        $items = $this->getItems();
+
+        if ($items->isEmpty()) {
+            throw new \Exception("Cart is empty.");
         }
 
-        Session::forget('cart');
+        // 1. Create Sale
+        $sale = Sale::create([
+            'order_number'   => strtoupper(Str::random(10)),
+            'order_type'     => 1, // adjust if you have multiple types
+            'total_amount'   => $this->getTotal(),
+            'user_id'        => $user_id,
+        ]);
+
+        // 2. Create OrderItems
+        foreach ($items as $item) {
+            OrderItem::create([
+                'order_id'       => $sale->id,
+                'product_id'     => $item->product->id,
+                'title'          => $item->product->title,
+                'quantity'       => $item->quantity,
+                'buying_price'   => $item->product->buying_price,
+                'selling_price'  => $item->product->selling_price,
+            ]);
+        }
+
+        // 3. Create Delivery
+        OrderDelivery::create(array_merge(
+            $deliveryData,
+            ['order_id' => $sale->id]
+        ));
+
+        // 4. Clear cart
+        $this->clear();
+
+        return $sale;
     }
 }

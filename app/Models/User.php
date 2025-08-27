@@ -81,6 +81,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ProductReview::class);
     }
 
+    public function sales()
+    {
+        return $this->hasMany(\App\Models\Sales\Sale::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasManyThrough(
+            \App\Models\Sales\OrderItem::class,
+            \App\Models\Sales\Sale::class,
+            'user_id',   // Foreign key on sales table
+            'order_id',  // Foreign key on order_items table
+            'id',        // Local key on users table
+            'id'         // Local key on sales table
+        );
+    }
+
     public function hasReviewedProduct($product_id)
     {
         return $this->productReviews()->where('product_id', $product_id)->exists();
@@ -94,6 +111,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getStatusLabelAttribute(): string
     {
         return $this->user_status ? 'Active' : 'Inactive';
+    }
+
+    public function getUserLevelValueAttribute(): ?int
+    {
+        return $this->user_level?->value;
     }
 
     public function isSuperAdmin(): bool

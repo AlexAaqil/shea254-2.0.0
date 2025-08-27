@@ -31,6 +31,12 @@ a.btn {
             @apply py-1 px-1 text-sm;
         }
     }
+
+    button.delete {
+        svg {
+            @apply stroke-red-600;
+        }
+    }
 }
 
 button.btn_transparent,

@@ -4,11 +4,13 @@
             <div class="info">
                 <h2>Users</h2>
                 <div class="stats">
-                    <span>{{ $count_admins }} {{ Str::plural('admin', $count_admins) }}</span>
-                    <span>{{ $count_users }} {{ Str::plural('user', $count_users) }}</span>
                     @if(auth()->user()->isSuperAdmin())
                         <span>{{ $count_super_admins }} {{ Str::plural('super admin', $count_super_admins) }}</span>
                     @endif
+                    <span>{{ $count_admins }} {{ Str::plural('admin', $count_admins) }}</span>
+                    <span>{{ $count_users }} {{ Str::plural('user', $count_users) }}</span>
+                    <span>{{ $count_unverified_users }} unverified</span>
+                    <span>{{ $count_inactive_users }} inactive</span>
                 </div>
             </div>
 
@@ -33,7 +35,7 @@
             </div>
 
             <div class="button">
-                <a href="{{ route('users.create') }}" wire:navigate class="btn">Create User</a>
+                <a href="{{ route('users.create') }}" class="btn">Create User</a>
             </div>
         </div>
 
@@ -81,7 +83,7 @@
 
                         <div class="crud">
                             @if($isAdmin)
-                                <a href="{{ route('users.edit', ['id' => $user->id]) }}" wire:navigate class="edit">
+                                <a href="{{ route('users.edit', $user->id) }}" wire:navigate class="edit">
                                     <x-svgs.edit />
                                 </a>
                             @endif

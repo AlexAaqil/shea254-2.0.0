@@ -11,8 +11,7 @@ use App\Livewire\Pages\General\ContactPage;
 use App\Livewire\Pages\Dashboards\Index as Dashboard;
 
 use App\Livewire\Pages\Users\Index as UsersPage;
-use App\Livewire\Pages\Users\Form as CreateUser;
-use App\Livewire\Pages\Users\Form as EditUser;
+use App\Http\Controllers\UserController;
 
 Route::get('/', HomePage::class)->name('home-page');
 Route::get('about', AboutPage::class)->name('about-page');
@@ -26,8 +25,7 @@ Route::middleware(['authenticated_user'])->group(function () {
 
 Route::middleware(['admin_only'])->group(function () {
     Route::get('users', UsersPage::class)->name('users.index');
-    Route::get('users/create', CreateUser::class)->name('users.create');
-    Route::get('users/{id}/edit', EditUser::class)->name('users.edit');
+    Route::resource('users', UserController::class)->only(['create', 'store', 'edit', 'update']);
 });
 
 require __DIR__ . '/auth.php';

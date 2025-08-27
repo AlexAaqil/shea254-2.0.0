@@ -9,8 +9,14 @@
         @apply flex items-center justify-between flex-wrap py-4 px-4 md:py-6 md:px-4;
     }
 
-    .branding a {
-        @apply text-lg font-bold text-white;
+    .branding {
+        a {
+            @apply text-lg font-bold text-white;
+
+            img {
+                @apply h-[35px] w-[35px] rounded-full;
+            }
+        }
     }
 
     .burger_menu {

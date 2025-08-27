@@ -42,7 +42,7 @@ class Index extends Component
     public function toggleStatus($user_id)
     {
         $user = User::findOrFail($user_id);
-        $user->status = !$user->status;
+        $user->user_status = !$user->user_status;
         $user->save();
 
         $this->dispatch('notify', type: 'success', message: 'Status updated.');
@@ -81,11 +81,27 @@ class Index extends Component
             ->paginate(50)
             ->withQueryString();
 
+        $stats = User::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN user_level NOT IN (?, ?) THEN 1 ELSE 0 END) as count_users,
+            SUM(CASE WHEN user_level = ? THEN 1 ELSE 0 END) as count_super_admins,
+            SUM(CASE WHEN user_level = ? THEN 1 ELSE 0 END) as count_admins,
+            SUM(CASE WHEN email_verified_at IS NULL THEN 1 ELSE 0 END) as count_unverified_users,
+            SUM(CASE WHEN user_status = 0 THEN 1 ELSE 0 END) as count_inactive_users
+        ", [
+            UserRoles::SUPER_ADMIN,
+            UserRoles::ADMIN,
+            UserRoles::SUPER_ADMIN->value,
+            UserRoles::ADMIN->value
+        ])->first();
+
         return view('livewire.pages.users.index', [
             'users' => $users,
-            'count_users' => User::where('user_level', !UserRoles::SUPER_ADMIN)->count(),
-            'count_super_admins' => User::where('user_level', UserRoles::SUPER_ADMIN->value)->count(),
-            'count_admins' => User::where('user_level', UserRoles::ADMIN->value)->count(),
+            'count_users' => $stats->count_users,
+            'count_super_admins' => $stats->count_super_admins,
+            'count_admins' => $stats->count_admins,
+            'count_unverified_users' => $stats->count_unverified_users,
+            'count_inactive_users' => $stats->count_inactive_users,
         ]);
     }
 }
