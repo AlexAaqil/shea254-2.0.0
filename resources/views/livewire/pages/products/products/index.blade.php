@@ -2,6 +2,7 @@
     <div class="container Products">
         <div class="breadcrumbs">
             <a href="{{ Route::has('product-categories.index') ? route('product-categories.index') : '#' }}" wire:navigate>Categories</a>
+            <a href="{{ Route::has('product-measurements.index') ? route('product-measurements.index') : '#' }}" wire:navigate>Measurements</a>
             <span>Products</span>
         </div>
 
@@ -106,7 +107,9 @@
                             <a href="{{ Route::has('products.edit') ? route('products.edit', $product->id) : '#' }}" class="edit">
                                 <x-svgs.edit />
                             </a>
-                            <button class="delete">
+                            <button x-data
+                                x-on:click.prevent="$wire.set('delete_product_id', {{ $product->id }}); $dispatch('open-modal', 'confirm-product-deletion')"
+                                class="delete">
                                 <x-svgs.trash />
                             </button>
                         </div>

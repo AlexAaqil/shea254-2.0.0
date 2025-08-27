@@ -4,10 +4,78 @@ namespace App\Models\Products;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::creating(function ($product) {
+            if(empty($product->slug)) {
+                $product->slug = static::generateUniqueSlug($product->title);
+            }
+        });
+
+        static::updating(function ($product) {
+            $original_title = $product->getOriginal('title');
+            $original_slug = $product->getOriginal('slug');
+
+            if ($product->isDirty('title') || empty($product->slug)) {
+                $new_slug = static::generateUniqueSlug($product->title, $product->id);
+                $product->slug = $new_slug;
+
+                // Rename associated image files
+                foreach ($product->product_images as $image) {
+                    $old_filename = $image->image;
+
+                    // Only handle files that contain the old slug
+                    if (Str::startsWith($old_filename, $original_slug)) {
+                        $extension = pathinfo($old_filename, PATHINFO_EXTENSION);
+                        $random = Str::random(6);
+                        $new_filename = $new_slug . '-' . $random . '.' . $extension;
+
+                        $old_path = "products/{$old_filename}";
+                        $new_path = "products/{$new_filename}";
+
+                        if (Storage::disk('public')->exists($old_path)) {
+                            Storage::disk('public')->move($old_path, $new_path);
+                            $image->update(['image' => $new_filename]);
+                        }
+                    }
+                }
+            }
+        });
+
+        static::deleting(function ($product) {
+            foreach($product->product_images as $image) {
+                $path = "products/{$image->image}";
+
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        });
+    }
+
+    protected static function generateUniqueSlug(string $title, $ignore_id = null): string
+    {
+        $base_slug = Str::slug($title);
+        $slug = $base_slug;
+        $i = 1;
+
+        while (
+            static::query()
+                ->where('slug', $slug)
+                ->when($ignore_id, fn ($query) => $query->where('id', '!=', $ignore_id))
+                ->exists()
+        ) {
+            $slug = $base_slug . '-' . $i++;
+        }
+
+        return $slug;
+    }
 
     public function casts(): array
     {

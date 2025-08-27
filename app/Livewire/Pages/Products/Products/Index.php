@@ -74,7 +74,10 @@ class Index extends Component
     public function render()
     {
         $products = Product::query()
-            ->with(['product_images', 'product_category'])
+            ->with([
+                'product_category',
+                'product_images' => fn($query) => $query->orderBy('image_order')->limit(1)
+            ])
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {
                     $q->where('title', 'like', '%' . $this->search . '%');
@@ -92,7 +95,7 @@ class Index extends Component
 
         return view('livewire.pages.products.products.index', [
             'products' => $products,
-            'count_products' => $stats->count_products,
+            'count_products' => $stats->total,
             'count_invisible' => $stats->count_invisible,
             'count_featured' => $stats->count_featured,
         ]);
