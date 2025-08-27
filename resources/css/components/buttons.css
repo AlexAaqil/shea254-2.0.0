@@ -3,8 +3,14 @@ a.btn {
     @apply cursor-pointer;
 }
 
-.custom_form button {
-    @apply bg-gray-900 text-white tracking-wide py-2 px-4 rounded-sm;
+.buttons_group {
+    @apply flex items-center gap-12 mt-4;
+}
+
+.custom_form button,
+.btn,
+a.btn {
+    @apply bg-gray-900 text-white font-semibold tracking-wide rounded-sm py-[12px] px-[24px];
 }
 
 .actions {
@@ -25,4 +31,20 @@ a.btn {
             @apply py-1 px-1 text-sm;
         }
     }
+}
+
+button.btn_transparent,
+a.btn_transparent {
+    @apply bg-transparent text-gray-900 border border-gray-900;
+}
+
+.btn_danger,
+button.btn_danger,
+a.btn_danger {
+    @apply bg-red-600;
+}
+
+button.btn_themed,
+a.btn_themed {
+    @apply bg-[var(--themed-btn)] text-white hover:bg-[var(--themed-btn-hover)] focus:ring-2 focus:ring-[var(--themed-btn-focus)] focus:ring-offset-2;
 }

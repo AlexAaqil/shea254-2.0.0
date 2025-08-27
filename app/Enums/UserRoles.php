@@ -27,4 +27,21 @@ enum UserRoles: int
 
         return $labels;
     }
+
+    public static function adminLabels(): array
+    {
+        return [
+            self::USER->value => self::USER->label(),
+            self::ADMIN->value => self::ADMIN->label(),
+        ];
+    }
+
+    public static function superAdminLabels(): array
+    {
+        return [
+            self::SUPER_ADMIN->value => self::SUPER_ADMIN->label(),
+            self::ADMIN->value => self::ADMIN->label(),
+            self::USER->value => self::USER->label(),
+        ];
+    }
 }

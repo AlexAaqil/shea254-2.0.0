@@ -9,11 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use App\Models\Products\ProductReview;
 use App\Enums\UserRoles;
+use App\Traits\UserRoleScopes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, UserRoleScopes;
 
     /**
      * The attributes that are mass assignable.

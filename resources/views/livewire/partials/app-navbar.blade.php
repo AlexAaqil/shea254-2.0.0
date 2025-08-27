@@ -26,24 +26,39 @@
                             'navigate' => false,
                         ],
                         [
+                            'route' => 'orders.index',
+                            'label' => 'Orders',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'products.index',
+                            'label' => 'Products',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'reviews.index',
+                            'label' => 'Reviews',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'locations.index',
+                            'label' => 'Locations',
+                            'navigate' => true,
+                        ],
+                        [
                             'route' => 'users.index',
                             'label' => 'Users',
                             'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
-                            'route' => 'tours.index',
-                            'label' => 'Tours',
-                            'navigate' => true,
-                        ],
-                        [
-                            'route' => 'bookings.index',
-                            'label' => 'Bookings',
-                            'navigate' => true,
-                        ],
-                        [
                             'route' => 'contact-messages.index',
                             'label' => 'Messages',
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'blogs.index',
+                            'label' => 'Blogs',
                             'navigate' => true,
                         ],
                     ];

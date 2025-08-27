@@ -10,13 +10,28 @@
                 @endif
 
                 <div class="stat">
-                    <p>{{ $count_admins }}</p>
-                    <p>{{ Str::plural('Admin', $count_admins) }}</p>
+                    <p>{{ $count_users }}</p>
+                    <p>{{ Str::plural('User', $count_users) }} & {{ $count_admins }} {{ Str::plural('Admin', $count_admins) }}</p>
                 </div>
 
                 <div class="stat">
-                    <p>{{ $count_users }}</p>
-                    <p>{{ Str::plural('User', $count_users) }}</p>
+                    <p>xxx</p>
+                    <p>Orders</p>
+                </div>
+
+                <div class="stat">
+                    <p>xxx</p>
+                    <p>Products & xxx Categories</p>
+                </div>
+
+                <div class="stat">
+                    <p>xxx</p>
+                    <p>Locations & xxx Areas</p>
+                </div>
+
+                <div class="stat">
+                    <p>xxx</p>
+                    <p>Blogs</p>
                 </div>
 
                 <div class="stat">

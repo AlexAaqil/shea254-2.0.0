@@ -1,0 +1,29 @@
+.Users {
+    .container {
+        .users {
+            @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+
+            .user {
+                @apply bg-gray-50 p-4 rounded-lg;
+
+                .details {
+                    @apply flex gap-6;
+
+                    .info {
+                        @apply space-y-1;
+
+                        h3 {
+                            @apply text-lg font-semibold;
+                        }
+                    }
+                }
+            }
+
+            .actions {
+                .crud {
+                    @apply mt-0 gap-2;
+                }
+            }
+        }
+    }
+}
