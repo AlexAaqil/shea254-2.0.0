@@ -25,6 +25,12 @@
                 </div>
 
                 <div class="inputs">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="text" wire:model="phone_number" name="phone_number" id="phone_number" autocomplete="phone_number">
+                    <x-form-input-error field="phone_number" />
+                </div>
+
+                <div class="inputs">
                     <label for="password">Password</label>
                     <input type="password" wire:model="password" name="password" id="password" autocomplete="new-password">
                     <x-form-input-error field="password" />
@@ -38,7 +44,7 @@
 
                 <button type="submit" wire:loading.attr="disabled" wire:target="signup">
                     <span wire:loading.remove wire:target="signup">Signup</span>
-                    <span wire:loading wire:target="signup">Signing in...</span>
+                    <span wire:loading wire:target="signup">Signing up...</span>
                 </button>
             </form>
 

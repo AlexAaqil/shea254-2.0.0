@@ -21,7 +21,7 @@ class AppNavbar extends Component
 
     public function refreshName($name = null)
     {
-        $this->name = $name ?? Auth::user()->full_name;
+        $this->name = $name ?? optional(Auth::user())->full_name ?? '';
     }
 
     public function logout(Logout $logout)

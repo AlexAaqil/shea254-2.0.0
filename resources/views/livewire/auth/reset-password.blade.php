@@ -1,6 +1,10 @@
 <div class="Authentication">
     <div class="container ResetPassword">
         <div class="custom_form">
+            <div class="header">
+                <h1>Reset Password</h1>
+            </div>
+
             <form wire:submit="resetPassword">
                 <div class="inputs">
                     <label for="email">Email Address</label>
