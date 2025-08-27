@@ -1,0 +1,25 @@
+.app_layout {
+    .Products {
+        .product_card {
+            .product_price {
+                .selling_price {
+                    @apply font-bold text-lg text-[var(--theme-bg)];
+                }
+            }
+
+            .extras {
+                @apply grid;
+
+                .extra {
+                    span {
+                        @apply text-sm;
+
+                        &:nth-of-type(2) {
+                            @apply font-semibold;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

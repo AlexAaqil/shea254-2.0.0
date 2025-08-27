@@ -70,12 +70,13 @@
                     <div class="actions">
                         <div class="others">
                             @if($isAdmin && !$isCurrentUser)
-                                <span wire:click="toggleStatus({{ $user->id }})"
+                                <button
+                                    wire:click="toggleStatus({{ $user->id }})"
                                     wire:loading.attr="disabled"
                                     wire:target="toggleStatus"
                                     class="{{ $user->isActive() ? 'border border-green-500 bg-green-100 text-green-900 text-xs p-1' : 'border border-red-500 bg-red-100 text-red-900 text-xs p-1' }}">
                                     {{ $user->status_label }}
-                                </span>
+                                </button>
                             @else
                                 <span>{{ $user->status_label }}</span>
                             @endif

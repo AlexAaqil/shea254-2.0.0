@@ -9,6 +9,14 @@ class Product extends Model
 {
     protected $guarded = [];
 
+    public function casts(): array
+    {
+        return [
+            'is_visible' => 'boolean',
+            'featured' => 'boolean',
+        ];
+    }
+
     public function product_category()
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
@@ -50,6 +58,16 @@ class Product extends Model
     public function getTranslatedFeatured()
     {
         return $this->featured == 1 ? 'Yes' : 'No';
+    }
+
+    public function getIsVisibleLabelAttribute(): string
+    {
+        return $this->is_visible ? 'Visible' : 'Invisible';
+    }
+
+    public function getIsFeaturedLabelAttribute(): string
+    {
+        return $this->featured ? 'Featured' : 'Not Featured';
     }
 
     public function getFirstImage() {
