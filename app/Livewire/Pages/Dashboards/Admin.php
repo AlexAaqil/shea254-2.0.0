@@ -5,25 +5,40 @@ namespace App\Livewire\Pages\Dashboards;
 use Livewire\Component;
 use App\Enums\UserRoles;
 use App\Models\User;
+use App\Models\Products\Product;
+use App\Models\Products\ProductCategory;
 use App\Models\Comment;
 
 class Admin extends Component
 {
     public function render()
     {
-        $count_super_admins = User::where('user_level', UserRoles::SUPER_ADMIN)->count();
-        $count_admins = User::where('user_level', UserRoles::ADMIN)->count();
-        $count_users = User::whereNotIn('user_level', [UserRoles::SUPER_ADMIN, UserRoles::ADMIN])->count();
+        $user_counts = User::selectRaw("
+            COUNT(CASE WHEN user_level = ? THEN 1 END) as super_admins,
+            COUNT(CASE WHEN user_level = ? THEN 1 END) as admins,
+            COUNT(CASE WHEN user_level NOT IN (?, ?) THEN 1 END) as users
+        ", [
+            UserRoles::SUPER_ADMIN->value,
+            UserRoles::ADMIN->value,
+            UserRoles::SUPER_ADMIN->value,
+            UserRoles::ADMIN->value
+        ])->first();
+
+        $count_products = Product::count();
+        $count_product_categories = ProductCategory::count();
 
         $count_messages = Comment::count();
 
 
-        return view('livewire.pages.dashboards.admin', compact(
-            'count_super_admins',
-            'count_admins',
-            'count_users',
+        return view('livewire.pages.dashboards.admin', [
+            'count_super_admins' => $user_counts->super_admins,
+            'count_admins' => $user_counts->admins,
+            'count_users' => $user_counts->users,
 
-            'count_messages',
-        ));
+            'count_products' => $count_products,
+            'count_product_categories' => $count_product_categories,
+
+            'count_messages' => $count_messages,
+        ]);
     }
 }

@@ -20,8 +20,8 @@
                 </div>
 
                 <div class="stat">
-                    <p>xxx</p>
-                    <p>Products & xxx Categories</p>
+                    <p>{{ $count_products }}</p>
+                    <p>{{ Str::plural('Product', $count_products) }} & {{ $count_product_categories }} {{ Str::plural('Category', $count_product_categories) }}</p>
                 </div>
 
                 <div class="stat">
