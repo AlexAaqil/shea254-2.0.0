@@ -7,6 +7,8 @@ use App\Enums\UserRoles;
 use App\Models\User;
 use App\Models\Products\Product;
 use App\Models\Products\ProductCategory;
+use App\Models\Deliveries\DeliveryLocation;
+use App\Models\Deliveries\DeliveryArea;
 use App\Models\Comment;
 
 class Admin extends Component
@@ -27,6 +29,9 @@ class Admin extends Component
         $count_products = Product::count();
         $count_product_categories = ProductCategory::count();
 
+        $count_delivery_locations = DeliveryLocation::count();
+        $count_delivery_areas = DeliveryArea::count();
+
         $count_messages = Comment::count();
 
 
@@ -37,6 +42,9 @@ class Admin extends Component
 
             'count_products' => $count_products,
             'count_product_categories' => $count_product_categories,
+
+            'count_delivery_locations' => $count_delivery_locations,
+            'count_delivery_areas' => $count_delivery_areas,
 
             'count_messages' => $count_messages,
         ]);

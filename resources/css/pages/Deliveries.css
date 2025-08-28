@@ -1,0 +1,17 @@
+.Deliveries {
+    .DeliveryLocations {
+        .location_group {
+            @apply mb-6;
+
+            h2 {
+                @apply font-bold text-lg;
+            }
+
+            .card {
+                h3 {
+                    @apply font-light text-base;
+                }
+            }
+        }
+    }
+}

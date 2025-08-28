@@ -33,16 +33,19 @@
                         [
                             'route' => 'products.index',
                             'label' => 'Products',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'reviews.index',
                             'label' => 'Reviews',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
-                            'route' => 'locations.index',
+                            'route' => 'delivery-locations.index',
                             'label' => 'Locations',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
@@ -54,11 +57,13 @@
                         [
                             'route' => 'contact-messages.index',
                             'label' => 'Messages',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'blogs.index',
                             'label' => 'Blogs',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                     ];

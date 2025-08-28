@@ -18,6 +18,10 @@ use App\Livewire\Pages\Products\Categories\Index as ProductCategoriesPage;
 use App\Http\Controllers\Products\ProductCategoryController;
 use App\Livewire\Pages\Products\Measurements\Index as ProductMeasurementsPage;
 use App\Http\Controllers\Products\ProductMeasurementController;
+use App\Livewire\Pages\Deliveries\Locations\Index as DeliveryLocationsPage;
+use App\Http\Controllers\Deliveries\DeliveryLocationController;
+use App\Livewire\Pages\Deliveries\Areas\Index as DeliveryAreasPage;
+use App\Http\Controllers\Deliveries\DeliveryAreaController;
 
 Route::get('/', HomePage::class)->name('home-page');
 Route::get('about', AboutPage::class)->name('about-page');
@@ -41,6 +45,12 @@ Route::middleware(['admin_only'])->group(function () {
 
     Route::get('product-measurements', ProductMeasurementsPage::class)->name('product-measurements.index');
     Route::resource('product-measurements', ProductMeasurementController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('delivery-locations', DeliveryLocationsPage::class)->name('delivery-locations.index');
+    Route::resource('delivery-locations', DeliveryLocationController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('delivery-areas', DeliveryAreasPage::class)->name('delivery-areas.index');
+    Route::resource('delivery-areas', DeliveryAreaController::class)->only(['create', 'store', 'edit', 'update']);
 });
 
 require __DIR__ . '/auth.php';

@@ -25,13 +25,13 @@
                 </div>
 
                 <div class="stat">
-                    <p>xxx</p>
-                    <p>Locations & xxx Areas</p>
+                    <p>{{ $count_delivery_locations }}</p>
+                    <p>{{ Str::plural('Location', $count_delivery_locations) }} & {{ $count_delivery_areas }} {{ Str::plural('Area', $count_delivery_areas) }}</p>
                 </div>
 
                 <div class="stat">
                     <p>xxx</p>
-                    <p>Blogs</p>
+                    <p>Blogs & xxx Categories</p>
                 </div>
 
                 <div class="stat">
