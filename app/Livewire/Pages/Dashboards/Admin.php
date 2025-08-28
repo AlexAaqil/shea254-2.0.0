@@ -9,6 +9,8 @@ use App\Models\Products\Product;
 use App\Models\Products\ProductCategory;
 use App\Models\Deliveries\DeliveryLocation;
 use App\Models\Deliveries\DeliveryArea;
+use App\Models\Blogs\Blog;
+use App\Models\Blogs\BlogCategory;
 use App\Models\Comment;
 
 class Admin extends Component
@@ -32,6 +34,9 @@ class Admin extends Component
         $count_delivery_locations = DeliveryLocation::count();
         $count_delivery_areas = DeliveryArea::count();
 
+        $count_blogs = Blog::count();
+        $count_blog_categories = BlogCategory::count();
+
         $count_messages = Comment::count();
 
 
@@ -45,6 +50,9 @@ class Admin extends Component
 
             'count_delivery_locations' => $count_delivery_locations,
             'count_delivery_areas' => $count_delivery_areas,
+
+            'count_blogs' => $count_blogs,
+            'count_blog_categories' => $count_blog_categories,
 
             'count_messages' => $count_messages,
         ]);

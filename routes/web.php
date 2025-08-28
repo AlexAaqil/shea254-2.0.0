@@ -22,6 +22,10 @@ use App\Livewire\Pages\Deliveries\Locations\Index as DeliveryLocationsPage;
 use App\Http\Controllers\Deliveries\DeliveryLocationController;
 use App\Livewire\Pages\Deliveries\Areas\Index as DeliveryAreasPage;
 use App\Http\Controllers\Deliveries\DeliveryAreaController;
+use App\Livewire\Pages\Blogs\Blogs\Index as BlogsPage;
+use App\Http\Controllers\Blogs\BlogController;
+use App\Livewire\Pages\Blogs\Categories\Index as BlogCategoriesPage;
+use App\Http\Controllers\Blogs\BlogCategoryController;
 
 Route::get('/', HomePage::class)->name('home-page');
 Route::get('about', AboutPage::class)->name('about-page');
@@ -29,11 +33,11 @@ Route::get('shop', ShopPage::class)->name('shop-page');
 Route::get('products/details/{slug}', ProductDetailsPage::class)->name('product-details-page');
 Route::get('contact', ContactPage::class)->name('contact-page');
 
-Route::middleware(['authenticated_user'])->group(function () {
+Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
 });
 
-Route::middleware(['admin_only'])->group(function () {
+Route::middleware(['admin_only'])->group(function() {
     Route::get('users', UsersPage::class)->name('users.index');
     Route::resource('users', UserController::class)->only(['create', 'store', 'edit', 'update']);
 
@@ -51,6 +55,12 @@ Route::middleware(['admin_only'])->group(function () {
 
     Route::get('delivery-areas', DeliveryAreasPage::class)->name('delivery-areas.index');
     Route::resource('delivery-areas', DeliveryAreaController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('blogs', BlogsPage::class)->name('blogs.index');
+    Route::resource('blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('blog-categories', BlogCategoriesPage::class)->name('blog-categories.index');
+    Route::resource('blog-categories', BlogCategoryController::class)->only(['create', 'store', 'edit', 'update']);
 });
 
 require __DIR__ . '/auth.php';
