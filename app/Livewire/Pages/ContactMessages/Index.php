@@ -36,7 +36,7 @@ class Index extends Component
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {
                     $q->where('email', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%');
+                    ->orWhere('full_name', 'like', '%' . $this->search . '%');
                 });
             })
             ->latest()
@@ -44,9 +44,7 @@ class Index extends Component
             ->withQueryString();
 
         $count_messages = Comment::count();
-        $count_unread = Comment::where('is_read', false)->count();
-        $count_important = Comment::where('is_important', true)->count();
 
-        return view('livewire.pages.contact-messages.index', compact('messages', 'count_messages', 'count_unread', 'count_important'));
+        return view('livewire.pages.contact-messages.index', compact('messages', 'count_messages'));
     }
 }

@@ -26,6 +26,9 @@ use App\Livewire\Pages\Blogs\Blogs\Index as BlogsPage;
 use App\Http\Controllers\Blogs\BlogController;
 use App\Livewire\Pages\Blogs\Categories\Index as BlogCategoriesPage;
 use App\Http\Controllers\Blogs\BlogCategoryController;
+use App\Livewire\Pages\ContactMessages\Index as ContactMessagesPage;
+use App\Livewire\Pages\ContactMessages\Edit as EditContactMessage;
+
 
 Route::get('/', HomePage::class)->name('home-page');
 Route::get('about', AboutPage::class)->name('about-page');
@@ -61,6 +64,9 @@ Route::middleware(['admin_only'])->group(function() {
 
     Route::get('blog-categories', BlogCategoriesPage::class)->name('blog-categories.index');
     Route::resource('blog-categories', BlogCategoryController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('contact-messages', ContactMessagesPage::class)->name('contact-messages.index');
+    Route::get('contact-messages/{message}/edit', EditContactMessage::class)->name('contact-messages.edit');
 });
 
 require __DIR__ . '/auth.php';

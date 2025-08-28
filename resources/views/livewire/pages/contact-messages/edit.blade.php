@@ -2,7 +2,7 @@
     <div class="contact_message">
         <div class="header">
             <div class="info">
-                <h2>{{ $message->name }}</h2>
+                <h2>{{ $message->full_name }}</h2>
                 <div class="extras">
                     <p>
                         <span>{{ $message->email }}</span>
@@ -12,13 +12,6 @@
             </div>
 
             <div class="actions flex gap-2 justify-start lg:justify-end">
-                <button
-                    wire:click="toggleImportant"
-                    class="btn_transparent {{ $message->is_important ? 'bg-green-500 active_important_btn' : '' }}"
-                >
-                    <x-svgs.star class="w-4 h-4" />
-                </button>
-
                 @if(auth()->user()->isAdmin())
                     <button
                         x-data=""
@@ -50,20 +43,6 @@
                 </div>
             @endif
         </div>
-    </div>
-
-    <div class="custom_form">
-        <form wire:submit="updateMessage">
-            <div class="inputs">
-                <label for="notes">Notes</label>
-                <textarea wire:model.defer="notes" name="notes" id="notes" placeholder="Enter a note for this message"></textarea>
-            </div>
-
-            <div class="buttons_group">
-                <button type="submit" class="btn btn_primary">Update Note</button>
-                <a href="{{ Route::has('contact-messages.index') ? route('contact-messages.index') : '#' }}" wire:navigate class="btn btn_danger">Back to Messages</a>
-            </div>
-        </form>
     </div>
 
     <x-modal name="confirm-message-deletion" :show="$delete_message_id !== null" focusable>

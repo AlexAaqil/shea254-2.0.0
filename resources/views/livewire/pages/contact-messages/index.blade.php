@@ -1,12 +1,10 @@
 <div class="ContactMessages">
     <div class="container">
-        <div class="header">
+        <div class="app_header">
             <div class="info">
                 <h2>Messages</h2>
                 <div class="stats">
                     <span>{{ $count_messages }} {{ Str::plural('message', $count_messages) }}</span>
-                    <span>{{ $count_unread }} unread</span>
-                    <span>{{ $count_important }} important</span>
                 </div>
             </div>
 
@@ -40,7 +38,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th class="numbering">#</th>
+                            <th>#</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone Number</th>
@@ -52,21 +50,16 @@
 
                     <tbody>
                         @forelse($messages as $message)
-                            <tr class="{{ $message->is_not_read ? 'unread' : 'read' }}">
-                                <td class="numbering">
-                                    <span class="important_message">
-                                        <x-svgs.star @class([ $message->is_important ? 'text-orange-400' : '' ])
-                                        />
-                                    </span>
-                                </td>
-                                <td>{{ $message->name }}</td>
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $message->full_name }}</td>
                                 <td>{{ $message->email }}</td>
                                 <td>{{ $message->phone_number }}</td>
                                 <td>{{ Str::words($message->message, 8, '...') }}</td>
                                 <td>{{ $message->created_at->format('d/m/Y') }}</td>
                                 <td class="actions">
                                     <div class="action">
-                                        <a href="{{ Route::has('contact-messages.edit') ? route('contact-messages.edit', $message->uuid) : '#' }}" wire:navigate>
+                                        <a href="{{ Route::has('contact-messages.edit') ? route('contact-messages.edit', $message->id) : '#' }}" wire:navigate>
                                             <x-svgs.edit class="text-green-600" />
                                         </a>
                                     </div>
