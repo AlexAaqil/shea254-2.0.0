@@ -26,4 +26,40 @@
             @apply grid grid-cols-1 md:grid-cols-6 gap-4;
         }
     }
+
+    .SalesStatistics {
+        @apply mt-6;
+
+        .stats {
+            @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+        }
+    }
+
+    .Charts {
+        @apply mt-6;
+
+        .container {
+            @apply grid grid-cols-1 md:grid-cols-12 gap-4;
+
+            .chart {
+                @apply h-[50dvh] bg-blue-50 p-6 rounded-2xl shadow-md;
+
+                &:first-of-type {
+                    @apply md:col-span-8;
+                }
+
+                &:last-of-type {
+                    @apply md:col-span-4;
+                }
+
+                h2 {
+                    @apply font-bold text-lg text-center mb-4;
+                }
+
+                canvas {
+                    @apply max-h-[300px];
+                }
+            }
+        }
+    }
 }
