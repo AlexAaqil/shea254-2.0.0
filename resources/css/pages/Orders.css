@@ -1,0 +1,73 @@
+.Orders {
+    .Orders.EditOrder {
+        .order_details_form {
+            @apply mb-6;
+
+            .content {
+                @apply grid grid-cols-2 gap-12 px-4;
+
+                .order_details {
+                    p {
+                        @apply mb-2 grid grid-cols-12 gap-4;
+
+                        span {
+                            &:first-of-type {
+                                @apply col-span-3 text-gray-500;
+                            }
+
+                            &:last-of-type {
+                                @apply col-span-9;
+                            }
+                        }
+                    }
+                }
+
+                .order_items {
+                    .custom_title {
+                        @apply font-bold mb-1;
+                    }
+
+                    ul {
+                        @apply mb-2;
+
+                        li {
+                            @apply grid grid-cols-12 gap-8 py-1 border-b border-b-gray-200;
+
+                            span {
+                                &:first-of-type {
+                                    @apply col-span-6;
+                                }
+
+                                &:not(:first-of-type) {
+                                    @apply col-span-3 justify-self-center;
+                                }
+                            }
+                        }
+                    }
+
+                    .payment_details {
+                        @apply mt-8;
+
+                        .payment_info {
+                            .payment_details_grid {
+                                p {
+                                    @apply mb-1 grid grid-cols-12 gap-4;
+
+                                    span {
+                                        &:first-of-type {
+                                            @apply col-span-3 text-gray-500;
+                                        }
+
+                                        &:last-of-type {
+                                            @apply col-span-9;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

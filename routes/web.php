@@ -22,6 +22,8 @@ use App\Livewire\Pages\Deliveries\Locations\Index as DeliveryLocationsPage;
 use App\Http\Controllers\Deliveries\DeliveryLocationController;
 use App\Livewire\Pages\Deliveries\Areas\Index as DeliveryAreasPage;
 use App\Http\Controllers\Deliveries\DeliveryAreaController;
+use App\Livewire\Pages\Orders\Index as OrdersPage;
+use App\Livewire\Pages\Orders\Edit as EditOrder;
 use App\Livewire\Pages\Blogs\Blogs\Index as BlogsPage;
 use App\Http\Controllers\Blogs\BlogController;
 use App\Livewire\Pages\Blogs\Categories\Index as BlogCategoriesPage;
@@ -58,6 +60,9 @@ Route::middleware(['admin_only'])->group(function() {
 
     Route::get('delivery-areas', DeliveryAreasPage::class)->name('delivery-areas.index');
     Route::resource('delivery-areas', DeliveryAreaController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('orders', OrdersPage::class)->name('orders.index');
+    Route::get('orders/{order}/edit', EditOrder::class)->name('orders.edit');
 
     Route::get('blogs', BlogsPage::class)->name('blogs.index');
     Route::resource('blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
