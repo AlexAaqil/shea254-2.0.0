@@ -15,8 +15,8 @@
                 </div>
 
                 <div class="stat">
-                    <p>xxx</p>
-                    <p>Orders</p>
+                    <p>{{ $count_orders }}</p>
+                    <p>{{ Str::plural('Order', $count_orders) }}</p>
                 </div>
 
                 <div class="stat">

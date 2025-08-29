@@ -5,6 +5,7 @@ namespace App\Livewire\Pages\Dashboards;
 use Livewire\Component;
 use App\Enums\UserRoles;
 use App\Models\User;
+use App\Models\Sales\Sale;
 use App\Models\Products\Product;
 use App\Models\Products\ProductCategory;
 use App\Models\Deliveries\DeliveryLocation;
@@ -28,6 +29,8 @@ class Admin extends Component
             UserRoles::ADMIN->value
         ])->first();
 
+        $count_orders = Sale::whereHas('order_delivery')->count();
+
         $count_products = Product::count();
         $count_product_categories = ProductCategory::count();
 
@@ -44,6 +47,8 @@ class Admin extends Component
             'count_super_admins' => $user_counts->super_admins,
             'count_admins' => $user_counts->admins,
             'count_users' => $user_counts->users,
+
+            'count_orders' => $count_orders,
 
             'count_products' => $count_products,
             'count_product_categories' => $count_product_categories,
