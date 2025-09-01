@@ -1,7 +1,7 @@
 <x-slot name="head">
     {{-- SEO --}}
     <meta name="description" content="Best skin care experts in Nairobi, Kenya. We offer the best shea butter products, raw butters, african black soap, essential oils, toners & Serums, whipped butters, scrubs, carrier oils, cream and gels.">
-    <meta name="keywords" content="raw butters, african black soap, essential oils, toners & Serums, whipped butters, scrubs, carrier oils, cream, gels">
+    <meta name="keywords" content="shea butter, african black soap, essential oils, skincare Nairobi">
 
     {{-- Open Graph --}}
     <meta property="og:title" content="{{ config('app.name') }}">
@@ -120,7 +120,7 @@
                 @forelse($featured_products as $product)
                     @include('livewire.pages.general.products.card')
                 @empty
-                    <p>No products yet.</p>
+                    <p>No products found.</p>
                 @endforelse
             </div>
         </div>

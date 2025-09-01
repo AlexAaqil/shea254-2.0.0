@@ -19,18 +19,15 @@ class Product extends Model
         });
 
         static::updating(function ($product) {
-            $original_title = $product->getOriginal('title');
             $original_slug = $product->getOriginal('slug');
 
             if ($product->isDirty('title') || empty($product->slug)) {
                 $new_slug = static::generateUniqueSlug($product->title, $product->id);
                 $product->slug = $new_slug;
 
-                // Rename associated image files
                 foreach ($product->product_images as $image) {
                     $old_filename = $image->image;
 
-                    // Only handle files that contain the old slug
                     if (Str::startsWith($old_filename, $original_slug)) {
                         $extension = pathinfo($old_filename, PATHINFO_EXTENSION);
                         $random = Str::random(6);
@@ -59,19 +56,19 @@ class Product extends Model
         });
     }
 
-    protected static function generateUniqueSlug(string $title, $ignore_id = null): string
+    protected static function generateUniqueSlug(string $title, $ignoreId = null): string
     {
-        $base_slug = Str::slug($title);
-        $slug = $base_slug;
+        $base = Str::slug($title);
+        $slug = $base;
         $i = 1;
 
         while (
             static::query()
                 ->where('slug', $slug)
-                ->when($ignore_id, fn ($query) => $query->where('id', '!=', $ignore_id))
+                ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
                 ->exists()
         ) {
-            $slug = $base_slug . '-' . $i++;
+            $slug = $base . '-' . $i++;
         }
 
         return $slug;
@@ -100,17 +97,13 @@ class Product extends Model
         return $this->hasMany(ProductReview::class, 'product_id');
     }
 
-    public function average_rating()
-    {
-        return $this->product_reviews()->avg('rating');
-    }
-
     public function product_images() {
         return $this->hasMany(ProductImage::class, 'product_id')->orderBy('image_order', 'asc');
     }
 
-    public function getProductImages() {
-        return $this->hasMany(ProductImage::class, 'product_id')->orderBy('image_order', 'asc');
+    public function coverImage()
+    {
+        return $this->hasOne(ProductImage::class, 'product_id')->orderBy('image_order', 'asc')->orderBy('id', 'asc');
     }
 
     // public function priceTiers()
@@ -118,14 +111,17 @@ class Product extends Model
     //     return $this->hasMany(ProductPriceTier::class)->orderByDesc('min_quantity');
     // }
 
-    public function getTranslatedInStock()
+    public function getImageUrlAttribute(): string
     {
-        return $this->in_stock == 1 ? 'Yes' : 'No';
-    }
+        $image = $this->relationLoaded('coverImage')
+            ? $this->coverImage
+            : $this->coverImage()->first();
 
-    public function getTranslatedFeatured()
-    {
-        return $this->featured == 1 ? 'Yes' : 'No';
+        if ($image && !empty($image->image)) {
+            return Storage::url("{$image->image}");
+        }
+
+        return asset('assets/images/default-image.jpg');
     }
 
     public function getIsVisibleLabelAttribute(): string
@@ -133,46 +129,45 @@ class Product extends Model
         return $this->is_visible ? 'Visible' : 'Invisible';
     }
 
-    public function getIsFeaturedLabelAttribute(): string
+    public function getCategoryTitleAttribute()
     {
-        return $this->featured ? 'Featured' : 'Not Featured';
+        return $this->product_category?->title ?? 'uncategorized';
     }
 
-    public function getFirstImage() {
-        $productImages = $this->getProductImages()->get();
-
-        if ($productImages->isEmpty()) {
-            return asset('assets/images/default_image.jpg');
-        }
-
-        $firstImage = $productImages->first();
-
-        if (!$firstImage || !$firstImage->image) {
-            return asset('assets/images/default_image.jpg');
-        }
-
-        $imagePath = $firstImage->image;
-
-        // Check if the image exists in storage, otherwise return the default image path
-        if (Storage::disk('public')->exists($imagePath)) {
-            return Storage::url($imagePath);
-        } else {
-            return asset('assets/images/default_image.jpg');
-        }
+    public function getCategorySlugAttribute(): ?string
+    {
+        return $this->product_category?->slug;
     }
 
-    public function getImageUrlAttribute()
+    public function getEffectivePriceAttribute(): float
     {
-        $image = $this->relationLoaded('product_images')
-            ? $this->product_images->sortBy('image_order')->first()
-            : $this->product_images()->orderBy('image_order')->first();
+        if ($this->discount_price > 0 && $this->discount_price < $this->selling_price) {
+            return $this->discount_price;
+        }
+        return $this->selling_price;
+    }
 
-        if ($image && Storage::disk('public')->exists("{$image->image}")) {
-            return Storage::url("{$image->image}");
+    public function getEffectivePriceForQuantity(int $quantity): float
+    {
+        $price = $this->effective_price;
+
+        if ($quantity > 1 && $this->relationLoaded('priceTiers')) {
+            $tier = $this->priceTiers
+                ->where('min_quantity', '<=', $quantity)
+                ->sortByDesc('min_quantity')
+                ->first();
+
+            if ($tier && $tier->price < $price) {
+                $price = $tier->price;
+            }
         }
 
-        // Always return a fallback instead of null
-        return asset('assets/images/default-image.jpg');
+        return $price;
+    }
+
+    public function average_rating()
+    {
+        return $this->product_reviews()->avg('rating');
     }
 
     public function calculateDiscount()
@@ -191,56 +186,5 @@ class Product extends Model
         }
 
         return $this->discount_percentage;
-    }
-
-    public function getEffectivePriceAttribute(): float
-    {
-        if ($this->discount_price > 0 && $this->discount_price < $this->selling_price) {
-            return $this->discount_price;
-        }
-        return $this->selling_price;
-    }
-
-    public function getEffectiveDefaultPrice(): float
-    {
-        if ($this->discount_price > 0 && $this->discount_price < $this->selling_price) {
-            return $this->discount_price;
-        }
-        return $this->selling_price;
-    }
-
-    public function getEffectivePriceForQuantity(int $quantity): float
-    {
-        // Start with base selling price
-        $final_price = $this->selling_price;
-
-        // Apply discount if available and valid
-         if ($this->discount_price > 0 && $this->discount_price < $final_price) {
-            $final_price = $this->discount_price;
-        }
-
-        // Check for tier prices (only if quantity > 1)
-        if ($quantity > 1) {
-            $tier_price = $this->priceTiers
-                ->where('min_quantity', '<=', $quantity)
-                ->sortByDesc('min_quantity') // Gets the best tier for this quantity
-                ->first()?->price;
-
-            if ($tier_price && $tier_price < $final_price) {
-                $final_price = $tier_price;
-            }
-        }
-
-        return $final_price;
-    }
-
-    public function getCategorySlugAttribute(): ?string
-    {
-        return $this->product_category?->slug;
-    }
-
-    public function getCategoryTitleAttribute()
-    {
-        return $this->product_category?->title ?? 'untitled';
     }
 }

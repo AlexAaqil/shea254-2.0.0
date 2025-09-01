@@ -3,7 +3,7 @@
         <div class="content">
             <div class="branding">
                 <div class="image">
-                    <img src="{{ asset('assets/images/logo.jpg') }}" alt="{{ config('app.name') }} Logo">
+                    <x-app-logo />
                 </div>
 
                 <div class="info">

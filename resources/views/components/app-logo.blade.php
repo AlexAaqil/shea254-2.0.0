@@ -1,1 +1,1 @@
-<img src="{{ asset('assets/images/logo.jpg') }}" alt="{{ config('app.name') }} Logo" />
+<img src="{{ asset('assets/images/shea254-logo.jpg') }}" alt="{{ config('app.name') }} Logo" />
