@@ -74,10 +74,8 @@ class Index extends Component
     public function render()
     {
         $products = Product::query()
-            ->with([
-                'product_category',
-                'product_images' => fn($query) => $query->orderBy('image_order')->limit(1)
-            ])
+            ->select(['id', 'title', 'slug', 'selling_price', 'discount_price', 'stock_count', 'category_id'])
+            ->with(['product_category', 'coverImage'])
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {
                     $q->where('title', 'like', '%' . $this->search . '%');

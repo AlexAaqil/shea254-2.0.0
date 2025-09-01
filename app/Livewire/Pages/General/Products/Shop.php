@@ -45,7 +45,7 @@ class Shop extends Component
 
         $products = Product::query()
             ->select('id', 'title', 'slug', 'discount_price', 'selling_price', 'stock_count', 'category_id')
-            ->with(['product_images', 'product_category'])
+            ->with(['product_category', 'coverImage'])
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {
                     $q->where('title', 'like', '%' . $this->search . '%');
