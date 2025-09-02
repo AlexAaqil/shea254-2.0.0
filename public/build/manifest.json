@@ -1,0 +1,24 @@
+{
+  "resources/css/app-layout.css": {
+    "file": "assets/app-layout-2CvU9rxv.css",
+    "src": "resources/css/app-layout.css",
+    "isEntry": true,
+    "names": [
+      "app-layout.css"
+    ]
+  },
+  "resources/css/guest-layout.css": {
+    "file": "assets/guest-layout-BNBfMs6j.css",
+    "src": "resources/css/guest-layout.css",
+    "isEntry": true,
+    "names": [
+      "guest-layout.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C0G0cght.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

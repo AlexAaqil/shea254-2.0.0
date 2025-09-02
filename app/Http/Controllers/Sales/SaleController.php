@@ -79,11 +79,12 @@ class SaleController extends Controller
             $kcb_mpesa_express = app(KCBMpesaExpressController::class);
             $response = $kcb_mpesa_express->initiatePayment($phone_number, $total_amount, $order_number);
         } catch (Throwable $e) {
+            report($e);
             session()->flash('notify', ['message' => 'Payment initiation failed. Please try again', 'type' => 'error']);
             return redirect()->route('checkout-page');
         }
 
-        if ($response->header->statusCode === '0') {
+        if (isset($response->response->ResponseCode) && $response->response->ResponseCode === '0') {
             $order = Sale::create([
                 'order_number' => $order_number,
                 'order_type' => 1,
@@ -108,12 +109,12 @@ class SaleController extends Controller
 
             foreach ($cart_items as $item) {
                 OrderItem::create([
-                    'product_id' => $item['id'] ?? null,
-                    'title' => $item['title'],
-                    'quantity' => $item['quantity'],
-                    'buying_price' => $item['buying_price'] ?? 0,
-                    'selling_price' => $item['selling_price'] ?? 0,
-                    'order_id' => $order->id,
+                    'product_id'    => $item->product->id,
+                    'title'         => $item->product->title,
+                    'quantity'      => $item->quantity,
+                    'buying_price'  => $item->product->buying_price,
+                    'selling_price' => $item->product->selling_price,
+                    'order_id'      => $order->id,
                 ]);
             }
 
@@ -137,7 +138,7 @@ class SaleController extends Controller
             Session::forget(['cart', 'cart_count']);
 
             session()->flash('notify', ['message' => "Please complete the payment on your phone for {$order->order_number}.", 'type' => 'success']);
-            return redirect()->route('order_success');
+            return redirect()->route('checkout.success');
         }
 
         session()->flash('notify', ['message' => "$response->response->CustomerMessage ?? 'Payment initiation failed. Please try again.'", 'type' => 'error']);
@@ -156,6 +157,6 @@ class SaleController extends Controller
             return redirect()->route('shop');
         }
 
-        return view('order_success', compact('order_number', 'order'));
+        return view('pages.general.sales.success', compact('order_number', 'order'));
     }
 }
