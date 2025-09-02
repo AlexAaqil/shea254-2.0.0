@@ -1,0 +1,47 @@
+.CheckoutPage {
+    @apply pt-4 pb-12;
+
+    .Hero {
+        .container {
+            h1 {
+                @apply font-bold text-center text-3xl mb-4;
+            }
+        }
+    }
+
+    .CheckoutDetails {
+        .container {
+            @apply grid grid-cols-1 lg:grid-cols-12 gap-8;
+
+            .checkout_form {
+                @apply col-span-8;
+
+                button {
+                    @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)];
+                }
+            }
+
+            .checkout_summary {
+                @apply col-span-4 justify-self-end;
+
+                h2 {
+                    @apply font-bold text-2xl text-center mb-4;
+                }
+
+                .summary_item {
+                    @apply flex justify-between gap-8;
+
+                    &:last-of-type {
+                        @apply mt-4;
+                    }
+
+                    span {
+                        &:last-of-type {
+                            @apply font-bold;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
