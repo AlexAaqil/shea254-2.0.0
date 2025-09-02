@@ -7,6 +7,8 @@ use App\Livewire\Pages\General\AboutPage;
 use App\Livewire\Pages\General\Products\Shop as ShopPage;
 use App\Livewire\Pages\General\Products\Details as ProductDetailsPage;
 use App\Livewire\Pages\General\ContactPage;
+use App\Livewire\Pages\General\Sales\Cart as CartPage;
+use App\Http\Controllers\Sales\SaleController;
 
 use App\Livewire\Pages\Dashboards\Index as Dashboard;
 
@@ -37,6 +39,12 @@ Route::get('about', AboutPage::class)->name('about-page');
 Route::get('shop', ShopPage::class)->name('shop-page');
 Route::get('products/details/{slug}', ProductDetailsPage::class)->name('product-details-page');
 Route::get('contact', ContactPage::class)->name('contact-page');
+Route::get('cart', CartPage::class)->name('cart-page');
+Route::get('checkout', [SaleController::class, 'checkout'])->name('checkout-page');
+Route::post('checkout', [SaleController::class, 'store'])->name('checkout.store');
+Route::get('order-successful', [SaleController::class, 'success'])->name('checkout.success');
+Route::get('areas/fetch/{location}', [DeliveryAreaController::class, 'areasFetch'])->name('areas.fetch');
+Route::get('areas/shipping-cost/{area}', [DeliveryAreaController::class, 'areasShippingCost'])->name('areas.shipping-cost');
 
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');

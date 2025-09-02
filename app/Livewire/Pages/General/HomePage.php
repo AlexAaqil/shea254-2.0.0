@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use App\Models\Products\Product;
 use App\Models\Products\ProductReview;
+use App\Services\CartService;
 
 class HomePage extends Component
 {
@@ -19,6 +20,15 @@ class HomePage extends Component
                 ->take(3)
                 ->get();
         });
+    }
+
+    public function addToCart(int $product_id): void
+    {
+        app(CartService::class)->add($product_id);
+
+        $this->dispatch('cart-updated');
+
+        $this->dispatch('notify', 'Added to cart', 'success');
     }
 
     public function render()

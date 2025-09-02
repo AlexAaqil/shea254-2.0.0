@@ -44,4 +44,16 @@ class DeliveryAreaController extends Controller
 
         return redirect()->route('delivery-areas.index');
     }
+
+    public function areasFetch($location)
+    {
+        $areas = DeliveryArea::where('delivery_location_id', $location)->get(['id', 'area_name']);
+
+        return response()->json($areas);
+    }
+
+    public function areasShippingCost(DeliveryArea $area)
+    {
+        return response()->json(['price' => (float)$area->price]);
+    }
 }
