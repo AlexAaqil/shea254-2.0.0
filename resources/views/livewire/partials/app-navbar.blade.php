@@ -26,8 +26,21 @@
                             'navigate' => false,
                         ],
                         [
+                            'route' => 'user-orders.index',
+                            'label' => 'Purchases',
+                            'can' => $user && !$user->isAdmin(),
+                            'navigate' => true,
+                        ],
+                        [
+                            'route' => 'user-reviews.index',
+                            'label' => 'Reviews',
+                            'can' => $user && !$user->isAdmin(),
+                            'navigate' => true,
+                        ],
+                        [
                             'route' => 'orders.index',
                             'label' => 'Orders',
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
