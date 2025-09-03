@@ -129,6 +129,11 @@ class Product extends Model
         return $this->is_visible ? 'Visible' : 'Invisible';
     }
 
+    public function getIsFeaturedLabelAttribute(): string
+    {
+        return $this->featured ? 'Featured' : 'Unfeatured';
+    }
+
     public function getCategoryTitleAttribute()
     {
         return $this->product_category?->title ?? 'uncategorized';
