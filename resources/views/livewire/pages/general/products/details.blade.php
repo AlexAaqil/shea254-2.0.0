@@ -11,7 +11,7 @@
                 <div class="other_images">
                     @forelse($product->product_images as $image)
                         @php
-                            $imageUrl = Storage::url('products/images/' . $image->image);
+                            $imageUrl = Storage::url($image->image);
                         @endphp
 
                         <div class="image" @click="active_image = '{{ $imageUrl }}'">
@@ -54,29 +54,22 @@
                 </p>
 
                 <div class="actions">
-                    <button class="btn">Add to Cart</button>
+                    <button wire:click="addToCart({{ $product->id }})" class="btn">Add to Cart</button>
+
+                    <div class="action">
+                        <a href="{{ Route::has('product-reviews.create') ? route('product-reviews.create') : '#' }}" class="btn">Review Product</a>
+                    </div>
                 </div>
 
                 <div class="extras">
                     <p>
                         <span>Category</span>
-                        <span>
-                            : @if($product->category_slug)
-                                <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>
-                                    {{ $product->category_title }}
-                                </a>
-                            @else
-                                Uncategorized
-                            @endif
+                        <span>: <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>{{    $product->category_title }}</a>
                         </span>
                     </p>
                     <p>
                         <span>In stock</span>
                         <span>: {{ $product->stock_count }}</span>
-                    </p>
-                    <p>
-                        <span>Measurement</span>
-                        <span>: {{ $product->product_measurement . ' ' . $product->measurement_unit->measurement_name }}</span>
                     </p>
                     <p>
                         <span>Rating</span>

@@ -19,7 +19,7 @@
         .images {
             .main_image {
                 .image {
-                    @apply h-[500px];
+                    @apply h-[400px];
 
                     img {
                         @apply transition duration-300;
@@ -60,8 +60,18 @@
             }
 
             .actions {
+                @apply flex items-center justify-start gap-4 mt-6;
+
                 button {
                     @apply bg-[var(--theme-bg)] text-white font-semibold;
+                }
+
+                .action {
+                    @apply mt-0;
+
+                    a.btn {
+                        @apply bg-transparent border border-[var(--theme-bg)] text-[var(--theme-bg)];
+                    }
                 }
             }
 
