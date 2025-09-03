@@ -153,8 +153,8 @@ class SaleController extends Controller
             ->first();
 
         if (!$order) {
-            session()->flash('notify', ['message' => 'Order not found', 'type' => 'error']);
-            return redirect()->route('shop');
+            session()->flash('notify', ['message' => "You currently have no successful order", 'type' => 'error']);
+            return redirect()->route('shop-page');
         }
 
         return view('pages.general.sales.success', compact('order_number', 'order'));

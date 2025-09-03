@@ -1,0 +1,73 @@
+.OrderSuccess {
+    @apply py-16;
+
+    .container {
+        @apply text-center space-y-2 rounded-lg shadow-lg lg:w-[40dvw] py-12;
+
+        .icon {
+            @apply bg-green-700 w-[50px] h-[50px] mx-auto mb-4 rounded-full flex justify-center items-center;
+            animation: popIn 0.6s ease-out forwards;
+            transform: scale(0.5);
+            opacity: 0;
+
+            svg {
+                @apply fill-white;
+                animation: fadeSlideIn 0.5s ease-out 0.4s forwards;
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        h1 {
+            @apply text-3xl font-bold text-[var(--theme-bg)];
+            animation: fadeUp 0.8s ease-out 0.6s forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        p {
+            .order_number {
+                @apply font-semibold text-[var(--theme-bg)];
+            }
+        }
+
+        .actions {
+            @apply flex justify-center;
+
+            .btn {
+                @apply relative px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ease-out;
+                background: var(--theme-bg);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+                /* Hover: slight lift & color shift */
+                &:hover {
+                    background: color-mix(in srgb, var(--theme-bg) 90%, white 10%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+                }
+
+                /* Active (click): subtle press-in */
+                &:active {
+                    transform: translateY(1px) scale(0.98);
+                    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+                }
+            }
+        }
+    }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeSlideIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
