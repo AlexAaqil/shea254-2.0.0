@@ -57,7 +57,7 @@
                     <button wire:click="addToCart({{ $product->id }})" class="btn">Add to Cart</button>
 
                     <div class="action">
-                        <a href="{{ Route::has('product-reviews.create') ? route('product-reviews.create') : '#' }}" class="btn">Review Product</a>
+                        <a href="{{ Route::has('product-reviews.create') ? route('product-reviews.create', $product->slug) : '#' }}" class="btn">Review Product</a>
                     </div>
                 </div>
 

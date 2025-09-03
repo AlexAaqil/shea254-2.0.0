@@ -11,6 +11,7 @@ use App\Livewire\Pages\General\Sales\Cart as CartPage;
 use App\Http\Controllers\Sales\SaleController;
 
 use App\Livewire\Pages\Dashboards\Index as Dashboard;
+use App\Http\Controllers\Products\ProductReviewController;
 
 use App\Livewire\Pages\Users\Index as UsersPage;
 use App\Http\Controllers\UserController;
@@ -48,6 +49,9 @@ Route::get('areas/shipping-cost/{area}', [DeliveryAreaController::class, 'areasS
 
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
+
+    Route::get('product-reviews/{product}', [ProductReviewController::class, 'create'])->name('product-reviews.create');
+    Route::post('product-reviews/{product}', [ProductReviewController::class, 'store'])->name('product-reviews.store');
 });
 
 Route::middleware(['admin_only'])->group(function() {
