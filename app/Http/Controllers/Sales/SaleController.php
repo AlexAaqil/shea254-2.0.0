@@ -142,7 +142,7 @@ class SaleController extends Controller
         }
 
         session()->flash('notify', ['message' => "{$response->response->CustomerMessage} ?? 'Payment initiation failed. Please try again.'", 'type' => 'error']);
-        return redirect()->route('checkout.create');
+        return redirect()->route('checkout-page');
     }
 
     public function success()
