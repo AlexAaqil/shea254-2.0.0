@@ -39,78 +39,53 @@
             </div>
         </div>
 
-        <div class="users">
-            @forelse ($users as $user)
-                <div class="user" wire:key="user-{{ $user->id }}">
-                    <div class="details">
-                        <div class="image h-20 w-20">
-                            <x-user-avatar :user="$user" />
-                        </div>
+        <div class="users_list">
+            <div class="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th class="action">Actions</th>
+                        </tr>
+                    </thead>
 
-                        <div class="info">
-                            <h3>
-                                {{ $user->first_name }} {{ $user->last_name }}
-                                @if($user->isAdmin())
-                                    <x-svgs.shield-with-checkmark class="inline-block w-3 h-3 ml-1 text-green-600" />
-                                @endif
-                            </h3>
-                            <p class="{{ $user->email_verified_at === null ? 'text-red-600' : '' }}">
-                                {{ $user->email }}
-                            </p>
-                            <p>{{ $user->phone_numbers ? $user->phone_numbers : 'N/A' }}</p>
-                        </div>
-                    </div>
+                    <tbody>
+                        @forelse($users as $user)
+                            <tr>
+                                <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
+                                <td class="user_name">
+                                    <span>{{ $user->full_name }}</span>
+                                    @if ($user->isAdmin())
+                                        <x-svgs.shield-with-checkmark />
+                                    @endif
+                                </td>
+                                <td>{{ $user->phone_number }}</td>
+                                <td class="{{ $user->email_verified_at ? '' : 'text-red-500' }}">{{ $user->email }}</td>
+                                <td>{{ $user->status_label }}</td>
+                                <td class="actions">
+                                    <div class="action">
+                                        <a href="{{ Route::has('users.edit') ? route('users.edit', $user->id) : '#' }}" wire:navigate>
+                                            <x-svgs.edit class="text-green-600" />
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">No users found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                    @php
-                        $currentUser = auth()->user();
-                        $isCurrentUser = $currentUser->id === $user->id;
-                        $isAdmin = $currentUser->isAdmin();
-                    @endphp
-
-                    <div class="actions">
-                        <div class="others">
-                            @if($isAdmin && !$isCurrentUser)
-                                <button
-                                    wire:click="toggleStatus({{ $user->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="toggleStatus"
-                                    class="{{ $user->isActive() ? 'border border-green-500 bg-green-100 text-green-900 text-xs p-1' : 'border border-red-500 bg-red-100 text-red-900 text-xs p-1' }}">
-                                    {{ $user->status_label }}
-                                </button>
-                            @else
-                                <span>{{ $user->status_label }}</span>
-                            @endif
-                        </div>
-
-                        <div class="crud">
-                            @if($isAdmin)
-                                <a href="{{ route('users.edit', $user->id) }}" wire:navigate class="edit">
-                                    <x-svgs.edit />
-                                </a>
-                            @endif
-
-                            @if($isAdmin && !$isCurrentUser)
-                                <button x-data
-                                        x-on:click.prevent="$wire.set('delete_user_id', {{ $user->id }}); $dispatch('open-modal', 'confirm-user-deletion')"
-                                        class="delete">
-                                    <x-svgs.trash />
-                                </button>
-                            @endif
-
-                            @unless($isAdmin)
-                                <span>{{ $user->role->label() }}</span>
-                            @endunless
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p>No users found.</p>
-            @endforelse
-        </div>
-
-        {{-- ✅ Pagination --}}
-        <div class="mt-6">
-            {{ $users->links() }}
+            <div class="pagination mt-4">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 

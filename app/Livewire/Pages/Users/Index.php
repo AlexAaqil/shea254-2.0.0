@@ -77,6 +77,7 @@ class Index extends Component
                     ->orWhere('last_name', 'like', '%' . $this->search . '%');
                 });
             })
+            ->orderBy('user_level')
             ->orderBy('first_name')
             ->paginate(50)
             ->withQueryString();
