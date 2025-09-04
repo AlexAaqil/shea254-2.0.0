@@ -2,7 +2,7 @@
     <section class="Hero">
         <div class="container">
             <div class="breadcrumbs">
-                <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">Shop</a>
+                <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" wire:navigate>Shop</a>
                 <span>{{ Str::title($category->title) }}</span>
             </div>
             <h1>{{ Str::title($category->title) }}</h1>

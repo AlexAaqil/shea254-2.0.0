@@ -175,21 +175,19 @@ class Product extends Model
         return $this->product_reviews()->avg('rating');
     }
 
-    public function calculateDiscount()
+    public function getDiscountPercentageAttribute(): int
     {
         if ($this->discount_price != 0 && $this->discount_price < $this->selling_price) {
-            // Calculate the discount percentage
-            $discountPercentage = (($this->selling_price - $this->discount_price) / $this->selling_price) * 100;
-
-            // Set the new price and percentage in the model
-            $this->new_price = $this->discount_price;
-            $this->discount_percentage = round($discountPercentage, 0);
-        } else {
-            // If no discount, set the new price as the regular price
-            $this->new_price = $this->selling_price;
-            $this->discount_percentage = 0;
+            return (int) round(
+                (($this->selling_price - $this->discount_price) / $this->selling_price) * 100
+            );
         }
 
-        return $this->discount_percentage;
+        return 0;
+    }
+
+    public function getHasDiscountAttribute(): bool
+    {
+        return $this->discount_percentage > 0;
     }
 }

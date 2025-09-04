@@ -25,18 +25,11 @@
 
     <section class="Categories">
         <div class="container">
-            <div class="categories_list flex gap-4">
-                @if($categories->count() > 0)
-                    <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" class="text-sm" wire:navigate>All Categories</a>
-                    @foreach ($categories as $category)
-                        <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $category->slug) : '#' }}" class="text-blue-500 text-sm" wire:navigate>
-                            {{ $category->title }}
-                        </a>
-                    @endforeach
-                @else
-                    <p>No categories yet.</p>
-                @endif
-            </div>
+            @forelse($categories as $category)
+                <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $category->slug) : '#' }}" wire:navigate>{{ $category->title }}</a>
+            @empty
+                <p>No categories found.</p>
+            @endforelse
         </div>
     </section>
 

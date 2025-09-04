@@ -44,7 +44,7 @@
             <span class="selling_price">
                 Ksh. {{ number_format($product->effective_price, 2) }}
             </span>
-            @if ($product->discount_price && $product->discount_price < $product->selling_price)
+            @if ($product->has_discount)
                 <span class="discount_price">
                     {{ number_format($product->selling_price, 2) }}
                 </span>

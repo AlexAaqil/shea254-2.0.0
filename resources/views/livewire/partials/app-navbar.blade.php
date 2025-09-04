@@ -44,6 +44,12 @@
                             'navigate' => true,
                         ],
                         [
+                            'route' => 'product-offers.index',
+                            'label' => 'Offers',
+                            'can' => $user && $user->isAdmin(),
+                            'navigate' => true,
+                        ],
+                        [
                             'route' => 'products.index',
                             'label' => 'Products',
                             'can' => $user && $user->isAdmin(),

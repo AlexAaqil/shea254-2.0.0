@@ -15,7 +15,7 @@ class Details extends Component
     {
         $this->product = Product::with(['product_images', 'product_category', 'product_reviews'])->where('slug', $slug)->firstOrFail();
 
-        $this->related_products = Product::with('product_images', 'measurement_unit')
+        $this->related_products = Product::with(['product_images', 'measurement_unit'])
             ->where('category_id', $this->product->product_category_id)
             ->where('id', '!=', $this->product->id)
             ->inRandomOrder()

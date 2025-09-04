@@ -16,6 +16,7 @@ class Categorized extends Component
         $this->category = ProductCategory::where('slug', $category)->firstOrFail();
         $this->categories = ProductCategory::where('slug', '!=', $category)->get();
         $this->products = $this->category->products()
+            ->with(['product_category', 'coverImage'])
             ->where('is_visible', true)
             ->orderBy('title')
             ->get();
