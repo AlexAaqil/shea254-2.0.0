@@ -2,6 +2,9 @@
     <div class="container Orders EditOrder">
         <div class="custom_form order_details_form">
             <div class="header">
+                <a href="{{ Route::has('orders.index') ? route('orders.index') : '#' }}" wire:navigate>
+                    <x-svgs.arrow-left class="w-5 h-5" />
+                </a>
                 <h2>Order Details</h2>
             </div>
 
@@ -129,6 +132,9 @@
 
         <div class="custom_form">
             <div class="header">
+                <a href="{{ Route::has('orders.index') ? route('orders.index') : '#' }}" wire:navigate>
+                    <x-svgs.arrow-left class="w-5 h-5" />
+                </a>
                 <h2>Edit Order</h2>
             </div>
 
@@ -157,10 +163,14 @@
                     </div>
                 </div>
 
-                <button type="submit" wire:loading.attr="disabled" wire:target="updateOrder">
-                    <span wire:loading.remove wire:target="updateOrder">Update</span>
-                    <span wire:loading wire:target="updateOrder">Updating Order...</span>
-                </button>
+                <div class="buttons_group">
+                    <button type="submit" wire:loading.attr="disabled" wire:target="updateOrder">
+                        <span wire:loading.remove wire:target="updateOrder">Update</span>
+                        <span wire:loading wire:target="updateOrder">Updating Order...</span>
+                    </button>
+
+                    <a href="{{ route('orders.index') }}" class="btn btn_danger">Cancel</a>
+                </div>
             </form>
         </div>
     </div>

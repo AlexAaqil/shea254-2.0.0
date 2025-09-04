@@ -173,8 +173,8 @@
     }
 }
 
-.CategorizedProducts {
-    .HeroSection {
+.CategorizedProductsPage {
+    .Hero {
         .container {
             @apply text-center space-y-2;
 
@@ -182,12 +182,18 @@
                 @apply justify-center;
             }
 
-            .title {
-                @apply font-bold text-2xl lg:text-4xl;
+            h1 {
+                @apply font-bold text-2xl lg:text-4xl text-[var(--theme-bg)];
             }
+        }
+    }
 
-            p {
-                @apply text-base lg:text-lg;
+    .Categories {
+        .container {
+            @apply flex flex-wrap justify-center gap-6;
+
+            a {
+                @apply flex-none bg-white text-[var(--theme-bg)] px-[12px] py-[4px] rounded-[32px];
             }
         }
     }

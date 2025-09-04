@@ -141,7 +141,7 @@ class Product extends Model
 
     public function getCategorySlugAttribute(): ?string
     {
-        return $this->product_category?->slug;
+        return $this->product_category?->slug ?: null;
     }
 
     public function getEffectivePriceAttribute(): float

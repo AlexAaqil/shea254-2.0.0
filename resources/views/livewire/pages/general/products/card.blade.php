@@ -14,7 +14,13 @@
     <div class="content">
         <div class="extras">
             <span>
-                <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>
+                <a
+                    @if($product->category_slug)
+                        href="{{ route('products-categorized-page', $product->category_slug) }}" wire:navigate
+                    @else
+                        class="disabled-link" aria-disabled="true"
+                    @endif
+                >
                     {{ $product->category_title }}
                 </a>
             </span>

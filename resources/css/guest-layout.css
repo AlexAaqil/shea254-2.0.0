@@ -16,6 +16,7 @@
 
 @import "./pages/Authentication.css";
 @import "./pages/general/HomePage.css";
+@import "./pages/general/ShopPage.css";
 @import "./pages/general/AboutPage.css";
 @import "./pages/general/Products.css";
 @import "./pages/general/ContactPage.css";
