@@ -18,20 +18,20 @@
         <div class="container">
             @php
                 $categories = collect([
-                    (object) ['name' => 'Raw Butters', 'slug' => 'raw-butters'],
-                    (object) ['name' => 'African Black Soap', 'slug' => 'black-soap'],
-                    (object) ['name' => 'Essential Oils', 'slug' => 'essential-oil'],
-                    (object) ['name' => 'Toners & Serums', 'slug' => 'toners-and-serums'],
-                    (object) ['name' => 'Whipped Butters', 'slug' => 'whipped-butters'],
-                    (object) ['name' => 'Scrubs', 'slug' => 'scrub'],
-                    (object) ['name' => 'Carrier Oils', 'slug' => 'carrier-oil'],
-                    (object) ['name' => 'Cream & Gels', 'slug' => 'creams-gels'],
+                    (object) ['title' => 'Raw Butters', 'slug' => 'raw-butters'],
+                    (object) ['title' => 'African Black Soap', 'slug' => 'black-soap'],
+                    (object) ['title' => 'Essential Oils', 'slug' => 'essential-oil'],
+                    (object) ['title' => 'Toners & Serums', 'slug' => 'toners-and-serums'],
+                    (object) ['title' => 'Whipped Butters', 'slug' => 'whipped-butters'],
+                    (object) ['title' => 'Scrubs', 'slug' => 'scrub'],
+                    (object) ['title' => 'Carrier Oils', 'slug' => 'carrier-oil'],
+                    (object) ['title' => 'Cream & Gels', 'slug' => 'creams-gels'],
                 ]);
             @endphp
 
             @foreach($categories as $category)
                 <div class="category">
-                    <a href="{{ Route::has('products.categorized') ? route('products.categorized', $category->slug) : '#' }}">{{ $category->name }}</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $category->slug) : '#' }}" wire:navigate>{{ $category->title }}</a>
                 </div>
             @endforeach
         </div>
