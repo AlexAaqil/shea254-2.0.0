@@ -22,4 +22,12 @@
             }
         }
     }
+
+    .ProductReviews {
+        .custom_form {
+            .review_details {
+                @apply mb-4;
+            }
+        }
+    }
 }

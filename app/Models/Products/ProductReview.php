@@ -9,6 +9,10 @@ class ProductReview extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'is_visible' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -17,5 +21,10 @@ class ProductReview extends Model
     public function product()
     {
         return $this->belongsTo(Product::class,'product_id');
+    }
+
+    public function getIsVisibleLabelAttribute()
+    {
+        return $this->is_visible ? 'Yes' : 'No';
     }
 }

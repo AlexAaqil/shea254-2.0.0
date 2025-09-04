@@ -50,7 +50,7 @@
                             'navigate' => true,
                         ],
                         [
-                            'route' => 'reviews.index',
+                            'route' => 'product-reviews.index',
                             'label' => 'Reviews',
                             'can' => $user && $user->isAdmin(),
                             'navigate' => true,

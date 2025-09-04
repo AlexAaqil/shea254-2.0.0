@@ -21,7 +21,7 @@ class ProductReviewController extends Controller
                 ->exists();
         }
 
-        return view('pages.general.product.review', compact('product', 'alreadyReviewed'));
+        return view('pages.general.products.reviews.create', compact('product', 'alreadyReviewed'));
     }
 
     public function store(Request $request, $product)
@@ -37,18 +37,38 @@ class ProductReviewController extends Controller
             return redirect()->route('shop-page');
         }
 
-        $validated = $request->validate([
+        $validated_data = $request->validate([
             'rating' => 'required|numeric|min:1|max:5',
             'review' => 'required|string|max:1500',
             'image' => 'nullable|image|max:2048',
         ]);
 
-        $validated['user_id'] = Auth::id();
-        $validated['product_id'] = $product->id;
+        $validated_data['user_id'] = Auth::id();
+        $validated_data['product_id'] = $product->id;
 
-        ProductReview::create($validated);
+        ProductReview::create($validated_data);
 
         session()->flash('notify', ['message' => 'Thank you! Your review has been submitted.']);
         return redirect()->route('shop-page');
+    }
+
+    public function edit(ProductReview $product_review)
+    {
+        $product_review->load('product', 'user');
+
+        return view('pages.general.products.reviews.edit', compact('product_review'));
+    }
+
+    public function update(Request $request, ProductReview $product_review)
+    {
+        $validated_data = $request->validate([
+            'is_visible' => 'required|boolean',
+            'ordering' => 'required|numeric|min:0',
+        ]);
+
+        $product_review->update($validated_data);
+
+        session()->flash('notify', ['message' => 'Review updated successfully.']);
+        return redirect()->route('product-reviews.index');
     }
 }

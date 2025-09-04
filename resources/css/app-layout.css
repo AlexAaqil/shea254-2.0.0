@@ -1,8 +1,12 @@
 @import "./globals.css";
 
 .app_layout {
-    .container {
+    .app_layout_container {
         @apply px-4 py-2 mx-auto;
+    }
+
+    .container {
+        @apply px-4 py-2 mx-auto min-w-full;
 
         .app_header {
             @apply grid grid-cols-1 md:grid-cols-3 items-center gap-2 py-4;
