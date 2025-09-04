@@ -62,11 +62,12 @@ class ProductReviewController extends Controller
     public function update(Request $request, ProductReview $product_review)
     {
         $validated_data = $request->validate([
-            'is_visible' => 'required|boolean',
             'ordering' => 'required|numeric|min:0',
         ]);
 
-        $product_review->update($validated_data);
+        $product_review->fill($validated_data);
+        $product_review->is_visible = $request->boolean('is_visible');
+        $product_review->save();
 
         session()->flash('notify', ['message' => 'Review updated successfully.']);
         return redirect()->route('product-reviews.index');
