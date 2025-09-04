@@ -94,6 +94,43 @@
             }
         }
     }
+
+    .more_details {
+        .description {
+            strong {
+                @apply text-[var(--theme-bg)];
+            }
+
+            p {
+                @apply mb-1;
+            }
+
+            ul,
+            ol {
+                @apply mb-4;
+
+                li {
+                    @apply ml-4 mb-1;
+
+                    .container {
+                        @apply hidden;
+                    }
+                }
+            }
+
+            ul {
+                li {
+                    @apply list-disc;
+                }
+            }
+
+            ol {
+                li {
+                    @apply list-decimal;
+                }
+            }
+        }
+    }
 }
 
 .ProductReviewsPage {

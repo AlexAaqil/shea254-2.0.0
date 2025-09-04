@@ -84,9 +84,9 @@
                 {!! $product->description !!}
             </div>
 
-            <div class="reviews">
-                {{-- Reviews will go here --}}
-            </div>
+            {{-- <div class="reviews">
+                TODO: Reviews should go here
+            </div> --}}
         </div>
     </section>
 
