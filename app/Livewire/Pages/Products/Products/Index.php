@@ -74,7 +74,7 @@ class Index extends Component
     public function render()
     {
         $products = Product::query()
-            ->select(['id', 'title', 'slug', 'selling_price', 'discount_price', 'stock_count', 'category_id'])
+            ->select(['id', 'title', 'slug', 'selling_price', 'discount_price', 'stock_count', 'is_visible', 'featured', 'category_id'])
             ->with(['product_category', 'coverImage'])
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {

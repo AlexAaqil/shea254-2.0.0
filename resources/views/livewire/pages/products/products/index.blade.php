@@ -90,7 +90,10 @@
                     <div class="actions">
                         <div class="others">
                             <button
-                                wire:click="toggleVisibility('{{ $product->id }}')" wire:loading.attr="disabled" wire:target="toggleVisibility" class="{{ $product->is_visible ? 'border border-green-500 bg-green-100 text-green-900 text-xs p-1' : 'border border-red-500 bg-red-100 text-red-900 text-xs p-1' }}">
+                                wire:click="toggleVisibility('{{ $product->id }}')"
+                                wire:loading.attr="disabled"
+                                wire:target="toggleVisibility"
+                                class="{{ $product->is_visible ? 'border border-green-500 bg-green-100 text-green-900 text-xs p-1' : 'border border-red-500 bg-red-100 text-red-900 text-xs p-1' }}">
                                 {{ $product->is_visible_label }}
                             </button>
 

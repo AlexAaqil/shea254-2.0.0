@@ -39,3 +39,17 @@ body {
         @apply text-gray-700;
     }
 }
+
+.product_price {
+    .discount_price {
+        @apply line-through text-gray-600 text-sm ml-2;
+    }
+
+    .discount_percentage {
+        @apply text-red-600 font-semibold ml-2;
+    }
+
+    .selling_price {
+        @apply text-[var(--theme-bg)] text-lg font-semibold;
+    }
+}

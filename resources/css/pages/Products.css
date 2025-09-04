@@ -1,9 +1,15 @@
 .app_layout {
     .Products {
         .product_card {
+            .info {
+                h3 {
+                    @apply text-base;
+                }
+            }
+
             .product_price {
                 .selling_price {
-                    @apply font-bold text-lg text-[var(--theme-bg)];
+                    @apply font-bold text-[var(--theme-bg)];
                 }
             }
 
