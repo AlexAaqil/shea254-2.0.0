@@ -24,10 +24,10 @@
             @apply grid grid-cols-1 lg:grid-cols-12 gap-8;
 
             .contact_info {
-                @apply col-span-4;
+                @apply lg:col-span-4;
 
                 .info {
-                    @apply flex items-center gap-2 mb-6 bg-blue-50 lg:w-[75%] lg:mx-auto rounded-lg p-[8px];
+                    @apply flex items-center gap-2 mb-6 bg-blue-50 w-full lg:w-[75%] lg:mx-auto rounded-lg p-[8px];
 
                     .icon {
                         @apply w-[40px] h-[40px] rounded-full p-[8px] bg-[var(--theme-bg)];
@@ -50,7 +50,7 @@
             }
 
             .contact_form {
-                @apply col-span-8 p-[1em];
+                @apply lg:col-span-8 p-[1em];
 
                 .inputs_group {
                     @apply md:grid md:grid-cols-2 md:gap-6 md:items-start;

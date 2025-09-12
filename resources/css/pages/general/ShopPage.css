@@ -1,7 +1,7 @@
 .ShopPage {
     .Categories {
         .container {
-            @apply flex flex-wrap justify-center gap-6 min-w-full;
+            @apply flex flex-wrap lg:justify-center gap-4 min-w-full;
 
             a {
                 @apply flex-none bg-white text-[var(--theme-bg)] px-[12px] py-[4px] rounded-[32px];

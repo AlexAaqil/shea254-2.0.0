@@ -213,7 +213,7 @@
 
     .Categories {
         .container {
-            @apply flex flex-wrap justify-center gap-6;
+            @apply flex flex-wrap lg:justify-center gap-4;
 
             a {
                 @apply flex-none bg-white text-[var(--theme-bg)] px-[12px] py-[4px] rounded-[32px];

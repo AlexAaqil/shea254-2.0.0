@@ -26,7 +26,13 @@
                 @endauth
 
                 @foreach ($links as $link)
-                    <a href="{{ Route::has($link['href']) ? route($link['href']) : '#' }}" wire:navigate>{{ $link['text'] }}</a>
+                    <a
+                        href="{{ Route::has($link['href']) ? route($link['href']) : '#' }}"
+                        @class(['active' => Route::currentRouteName() === $link['href'] ])
+                        wire:navigate
+                    >
+                        {{ $link['text'] }}
+                    </a>
                 @endforeach
             </div>
         </div>
