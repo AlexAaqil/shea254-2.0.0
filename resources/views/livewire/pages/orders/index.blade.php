@@ -56,12 +56,12 @@
                     <tbody>
                         @forelse($orders as $order)
                             <tr>
+                                <td>{{ ($orders->currentPage() - 1) * $orders->perPage() + $loop->iteration }}</td>
                                 <td>
                                     <a href="{{ Route::has('orders.edit') ? route('orders.edit', $order->id) : '#' }}" class="text-blue-600" title="Edit this order" wire:navigate>
-                                        {{ ($orders->currentPage() - 1) * $orders->perPage() + $loop->iteration }}
+                                        {{ $order->order_number }}
                                     </a>
                                 </td>
-                                <td>{{ $order->order_number }}</td>
                                 <td>{{ $order->order_delivery?->full_name }}</td>
                                 <td>{{ $order->order_delivery->phone_number }}</td>
                                 <td>{!! Illuminate\Support\Str::limit($order->order_delivery?->address, 15, ' ...') !!}</td>
