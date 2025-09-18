@@ -25,7 +25,7 @@
 
             .category {
                 a {
-                    @apply w-[60%] bg-white text-[var(--theme-bg)] font-bold py-[12px] px-[16px] rounded-lg hover:bg-[var(--theme-bg)] hover:text-white block;
+                    @apply bg-white text-[var(--theme-bg)] font-bold py-[12px] px-[16px] rounded-lg hover:bg-[var(--theme-bg)] hover:text-white block;
                 }
             }
         }
@@ -35,8 +35,6 @@
         @apply py-4 px-0;
 
         .container {
-            @apply px-4 lg:p-0;
-
             .hero_wrapper,
             .overlay,
             .image,
