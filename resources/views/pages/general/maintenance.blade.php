@@ -50,7 +50,6 @@
 </head>
 <body>
     <div class="maintenance-box">
-        <img src="{{ asset('assets/images/shea254-app-logo.ico') }}" alt="Logo">
         <h1>We’ll be back soon 😊</h1>
         <p>{{ config('app.name') }} is currently under maintenance.<br>
            Thank you for your patience!</p>
