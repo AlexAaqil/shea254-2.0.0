@@ -18,41 +18,41 @@
         <div class="container">
             <div class="categories_group">
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'raw-butters') : '#' }}">Raw Butters</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'raw-butters') : '#' }}" wire:navigate>Raw Butters</a>
                 </div>
 
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'whipped-butters') : '#' }}">Whipped Butters</a>
-                </div>
-            </div>
-
-            <div class="categories_group">
-                <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'black-soap') : '#' }}">African Black Soap</a>
-                </div>
-
-                <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'scrub') : '#' }}">Scrubs</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'whipped-butters') : '#' }}" wire:navigate>Whipped Butters</a>
                 </div>
             </div>
 
             <div class="categories_group">
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'essential-oil') : '#' }}">Essential Oils</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'black-soap') : '#' }}" wire:navigate>African Black Soap</a>
                 </div>
 
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'carrier-oil') : '#' }}">Carrier Oils</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'scrub') : '#' }}" wire:navigate>Scrubs</a>
                 </div>
             </div>
 
             <div class="categories_group">
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'toners-and-serums') : '#' }}">Toners & Serums</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'essential-oil') : '#' }}" wire:navigate>Essential Oils</a>
                 </div>
 
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'creams-gels') : '#' }}">Cream & Gels</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'carrier-oil') : '#' }}" wire:navigate>Carrier Oils</a>
+                </div>
+            </div>
+
+            <div class="categories_group">
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'toners-and-serums') : '#' }}" wire:navigate>Toners & Serums</a>
+                </div>
+
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'creams-gels') : '#' }}" wire:navigate>Cream & Gels</a>
                 </div>
             </div>
         </div>
