@@ -16,24 +16,45 @@
 <div class="HomePage">
     <section class="Categories">
         <div class="container">
-            @php
-                $categories = collect([
-                    (object) ['title' => 'Raw Butters', 'slug' => 'raw-butters'],
-                    (object) ['title' => 'African Black Soap', 'slug' => 'black-soap'],
-                    (object) ['title' => 'Essential Oils', 'slug' => 'essential-oil'],
-                    (object) ['title' => 'Toners & Serums', 'slug' => 'toners-and-serums'],
-                    (object) ['title' => 'Whipped Butters', 'slug' => 'whipped-butters'],
-                    (object) ['title' => 'Scrubs', 'slug' => 'scrub'],
-                    (object) ['title' => 'Carrier Oils', 'slug' => 'carrier-oil'],
-                    (object) ['title' => 'Cream & Gels', 'slug' => 'creams-gels'],
-                ]);
-            @endphp
-
-            @foreach($categories as $category)
+            <div class="categories_group">
                 <div class="category">
-                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $category->slug) : '#' }}" wire:navigate>{{ $category->title }}</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'raw-butters') : '#' }}">Raw Butters</a>
                 </div>
-            @endforeach
+
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'whipped-butters') : '#' }}">Whipped Butters</a>
+                </div>
+            </div>
+
+            <div class="categories_group">
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'black-soap') : '#' }}">African Black Soap</a>
+                </div>
+
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'scrub') : '#' }}">Scrubs</a>
+                </div>
+            </div>
+
+            <div class="categories_group">
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'essential-oil') : '#' }}">Essential Oils</a>
+                </div>
+
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'carrier-oil') : '#' }}">Carrier Oils</a>
+                </div>
+            </div>
+
+            <div class="categories_group">
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'toners-and-serums') : '#' }}">Toners & Serums</a>
+                </div>
+
+                <div class="category">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'creams-gels') : '#' }}">Cream & Gels</a>
+                </div>
+            </div>
         </div>
     </section>
 
