@@ -64,7 +64,7 @@
                     }
 
                     a {
-                        @apply font-bold text-[var(--theme-bg)] whitespace-nowrap;
+                        @apply font-bold text-[0.95em] text-[var(--theme-bg)] tracking-[0.01em] whitespace-nowrap;
                     }
                 }
             }
