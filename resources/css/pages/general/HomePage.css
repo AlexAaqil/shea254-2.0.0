@@ -18,7 +18,7 @@
     }
 
     .Categories {
-        @apply py-4 flex items-center h-[200px];
+        @apply py-0 flex items-center h-[200px];
 
         .container {
             @apply relative flex gap-[1.5em] py-[1.5em] bg-[var(--theme-light-bg)] rounded-[16px] overflow-x-auto overflow-y-hidden;
@@ -73,9 +73,11 @@
     }
 
     .Hero {
-        @apply py-4 px-0;
+        @apply py-0 px-0;
 
         .container {
+            padding-block: 0;
+
             .hero_wrapper,
             .overlay,
             .image,
