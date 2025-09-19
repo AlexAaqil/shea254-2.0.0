@@ -8,11 +8,13 @@ use App\Services\CartService;
 class Cart extends Component
 {
     public $cart_items;
+    public $cart_subtotal;
     public $cart_count = 0;
 
     public function mount(CartService $cart)
     {
         $this->cart_items = $cart->getItems();
+        $this->cart_subtotal = $cart->getSubtotal();
         $this->cart_count = $cart->count();
     }
 

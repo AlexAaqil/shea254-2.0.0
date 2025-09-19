@@ -36,7 +36,9 @@ class CartService
     public function remove(int $product_id): void
     {
         $cart = Session::get('cart', []);
+
         unset($cart[$product_id]);
+
         Session::put('cart', $cart);
     }
 
@@ -53,22 +55,30 @@ class CartService
     public function getItems()
     {
         $cart = Session::get('cart', []);
+
         if (empty($cart)) return collect();
 
         $products = Product::whereIn('id', array_keys($cart))->get();
 
         return $products->map(function ($product) use ($cart) {
+            $effective_price = $product->effective_price;
+
             return (object) [
                 'product'  => $product,
                 'quantity' => $cart[$product->id],
-                'subtotal' => $cart[$product->id] * $product->selling_price,
+                'subtotal' => $cart[$product->id] * $effective_price,
             ];
         });
     }
 
-    public function getTotal(): float
+    public function getSubtotal(): float
     {
         return $this->getItems()->sum('subtotal');
+    }
+
+    public function getTotal(float $shipping = 0.0): float
+    {
+        return $this->getSubtotal() + (float)$shipping;
     }
 
     /**

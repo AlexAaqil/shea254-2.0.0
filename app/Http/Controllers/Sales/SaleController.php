@@ -27,14 +27,14 @@ class SaleController extends Controller
         }
 
         $cart_count = $cart->count();
-        $cart_total = $cart->getTotal();
+        $cart_subtotal = $cart->getSubtotal();
 
         $user = Auth::check() ? Auth::user() : null;
 
         $locations = DeliveryLocation::orderby('location_name')->get();
         $areas = DeliveryArea::orderby('area_name')->get();
 
-        return view('pages.general.sales.checkout', compact('user', 'cart_count', 'cart_total', 'locations', 'areas'));
+        return view('pages.general.sales.checkout', compact('user', 'cart_count', 'cart_subtotal', 'locations', 'areas'));
     }
 
     public function store(CheckoutRequest $request, CartService $cart)
@@ -42,7 +42,7 @@ class SaleController extends Controller
         $validated_data = $request->validated();
 
         $cart_items = $cart->getItems();
-        $cart_total = (float)$cart->getTotal();
+        $cart_subtotal = (float)$cart->getSubtotal();
 
         $phone_number = $validated_data['phone_number'];
         $email = $validated_data['email'];
@@ -71,7 +71,7 @@ class SaleController extends Controller
             $shipping_cost = 0.0;
         }
 
-        $total_amount = $shipping_cost + $cart_total;
+        $total_amount = $cart->getTotal($shipping_cost);
         $order_number = 'ord_' . Str::upper(Str::random(6)) . '_' . now()->format('dmy');
         $user_id = Auth::check() ? Auth::user()->id : null;
 

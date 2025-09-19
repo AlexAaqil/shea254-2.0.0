@@ -48,9 +48,7 @@
 
                 <div class="summary_item">
                     <span>Cart Total:</span>
-                    <span>Ksh. {{ number_format($cart_items->sum(function($item) {
-                        return $item->product->effective_price * $item->quantity;
-                    }), 2) }}</span>
+                    <span>Ksh. {{ number_format($cart_subtotal, 2) }}</span>
                 </div>
 
                 <div class="summary_actions">

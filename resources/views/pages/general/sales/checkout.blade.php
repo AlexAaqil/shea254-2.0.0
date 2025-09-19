@@ -111,7 +111,7 @@
 
                     <div class="summary_item">
                         <span>Total Amount:</span>
-                        <span id="total_amount">Ksh. {{ number_format($cart_total, 2) }}</span>
+                        <span id="total_amount">Ksh. {{ number_format($cart_subtotal, 2) }}</span>
                     </div>
                 </div>
             </div>
@@ -130,7 +130,7 @@
         let areaPrice = 0;
 
         function updateShippingAndTotal() {
-            const cartSubtotal = parseFloat("{{ (float)$cart_total }}");
+            const cartSubtotal = parseFloat("{{ (float)$cart_subtotal }}");
             const shippingCost = Number.isFinite(parseFloat(areaPrice)) ? parseFloat(areaPrice) : 0;
             shippingCostElement.textContent = `Ksh. ${shippingCost.toFixed(2)}`;
             totalElement.textContent = `Ksh. ${(cartSubtotal + shippingCost).toFixed(2)}`;
