@@ -27,6 +27,10 @@
             </div>
 
             <livewire:partials.footer />
+
+            <a href="https://wa.me/254711894267?text=Hi%20Shea254%20Team!%20I%20need%20help!" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp" class="whatsapp_customer_service_btn">
+                <x-svgs.whatsapp />
+            </a>
         </main>
 
         @livewireScripts

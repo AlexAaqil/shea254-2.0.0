@@ -4,6 +4,20 @@
     .container {
         @apply px-4 md:px-16 py-6 mx-auto;
     }
+
+    .whatsapp_customer_service_btn {
+        @apply fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center z-50;
+        animation: pulse-whatsapp 2s infinite;
+
+        svg {
+            @apply w-8 h-8 fill-white;
+        }
+    }
+}
+
+@keyframes pulse-whatsapp {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 @import "./components/cards.css";
