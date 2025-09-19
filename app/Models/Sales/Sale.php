@@ -9,7 +9,20 @@ use App\Models\Payments\Payment;
 
 class Sale extends Model
 {
-        protected $guarded = [];
+    protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function($sale) {
+            $sale->order_items()->delete();
+
+            $sale->order_delivery()->delete();
+
+            $sale->payment()->delete();
+        });
+    }
 
     public function order_delivery()
     {
@@ -20,15 +33,15 @@ class Sale extends Model
     {
         return $this->hasMany(OrderItem::class, 'order_id');
     }
+    
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'order_id');
+    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function payment()
-    {
-        return $this->hasOne(Payment::class, 'order_id');
     }
 
     static public function getOrders()

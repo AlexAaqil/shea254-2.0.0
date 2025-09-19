@@ -170,8 +170,33 @@
                     </button>
 
                     <a href="{{ route('orders.index') }}" class="btn btn_danger">Cancel</a>
+
+                    @auth
+                        @if(auth()->user()->isSuperAdmin())
+                            <button x-data x-on:click.prevent="$wire.set('delete_order_id', {{ $order->id }}); $dispatch('open-modal', 'confirm-order-deletion')" class="btn btn_danger">Delete</button>
+                        @endif
+                    @endauth
                 </div>
             </form>
         </div>
     </div>
+
+    <x-modal name="confirm-order-deletion" :show="$delete_order_id !== null" focusable>
+        <div class="custom_form">
+            <form wire:submit="deleteOrder" @submit="$dispatch('close-modal', 'confirm-order-deletion')" class="p-6">
+                <h2 class="text-lg font-semibold text-gray-900">Confirm Deletion</h2>
+
+                <p class="mt-2 mb-4 text-sm text-gray-600">Are you sure you want to permanently delete this order and associated details?</p>
+
+                <div class="mt-6 flex justify-start">
+                    <button type="button" class="mr-2" x-on:click="$dispatch('close-modal', 'confirm-order-deletion')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn_danger">
+                        Delete Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
 </div>
