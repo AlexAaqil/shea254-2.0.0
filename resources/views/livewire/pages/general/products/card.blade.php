@@ -1,6 +1,13 @@
 <div class="product_card card">
     <div class="image">
-        <img src="{{ $product->image_url }}" alt="{{ $product->slug }}">
+        <div class="skeleton"></div>
+        <img 
+            src="{{ $product->image_url }}" 
+            alt="{{ $product->name }}" 
+            loading="lazy"
+            onload="this.classList.add('loaded'); this.previousElementSibling.remove();"
+        >
+        <!-- <img src="{{ $product->image_url }}" alt="{{ $product->slug }}"> -->
 
         @if ($product->stock_count > 0)
             <div class="cart_btn">

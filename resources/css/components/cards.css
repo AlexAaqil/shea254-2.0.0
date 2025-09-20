@@ -75,7 +75,19 @@
 
 .product_card {
     .image {
-        @apply relative bg-blue-50;
+        @apply relative flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden w-full aspect-square;
+
+        .skeleton {
+            @apply absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
+        }
+
+        img {
+            @apply object-contain w-full h-full opacity-0 transition-opacity duration-500;
+        }
+
+        img.loaded {
+            @apply opacity-100;
+        }
 
         .cart_btn {
             @apply absolute right-2 bottom-2;
