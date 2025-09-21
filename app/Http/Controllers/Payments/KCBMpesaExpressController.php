@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use App\Models\Sales\Sale;
+use App\Models\Products\Product;
 
 class KCBMpesaExpressController extends Controller
 {
@@ -188,6 +191,33 @@ class KCBMpesaExpressController extends Controller
                 $payment->status = 'paid';
                 $payment->response_code = $result_code;
                 $payment->customer_message = 'Payment completed successfully';
+
+                DB::transaction(function () use ($payment) {
+                    $order = Sale::with('order_items')->find($payment->order_id);
+
+                    if ($order) {
+                        foreach($order->items as $item) {
+                            $updated = Product::where('id', $item->product_id)
+                                ->where('stock_count', '>=', $item->quantity)
+                                ->decrement('stock_count', $item->quantity);
+
+                            if ($updated) {
+                                Log::info('Stock decremented', [
+                                    'product_id' => $item->product_id,
+                                    'qty' => $item->quantity,
+                                    'order_id' => $order->id,
+                                ]);
+                            } else {
+                                Log::warning('Stock deduction failed, not enough stock', [
+                                    'product_id' => $item->product_id,
+                                    'qty' => $item->quantity,
+                                    'order_id' => $order->id,
+                                ]);
+                                // Optional: mark order as "on_hold" or notify admin
+                            }
+                        }
+                    }
+                });
             } else {
                 $payment->status = 'failed';
                 $payment->response_code = $result_code;

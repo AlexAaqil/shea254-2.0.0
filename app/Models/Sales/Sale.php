@@ -5,6 +5,7 @@ namespace App\Models\Sales;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Sales\OrderItem;
 use App\Models\User;
+use App\Models\Products\Product;
 use App\Models\Payments\Payment;
 
 class Sale extends Model
