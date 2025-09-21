@@ -26,7 +26,7 @@
     </div>
 
     <button type="submit" wire:loading.attr="disabled" wire:target="submitMessage">
-        <span wire:loading.remove wire:target="submitMessage">Send Message &rArr;</span>
+        <span wire:loading.remove wire:target="submitMessage">Send Message &rarr;</span>
         <span wire:loading wire:target="submitMessage">Sending your Message...</span>
     </button>
 </form>

@@ -15,7 +15,7 @@
                     ['href' => 'home-page', 'text' => 'Home'],
                     ['href' => 'shop-page', 'text' => 'Shop'],
                     ['href' => 'about-page', 'text' => 'About'],
-                    ['href' => 'blog-page', 'text' => 'Blog'],
+                    ['href' => 'users-blogs-page', 'text' => 'Blog'],
                     ['href' => 'contact-page', 'text' => 'Contact'],
                 ];
             @endphp

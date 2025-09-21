@@ -10,6 +10,8 @@ use App\Livewire\Pages\General\Products\Categorized as ProductsCategorizedPage;
 use App\Livewire\Pages\General\ContactPage;
 use App\Livewire\Pages\General\Sales\Cart as CartPage;
 use App\Http\Controllers\Sales\SaleController;
+use App\Livewire\Pages\General\Blogs\Index as UsersBlogsPage;
+use App\Livewire\Pages\General\Blogs\Details as UsersBlogsDetailsPage;
 
 use App\Livewire\Pages\Dashboards\Index as Dashboard;
 use App\Http\Controllers\Products\ProductReviewController;
@@ -50,6 +52,8 @@ Route::post('checkout', [SaleController::class, 'store'])->name('checkout.store'
 Route::get('order-successful', [SaleController::class, 'success'])->name('checkout.success');
 Route::get('areas/fetch/{location}', [DeliveryAreaController::class, 'areasFetch'])->name('areas.fetch');
 Route::get('areas/shipping-cost/{area}', [DeliveryAreaController::class, 'areasShippingCost'])->name('areas.shipping-cost');
+Route::get('blog', UsersBlogsPage::class)->name('users-blogs-page');
+Route::get('blog/{blog}', UsersBlogsDetailsPage::class)->name('users-blogs-details-page');
 
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');

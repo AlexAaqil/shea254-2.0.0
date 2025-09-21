@@ -21,11 +21,20 @@ body {
     @apply text-red-500;
 }
 
+.arrow {
+    @apply text-[24px] font-bold;
+}
+
 .image {
     @apply rounded-lg;
 
     img {
         @apply w-full h-full object-cover rounded-lg;
+    }
+
+    .fallback_avatar {
+        @apply w-full h-full flex items-center justify-center text-[32px] font-bold text-white rounded-[12px];
+        background: linear-gradient(135deg, #667eea, #764ba2);
     }
 }
 

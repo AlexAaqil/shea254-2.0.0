@@ -1,0 +1,103 @@
+.UsersBlogsPage {
+    @apply bg-slate-50;
+
+    .Hero {
+        @apply text-center py-12 bg-blue-50;
+
+        .container {
+            @apply space-y-2;
+
+            .breadcrumbs {
+                @apply justify-center;
+            }
+
+            h1 {
+                @apply text-2xl lg:text-4xl font-bold text-[var(--theme-bg)];
+            }
+        }
+    }
+
+    .UsersBlogs {
+        .container {
+            h2 {
+                @apply text-2xl lg:text-xl font-semibold mb-4;
+            }
+
+            .blogs_list {
+                .blog_card {
+                    .content {
+                        .extras {
+                            @apply flex items-center gap-8 mb-4;
+
+                            span {
+                                @apply text-sm text-gray-500;
+                            }
+                        }
+
+                        .info {
+                            @apply space-y-2;
+
+                            .title {
+                                a {
+                                    @apply text-[var(--theme-bg)] font-bold text-lg;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .no_blogs {
+                @apply py-12 text-center space-y-2;
+
+                p {
+                    &:first-of-type {
+                        @apply text-xl font-semibold;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.UsersBlogsDetailsPage {
+    @apply bg-slate-50;
+
+    .BlogDetails {
+        .container {
+            @apply py-12;
+
+            .image {
+                @apply h-[40dvh];
+
+                img {
+                    @apply object-contain;
+                }
+            }
+
+            .content {
+                @apply px-4 lg:px-16 mt-6;
+
+                .extras {
+                    @apply mb-4;
+
+                    span {
+                        @apply text-sm text-gray-500;
+                    }
+                }
+
+                h1 {
+                    @apply text-2xl lg:text-4xl font-bold text-[var(--theme-bg)] mb-4;
+                }
+
+                .action_btns {
+                    @apply mt-6;
+
+                    a {
+                        @apply bg-[var(--theme-bg)] rounded-[32px];
+                    }
+                }
+            }
+        }
+    }
+}
