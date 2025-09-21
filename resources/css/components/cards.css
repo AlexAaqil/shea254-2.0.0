@@ -122,10 +122,15 @@
         }
 
         .extras {
-            @apply flex gap-4;
+            @apply flex gap-8;
 
-            span {
-                @apply text-sm;
+            span,
+            a {
+                @apply text-sm text-gray-500;
+            }
+
+            .danger {
+                @apply text-[var(--text-danger)];
             }
         }
     }

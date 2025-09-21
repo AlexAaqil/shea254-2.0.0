@@ -10,9 +10,29 @@
             <div class="info">
                 <h2>Products</h2>
                 <div class="stats">
-                    <span>{{ $count_products }} {{ Str::plural('product', $count_products) }}</span>
-                    <span>{{ $count_featured }} featured</span>
-                    <span>{{ $count_invisible }} invisible</span>
+                    <span 
+                        class="{{ $filter === null ? 'font-bold text-blue-600' : 'cursor-pointer hover:underline' }}"
+                        wire:click="setFilter">
+                        {{ $count_products }} {{ Str::plural('product', $count_products) }}
+                    </span>
+
+                    <span 
+                        class="{{ $filter === 'featured' ? 'font-bold text-blue-600' : 'cursor-pointer hover:underline' }}"
+                        wire:click="setFilter('featured')">
+                        {{ $count_featured }} featured
+                    </span>
+
+                    <span 
+                        class="{{ $filter === 'invisible' ? 'font-bold text-blue-600' : 'cursor-pointer hover:underline' }}"
+                        wire:click="setFilter('invisible')">
+                        {{ $count_invisible }} invisible
+                    </span>
+
+                    <span 
+                        class="{{ $filter === 'out_of_stock' ? 'font-bold text-blue-600' : 'cursor-pointer hover:underline' }}"
+                        wire:click="setFilter('out_of_stock')">
+                        {{ $count_out_of_stock }} out of stock
+                    </span>
                 </div>
             </div>
 
@@ -80,8 +100,13 @@
                                 </div>
 
                                 <div class="extra">
-                                    <span>In Stock:</span>
-                                    <span>{{ $product->stock_count }}</span>
+                                    @if($product->stock_count <= 0)
+                                        <span class="danger">out of Stock</span>
+                                    @elseif($product->stock_count < 5)
+                                        <span class="danger">Remaining Items: {{ $product->stock_count }}</span>
+                                    @else
+                                        <span>In Stock: {{ $product->stock_count }}</span>
+                                    @endif
                                 </div>
                             </div>
                         </div>

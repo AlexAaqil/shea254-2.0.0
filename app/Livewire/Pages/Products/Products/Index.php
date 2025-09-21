@@ -13,10 +13,11 @@ class Index extends Component
     public $confirm_product_deletion = false;
     public ?int $delete_product_id = null;
 
+    public $filter = null;
     public $search = '';
     public bool $search_performed = false;
 
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'filter'];
 
     public function performSearch()
     {
@@ -28,6 +29,12 @@ class Index extends Component
     {
         $this->search = '';
         $this->search_performed = false;
+        $this->resetPage();
+    }
+
+    public function setFilter($filter = null)
+    {
+        $this->filter = $filter;
         $this->resetPage();
     }
 
@@ -81,6 +88,15 @@ class Index extends Component
                     $q->where('title', 'like', '%' . $this->search . '%');
                 });
             })
+            ->when($this->filter === 'featured', function ($query) {
+                $query->where('featured', 1);
+            })
+            ->when($this->filter === 'invisible', function ($query) {
+                $query->where('is_visible', 0);
+            })
+            ->when($this->filter === 'out_of_stock', function ($query) {
+                $query->where('stock_count', 0);
+            })
             ->orderBy('title')
             ->paginate(40)
             ->withQueryString();
@@ -88,7 +104,8 @@ class Index extends Component
         $stats = Product::selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN is_visible = 0 THEN 1 ELSE 0 END) as count_invisible,
-            SUM(CASE WHEN featured = 1 THEN 1 ELSE 0 END) as count_featured
+            SUM(CASE WHEN featured = 1 THEN 1 ELSE 0 END) as count_featured,
+            SUM(CASE WHEN stock_count = 0 THEN 1 ELSE 0 END) as count_out_of_stock
         ")->first();
 
         return view('livewire.pages.products.products.index', [
@@ -96,6 +113,7 @@ class Index extends Component
             'count_products' => $stats->total,
             'count_invisible' => $stats->count_invisible,
             'count_featured' => $stats->count_featured,
+            'count_out_of_stock' => $stats->count_out_of_stock,
         ]);
     }
 }

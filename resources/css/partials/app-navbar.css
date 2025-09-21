@@ -1,5 +1,5 @@
 .app_navbar {
-    @apply sticky top-0 left-0 right-0 z-50 bg-gray-900 text-white font-semibold;
+    @apply sticky top-0 left-0 right-0 z-100 bg-gray-900 text-white font-semibold;
 
     [x-cloak] {
         display: none !important;

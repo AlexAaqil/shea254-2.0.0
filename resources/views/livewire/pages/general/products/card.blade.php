@@ -7,7 +7,6 @@
             loading="lazy"
             onload="this.classList.add('loaded'); this.previousElementSibling.remove();"
         >
-        <!-- <img src="{{ $product->image_url }}" alt="{{ $product->slug }}"> -->
 
         @if ($product->stock_count > 0)
             <div class="cart_btn">
@@ -28,12 +27,16 @@
                         class="disabled-link" aria-disabled="true"
                     @endif
                 >
-                    {{ $product->category_title }}
+                    {{ Str::title($product->category_title) }}
                 </a>
             </span>
 
             @if($product->stock_count <= 0)
-                <span class="danger">out of stock</span>
+                <span class="danger">out of Stock</span>
+            @elseif($product->stock_count < 5)
+                <span class="danger">Remaining Items: {{ $product->stock_count }}</span>
+            @else
+                <span>In Stock: {{ $product->stock_count }}</span>
             @endif
         </div>
 

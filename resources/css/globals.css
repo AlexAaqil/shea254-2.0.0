@@ -13,6 +13,12 @@ body {
     --theme-bg: #1a237e;
     --theme-bg-text: #fff;
     --theme-light-bg: #f8f9fa;
+
+    --text-danger: #fb2c36;
+}
+
+.danger {
+    @apply text-red-500;
 }
 
 .image {
@@ -51,5 +57,24 @@ body {
 
     .selling_price {
         @apply text-[var(--theme-bg)] text-lg font-semibold;
+    }
+}
+
+.ck-editor {
+    @apply px-4;
+
+    ul,
+    ol {
+        @apply px-8;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    ul strong,
+    ol strong,
+    p strong {
+        @apply text-[var(--theme-bg)];
     }
 }
