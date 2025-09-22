@@ -13,12 +13,19 @@ class Details extends Component
 
     public function mount($slug)
     {
-        $this->product = Product::with(['product_images', 'product_category', 'product_reviews'])->where('slug', $slug)->firstOrFail();
+        $this->product = Product::query()
+            ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id', 'description')
+            ->with(['product_images', 'product_category'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        $this->related_products = Product::with(['product_images', 'measurement_unit'])
-            ->where('category_id', $this->product->product_category_id)
+        $this->related_products = Product::query()
+            ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
+            ->with(['product_images', 'product_category:id,title,slug'])
+            ->where('category_id', $this->product->category_id)
             ->where('id', '!=', $this->product->id)
-            ->inRandomOrder()
+            ->where('is_visible', true)
+            ->OrderBy('title')
             ->limit(6)
             ->get();
     }

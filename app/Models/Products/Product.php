@@ -113,12 +113,10 @@ class Product extends Model
 
     public function getImageUrlAttribute(): string
     {
-        $image = $this->relationLoaded('coverImage')
-            ? $this->coverImage
-            : $this->coverImage()->first();
-
-        if ($image && !empty($image->image)) {
-            return Storage::url("{$image->image}");
+        // Use the first product image from the already-loaded collection
+        if ($this->relationLoaded('product_images') && $this->product_images->isNotEmpty()) {
+            $firstImage = $this->product_images->first();
+            return Storage::url($firstImage->image);
         }
 
         return asset('assets/images/default-image.jpg');
@@ -173,6 +171,11 @@ class Product extends Model
     public function average_rating()
     {
         return $this->product_reviews()->avg('rating');
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->average_rating(), 1);
     }
 
     public function getDiscountPercentageAttribute(): int

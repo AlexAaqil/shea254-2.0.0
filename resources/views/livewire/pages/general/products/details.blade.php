@@ -43,7 +43,7 @@
                     <span class="selling_price">
                         Ksh. {{ number_format($product->effective_price, 2) }}
                     </span>
-                    @if ($product->discount_price && $product->discount_price < $product->selling_price)
+                    @if ($product->has_discount)
                         <span class="discount_price">
                             {{ number_format($product->selling_price, 2) }}
                         </span>
@@ -64,7 +64,7 @@
                 <div class="extras">
                     <p>
                         <span>Category</span>
-                        <span>: <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>{{    $product->category_title }}</a>
+                        <span>: <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>{{ $product->category_title }}</a>
                         </span>
                     </p>
                     <p>
@@ -73,7 +73,7 @@
                     </p>
                     <p>
                         <span>Rating</span>
-                        <span>: {{ number_format($product->product_reviews->avg('rating'), 1) }} / 5</span>
+                        <span>: {{ $product->average_rating }} / 5</span>
                     </p>
                 </div>
             </div>
@@ -92,7 +92,7 @@
 
     <section class="RelatedProducts">
         <div class="container">
-            <h2 class="related_products_title">You may also like</h2>
+            <h2 class="related_products_title">People Also Bought</h2>
             <div class="products_list custom_cards">
                 @forelse($related_products as $product)
                     @include('livewire.pages.general.products.card')

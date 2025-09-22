@@ -8,7 +8,7 @@
                     @apply h-[400px];
 
                     img {
-                        @apply transition duration-300;
+                        @apply object-contain transition duration-300;
                     }
                 }
             }

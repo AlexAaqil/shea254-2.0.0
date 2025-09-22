@@ -34,7 +34,7 @@ class HomePage extends Component
     public function render()
     {
         $featured_products = Product::select(['id', 'title', 'slug', 'selling_price', 'discount_price', 'stock_count', 'category_id'])
-            ->with(['product_category', 'coverImage'])
+            ->with(['product_category', 'product_images'])
             ->where('featured', 1)
             ->where('is_visible', 1)
             ->take(12)
