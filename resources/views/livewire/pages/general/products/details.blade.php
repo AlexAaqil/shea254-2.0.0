@@ -64,7 +64,14 @@
                 <div class="extras">
                     <p>
                         <span>Category</span>
-                        <span>: <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>{{ $product->category_title }}</a>
+                        <span>: 
+                            @if($product->category_slug)
+                                <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>
+                                    {{ $product->category_title }}
+                                </a>
+                            @else
+                                <span>{{ $product->category_title }}</span>
+                            @endif
                         </span>
                     </p>
                     <p>

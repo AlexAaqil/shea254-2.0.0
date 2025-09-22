@@ -10,7 +10,7 @@
                 <p>
                     <span>Rating : </span>
                     @if($product->product_reviews->isNotEmpty())
-                        {{ number_format($product->product_reviews->avg('rating'), 1) }} / 5
+                        {{ $product->average_rating }} / 5
                     @else
                         <span>No ratings yet</span>
                     @endif

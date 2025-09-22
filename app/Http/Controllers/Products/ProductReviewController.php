@@ -12,7 +12,10 @@ class ProductReviewController extends Controller
 {
     public function create($product)
     {
-        $product = Product::where('slug', $product)->with('product_reviews')->firstOrFail();
+        $product = Product::where('slug', $product)
+            ->select('id', 'title', 'slug', 'selling_price', 'discount_price', 'category_id')
+            ->with('product_images', 'product_reviews')
+            ->firstOrFail();
 
         $alreadyReviewed = false;
         if (Auth::check()) {

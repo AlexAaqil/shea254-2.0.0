@@ -82,6 +82,15 @@ class Product extends Model
         ];
     }
 
+    protected $appends = [
+        'image_url', 
+        'effective_price', 
+        'has_discount', 
+        'average_rating',
+        'category_title',
+        'category_slug',
+    ];
+
     public function product_category()
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');

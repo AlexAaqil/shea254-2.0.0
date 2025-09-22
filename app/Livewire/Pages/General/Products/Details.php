@@ -19,15 +19,27 @@ class Details extends Component
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $this->related_products = Product::query()
-            ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
-            ->with(['product_images', 'product_category:id,title,slug'])
-            ->where('category_id', $this->product->category_id)
-            ->where('id', '!=', $this->product->id)
-            ->where('is_visible', true)
-            ->OrderBy('title')
-            ->limit(6)
-            ->get();
+        if ($this->product->product_category) {
+            $this->related_products = Product::query()
+                ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
+                ->with(['product_images', 'product_category:id,title,slug'])
+                ->where('category_id', $this->product->category_id)
+                ->where('id', '!=', $this->product->id)
+                ->where('is_visible', true)
+                ->OrderBy('title')
+                ->limit(6)
+                ->get();
+        } else {
+            $this->related_products = Product::query()
+                ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
+                ->with(['product_images', 'product_category:id,title,slug'])
+                ->where('id', '!=', $this->product->id)
+                ->where('is_visible', true)
+                ->where('featured', true)
+                ->OrderBy('title')
+                ->limit(6)
+                ->get();
+        }   
     }
 
     public function addToCart(int $product_id): void
