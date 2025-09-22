@@ -13,36 +13,25 @@ class Cart extends Component
 
     public function mount(CartService $cart)
     {
-        $this->cart_items = $cart->getItems();
-        $this->cart_subtotal = $cart->getSubtotal();
-        $this->cart_count = $cart->count();
+        $this->refreshCart($cart);
     }
 
     public function increaseQuantity(CartService $cart, $product_id)
     {
-        foreach($this->cart_items as $item) {
-            if ($item->product->id == $product_id) {
-                $new_quantity = $item->quantity + 1;
-                $cart->update($product_id, $new_quantity);
-                break;
-            }
+        $currentQuantity = $this->getCurrentQuantity($product_id);
+        if ($currentQuantity !== null) {
+            $cart->update($product_id, $currentQuantity + 1);
+            $this->refreshCart($cart);
         }
-
-        $this->refreshCart($cart);
     }
 
-      public function decreaseQuantity(CartService $cart, $product_id)
+    public function decreaseQuantity(CartService $cart, $product_id)
     {
-        foreach ($this->cart_items as $item) {
-            if ($item->product->id == $product_id) {
-                if ($item->quantity > 1) {
-                    $new_quantity = $item->quantity - 1;
-                    $cart->update($product_id, $new_quantity);
-                }
-                break;
-            }
+        $currentQuantity = $this->getCurrentQuantity($product_id);
+        if ($currentQuantity !== null && $currentQuantity > 1) {
+            $cart->update($product_id, $currentQuantity - 1);
+            $this->refreshCart($cart);
         }
-        $this->refreshCart($cart);
     }
 
     public function removeItem(CartService $cart, $product_id)
@@ -51,9 +40,21 @@ class Cart extends Component
         $this->refreshCart($cart);
     }
 
+    private function getCurrentQuantity($product_id)
+    {
+        foreach ($this->cart_items as $item) {
+            if ($item->product->id == $product_id) {
+                return $item->quantity;
+            }
+        }
+        return null;
+    }
+
     private function refreshCart(CartService $cart)
     {
+        // Get all cart data in one go
         $this->cart_items = $cart->getItems();
+        $this->cart_subtotal = $cart->getSubtotal();
         $this->cart_count = $cart->count();
 
         $this->dispatch('cart-updated')->to('partials.navbar');
