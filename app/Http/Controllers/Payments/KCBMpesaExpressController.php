@@ -156,8 +156,6 @@ class KCBMpesaExpressController extends Controller
         try {
             $data = json_decode($request->getContent(), true);
 
-            $this->logger->info('Callback Received: ', ['data' => $data]);
-
             if (empty($data) || !isset($data['Body']['stkCallback'])) {
                 throw new Exception('Invalid callback data structure');
             }
@@ -166,6 +164,12 @@ class KCBMpesaExpressController extends Controller
             $merchant_request_id = $callback['MerchantRequestID'] ?? null;
             $result_code = $callback['ResultCode'] ?? null;
             $result_desc = $callback['ResultDesc'] ?? null;
+
+            $this->logger->info('Callback Received: ' . json_encode([
+                'merchant_request_id' => $merchant_request_id,
+                'result_code' => $result_code,
+                'result_desc' => $result_desc
+            ]));
 
             if (!$merchant_request_id) {
                 throw new Exception('Missing MerchantRequestID');
@@ -186,98 +190,100 @@ class KCBMpesaExpressController extends Controller
                 return response()->json(['status' => 'success'], 200);
             }
 
+            // Process successful payment
             if ($result_code === 0) {
-                // Payment successful - process stock decrement
                 $metadata = collect($callback['CallbackMetadata']['Item'] ?? [])
-                    ->mapWithKeys(function ($item) {
-                        return isset($item['Value']) ? [$item['Name'] => $item['Value']] : [$item['Name'] => null];
-                    })->toArray();
+                    ->mapWithKeys(fn($item) => isset($item['Value']) ? [$item['Name'] => $item['Value']] : [$item['Name'] => null])
+                    ->toArray();
 
-                $payment->transaction_reference = $metadata['MpesaReceiptNumber'] ?? $payment->transaction_reference;
-                $payment->response_description = json_encode([
-                    'amount' => $metadata['Amount'] ?? null,
-                    'mpesa_receipt' => $metadata['MpesaReceiptNumber'] ?? null,
-                    'transaction_date' => $metadata['TransactionDate'] ?? null,
-                    'phone_number' => $metadata['PhoneNumber'] ?? null
-                ]);
-                $payment->status = 'paid';
-                $payment->response_code = $result_code;
-                $payment->customer_message = 'Payment completed successfully';
-
-                DB::transaction(function () use ($payment) {
+                DB::transaction(function () use ($payment, $metadata, $result_code) {
                     $order = Sale::with('order_items')->find($payment->order_id);
 
-                    if ($order) {
-                        // Check if stock was already decremented
-                        if ($order->stock_updated) {
-                            $this->inventory_logger->warning('Stock already updated for order', [
-                                'order_id' => $order->id,
-                                'payment_id' => $payment->id
-                            ]);
-                            return;
-                        }
+                    if (!$order) {
+                        throw new Exception("Sale order not found for ID: {$payment->order_id}");
+                    }
 
-                        if ($order->order_items->isNotEmpty()) {
-                            foreach($order->order_items as $item) {
-                                $updated = Product::where('id', $item->product_id)
-                                    ->where('stock_count', '>=', $item->quantity)
-                                    ->decrement('stock_count', $item->quantity);
+                    // Decrement product stock
+                    if ($order->order_items->isNotEmpty()) {
+                        foreach ($order->order_items as $item) {
+                            $updated = Product::where('id', $item->product_id)
+                                ->where('stock_count', '>=', $item->quantity)
+                                ->decrement('stock_count', $item->quantity);
 
-                                if ($updated) {
-                                    $this->inventory_logger->info('Stock decremented', [
-                                        'product_id' => $item->product_id,
-                                        'qty' => $item->quantity,
-                                        'order_id' => $order->id,
-                                        'payment_id' => $payment->id
-                                    ]);
-                                } else {
-                                    $this->inventory_logger->error('Stock deduction failed, not enough stock', [
-                                        'product_id' => $item->product_id,
-                                        'qty' => $item->quantity,
-                                        'order_id' => $order->id,
-                                        'payment_id' => $payment->id
-                                    ]);
-                                    // You might want to handle this scenario differently
-                                    throw new Exception("Insufficient stock for product ID: {$item->product_id}");
-                                }
+                            if ($updated) {
+                                $this->inventory_logger->info('Stock decremented', [
+                                    'product_id' => $item->product_id,
+                                    'qty' => $item->quantity,
+                                    'order_id' => $order->id,
+                                    'payment_id' => $payment->id
+                                ]);
+                            } else {
+                                $this->inventory_logger->error('Stock deduction failed', [
+                                    'product_id' => $item->product_id,
+                                    'qty' => $item->quantity,
+                                    'order_id' => $order->id,
+                                    'payment_id' => $payment->id
+                                ]);
+                                throw new Exception("Insufficient stock for product ID: {$item->product_id}");
                             }
-                            
-                            // Mark order as having stock updated
-                            // $order->stock_updated = true;
-                            $order->save();
                         }
                     }
+
+                    // Update Sale
+                    $order->amount_paid = $metadata['Amount'] ?? null;
+                    $order->payment_method = 'kcb_mpesa';
+                    $order->status = 'paid';
+                    $order->save();
+
+                    $this->logger->info('Sale Updated: ' . json_encode([
+                        'order_id' => $order->id,
+                        'amount_paid' => $order->amount_paid,
+                        'payment_method' => $order->payment_method,
+                        'status' => $order->status
+                    ]));
+
+                    // Update Payment
+                    $payment->transaction_reference = $metadata['MpesaReceiptNumber'] ?? $payment->transaction_reference;
+                    $payment->response_description = json_encode([
+                        'amount' => $metadata['Amount'] ?? null,
+                        'mpesa_receipt' => $metadata['MpesaReceiptNumber'] ?? null,
+                        'transaction_date' => $metadata['TransactionDate'] ?? null,
+                        'phone_number' => $metadata['PhoneNumber'] ?? null
+                    ]);
+                    $payment->status = 'paid';
+                    $payment->response_code = $result_code;
+                    $payment->customer_message = 'Payment completed successfully';
+                    $payment->save();
+
+                    $this->logger->info('Payment Updated: ' . json_encode([
+                        'order_id' => $payment->order_id,
+                        'status' => $payment->status,
+                        'transaction_ref' => $payment->transaction_reference,
+                        'response_code' => $payment->response_code,
+                        'customer_message' => $payment->customer_message
+                    ]));
                 });
             } else {
-                // Payment failed/cancelled - DO NOT decrement stock
+                // Payment failed
                 $payment->status = 'failed';
                 $payment->response_code = $result_code;
                 $payment->response_description = $result_desc;
                 $payment->customer_message = 'Payment failed: ' . $result_desc;
-                
-                $this->logger->info('Payment failed/cancelled - Stock NOT decremented', [
+                $payment->save();
+
+                $this->logger->info('Payment Failed: ' . json_encode([
                     'merchant_request_id' => $merchant_request_id,
                     'result_code' => $result_code,
                     'result_desc' => $result_desc
-                ]);
+                ]));
             }
 
-            $payment->save();
-
-            $this->logger->info('Payment Updated', [
-                'merchant_request_id' => $merchant_request_id,
-                'status' => $payment->status,
-                'response_code' => $result_code,
-                'response_description' => $payment->response_description
-            ]);
-
             return response()->json(['status' => 'success'], 200);
+
         } catch (Exception $e) {
-            $this->logger->error('Callback Processing Failed', [
-                'error' => $e->getMessage(),
+            $this->logger->error('Callback Processing Failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
-
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
