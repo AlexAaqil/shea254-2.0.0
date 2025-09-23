@@ -127,6 +127,16 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
-    ],
+        'kcb_mpesa_express' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/kcb-mpesa-express.log'),
+            'level' => 'debug',
+        ],
 
+        'inventory_management' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/inventory_management.log'),
+            'level' => 'debug',
+        ],
+    ],
 ];
