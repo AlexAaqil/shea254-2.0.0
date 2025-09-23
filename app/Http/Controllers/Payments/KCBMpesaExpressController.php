@@ -197,8 +197,8 @@ class KCBMpesaExpressController extends Controller
                 DB::transaction(function () use ($payment) {
                     $order = Sale::with('order_items')->find($payment->order_id);
 
-                    if ($order) {
-                        foreach($order->items as $item) {
+                    if ($order && $order->order_items->isNotEmpty()) {
+                        foreach($order->order_items as $item) {
                             $updated = Product::where('id', $item->product_id)
                                 ->where('stock_count', '>=', $item->quantity)
                                 ->decrement('stock_count', $item->quantity);
