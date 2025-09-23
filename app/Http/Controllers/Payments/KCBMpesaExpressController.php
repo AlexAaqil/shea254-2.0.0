@@ -243,7 +243,7 @@ class KCBMpesaExpressController extends Controller
                             }
                             
                             // Mark order as having stock updated
-                            $order->stock_updated = true;
+                            // $order->stock_updated = true;
                             $order->save();
                         }
                     }
