@@ -177,7 +177,17 @@ class KCBMpesaExpressController extends Controller
                 throw new Exception("Payment not found for MerchantRequestID: {$merchant_request_id}");
             }
 
+            // Prevent duplicate processing
+            if ($payment->status === 'paid') {
+                $this->logger->warning('Payment already processed', [
+                    'merchant_request_id' => $merchant_request_id,
+                    'current_status' => $payment->status
+                ]);
+                return response()->json(['status' => 'success'], 200);
+            }
+
             if ($result_code === 0) {
+                // Payment successful - process stock decrement
                 $metadata = collect($callback['CallbackMetadata']['Item'] ?? [])
                     ->mapWithKeys(function ($item) {
                         return isset($item['Value']) ? [$item['Name'] => $item['Value']] : [$item['Name'] => null];
@@ -197,34 +207,59 @@ class KCBMpesaExpressController extends Controller
                 DB::transaction(function () use ($payment) {
                     $order = Sale::with('order_items')->find($payment->order_id);
 
-                    if ($order && $order->order_items->isNotEmpty()) {
-                        foreach($order->order_items as $item) {
-                            $updated = Product::where('id', $item->product_id)
-                                ->where('stock_count', '>=', $item->quantity)
-                                ->decrement('stock_count', $item->quantity);
+                    if ($order) {
+                        // Check if stock was already decremented
+                        if ($order->stock_updated) {
+                            $this->inventory_logger->warning('Stock already updated for order', [
+                                'order_id' => $order->id,
+                                'payment_id' => $payment->id
+                            ]);
+                            return;
+                        }
 
-                            if ($updated) {
-                                $this->inventory_logger->info('Stock decremented', [
-                                    'product_id' => $item->product_id,
-                                    'qty' => $item->quantity,
-                                    'order_id' => $order->id,
-                                ]);
-                            } else {
-                                $this->inventory_logger->warning('Stock deduction failed, not enough stock', [
-                                    'product_id' => $item->product_id,
-                                    'qty' => $item->quantity,
-                                    'order_id' => $order->id,
-                                ]);
-                                // Optional: mark order as "on_hold" or notify admin
+                        if ($order->order_items->isNotEmpty()) {
+                            foreach($order->order_items as $item) {
+                                $updated = Product::where('id', $item->product_id)
+                                    ->where('stock_count', '>=', $item->quantity)
+                                    ->decrement('stock_count', $item->quantity);
+
+                                if ($updated) {
+                                    $this->inventory_logger->info('Stock decremented', [
+                                        'product_id' => $item->product_id,
+                                        'qty' => $item->quantity,
+                                        'order_id' => $order->id,
+                                        'payment_id' => $payment->id
+                                    ]);
+                                } else {
+                                    $this->inventory_logger->error('Stock deduction failed, not enough stock', [
+                                        'product_id' => $item->product_id,
+                                        'qty' => $item->quantity,
+                                        'order_id' => $order->id,
+                                        'payment_id' => $payment->id
+                                    ]);
+                                    // You might want to handle this scenario differently
+                                    throw new Exception("Insufficient stock for product ID: {$item->product_id}");
+                                }
                             }
+                            
+                            // Mark order as having stock updated
+                            $order->stock_updated = true;
+                            $order->save();
                         }
                     }
                 });
             } else {
+                // Payment failed/cancelled - DO NOT decrement stock
                 $payment->status = 'failed';
                 $payment->response_code = $result_code;
                 $payment->response_description = $result_desc;
                 $payment->customer_message = 'Payment failed: ' . $result_desc;
+                
+                $this->logger->info('Payment failed/cancelled - Stock NOT decremented', [
+                    'merchant_request_id' => $merchant_request_id,
+                    'result_code' => $result_code,
+                    'result_desc' => $result_desc
+                ]);
             }
 
             $payment->save();
@@ -232,6 +267,7 @@ class KCBMpesaExpressController extends Controller
             $this->logger->info('Payment Updated', [
                 'merchant_request_id' => $merchant_request_id,
                 'status' => $payment->status,
+                'response_code' => $result_code,
                 'response_description' => $payment->response_description
             ]);
 
