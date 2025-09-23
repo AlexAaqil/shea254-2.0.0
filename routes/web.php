@@ -88,6 +88,7 @@ Route::middleware(['admin_only'])->group(function() {
 
     Route::get('orders', OrdersPage::class)->name('orders.index');
     Route::get('orders/{order}/edit', EditOrder::class)->name('orders.edit');
+    Route::post('orders/{order}/retry-payment', [SaleController::class, 'requestSTKPush'])->name('orders.request_stkpush');
 
     Route::get('blogs', BlogsPage::class)->name('blogs.index');
     Route::resource('blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);

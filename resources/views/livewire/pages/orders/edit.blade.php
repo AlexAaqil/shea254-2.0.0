@@ -120,7 +120,7 @@
                         </div>
 
                         @if($payment_status == 'failed' || $payment_status == 'pending')
-                            <form action="{{ Route::has('payments.request-stkPush') ? route('payment.request-stkPush', $order->order_number) : '#' }}" method="post">
+                            <form action="{{ Route::has('orders.request_stkpush') ? route('orders.request_stkpush', $order->order_number) : '#' }}" method="post">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Request STK Push</button>
                             </form>

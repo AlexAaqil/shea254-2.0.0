@@ -160,4 +160,39 @@ class SaleController extends Controller
 
         return view('pages.general.sales.success', compact('order_number', 'order'));
     }
+
+    public function requestSTKPush($order)
+    {
+        $order = Sale::where('order_number', $order)->firstOrFail();
+        $payment = optional($order->payment);
+
+        if ($payment->status === 'failed' || $payment->status === 'pending') {
+            $amount = (int) round($order->total_amount);
+            $phone_number = $order->order_delivery->phone_number;
+            $order_number = $order->order_number;
+
+            $kcb_mpesa_express = new KCBMpesaExpressController();
+            $response = $kcb_mpesa_express->initiatePayment($phone_number, $amount, $order_number);
+
+            if ($response->header->statusCode === '0') {
+                $payment->update([
+                    'merchant_request_id' => $response->response->MerchantRequestID,
+                    'checkout_request_id' => $response->response->CheckoutRequestID,
+                    'response_code' => $response->response->ResponseCode,
+                    'response_description' => $response->response->ResponseDescription,
+                    'customer_message' => $response->response->CustomerMessage,
+                    'status' => $response->response->ResponseCode === '0' ? 'pending' : 'failed',
+                ]);
+
+                session()->flash('notify', ['message' => "Success. {$response->response->CustomerMessage}", 'type' => 'success']);
+                return redirect()->back();
+            }
+
+            session()->flash('notify', ['message' => "Sorry. {$response->response->CustomerMessage}", 'type' => 'error']);
+            return redirect()->back();
+        }
+
+        session()->flash('notify', ['message' => "Sorry. Cannot initiate payment at this time.", 'type' => 'error']);
+        return redirect()->back();
+    }
 }
