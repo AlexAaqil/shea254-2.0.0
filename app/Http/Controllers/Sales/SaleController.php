@@ -92,6 +92,7 @@ class SaleController extends Controller
                 'discount' => 0,
                 'total_amount' => $total_amount,
                 'payment_method' => 'kcb_mpesa',
+                'status' => 'payment_pending',
                 'user_id' => $user_id,
             ]);
 
