@@ -168,13 +168,13 @@ class KCBMpesaExpressController extends Controller
             $result_desc = $callback['ResultDesc'] ?? null;
 
             if (!$merchant_request_id) {
-                throw new Exception('Missing required callback parameters');
+                throw new Exception('Missing MerchantRequestID');
             }
 
             $payment = Payment::where('merchant_request_id', $merchant_request_id)->first();
 
             if (!$payment) {
-                throw new Exception("Payment record not found for MerchantRequestID: {$merchant_request_id}");
+                throw new Exception("Payment not found for MerchantRequestID: {$merchant_request_id}");
             }
 
             if ($result_code === 0) {
