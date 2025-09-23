@@ -24,6 +24,7 @@ class KCBMpesaExpressController extends Controller
     protected $org_short_code;
     protected $org_pass_key;
     protected $logger;
+    protected $inventory_logger;
 
     public function __construct()
     {
@@ -37,6 +38,7 @@ class KCBMpesaExpressController extends Controller
         $this->org_short_code = env('KCB_ORG_SHORT_CODE');
         $this->org_pass_key = env('KCB_ORG_PASS_KEY');
         $this->logger = Log::channel('kcb_mpesa_express');
+        $this->inventory_logger = Log::channel('inventory_management');
 
         $this->logger->info('KCBMpesaExpressController initialized', [
             'base_url' => $this->base_url,
@@ -202,13 +204,13 @@ class KCBMpesaExpressController extends Controller
                                 ->decrement('stock_count', $item->quantity);
 
                             if ($updated) {
-                                Log::info('Stock decremented', [
+                                $this->inventory_logger->info('Stock decremented', [
                                     'product_id' => $item->product_id,
                                     'qty' => $item->quantity,
                                     'order_id' => $order->id,
                                 ]);
                             } else {
-                                Log::warning('Stock deduction failed, not enough stock', [
+                                $this->inventory_logger->warning('Stock deduction failed, not enough stock', [
                                     'product_id' => $item->product_id,
                                     'qty' => $item->quantity,
                                     'order_id' => $order->id,
