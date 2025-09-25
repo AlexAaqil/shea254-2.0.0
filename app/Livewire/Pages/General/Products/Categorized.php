@@ -4,6 +4,7 @@ namespace App\Livewire\Pages\General\Products;
 
 use Livewire\Component;
 use App\Models\Products\ProductCategory;
+use App\Services\CartService;
 
 class Categorized extends Component
 {
@@ -20,6 +21,15 @@ class Categorized extends Component
             ->where('is_visible', true)
             ->orderBy('title')
             ->get();
+    }
+
+    public function addToCart(int $product_id): void
+    {
+        app(CartService::class)->add($product_id);
+
+        $this->dispatch('cart-updated');
+
+        $this->dispatch('notify', 'Added to cart', 'success');
     }
 
     public function render()
