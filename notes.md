@@ -1,15 +1,7 @@
 # TODOs
 - wholesale price when quantity hits 10.
 - google, meta, tiktok conversions APIs.
-- deduct stock count on successful order payment.
 - stock management (CRUD).
-- callback function: 
-
-    Paid update => Sales (amount_paid, payment_method, status). Products: stock_count -qty
-
-    Cancelled
-    
-    Failed
 
 - admin dashboard - sales amounts and locations filters.
 - user dashboard - purchases.
