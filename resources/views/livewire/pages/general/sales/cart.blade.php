@@ -55,7 +55,7 @@
                     @if($cart_count != 0)
                         <a href="{{ Route::has('checkout-page') ? route('checkout-page') : '#' }}" class="btn">Proceed to Checkout</a>
                     @else
-                        <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" class="btn">Add Items to Cart</a>
+                        <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" class="btn" wire:navigate>Add Items to Cart</a>
                     @endif
                 </div>
             </div>
