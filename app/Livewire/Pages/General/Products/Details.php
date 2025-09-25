@@ -8,15 +8,28 @@ use App\Services\CartService;
 
 class Details extends Component
 {
-    public $product;
+    public $productId;
 
     public function mount($slug)
     {
-        $this->product = Product::query()
-            ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id', 'description')
-            ->with(['product_images', 'product_category'])
+        // Store the product ID once (instead of serializing full model)
+        $product = Product::query()
+            ->select(
+                'id',
+                'title',
+                'slug',
+                'featured',
+                'is_visible',
+                'selling_price',
+                'discount_price',
+                'stock_count',
+                'category_id',
+                'description'
+            )
             ->where('slug', $slug)
-            ->firstOrFail(); 
+            ->firstOrFail();
+
+        $this->productId = $product->id;
     }
 
     public function addToCart(int $product_id): void
@@ -24,34 +37,60 @@ class Details extends Component
         app(CartService::class)->add($product_id);
 
         $this->dispatch('cart-updated');
-
         $this->dispatch('notify', 'Added to cart', 'success');
     }
 
     public function render()
     {
-        if ($this->product->product_category) {
+        $product = Product::query()
+            ->with(['product_images', 'product_category'])
+            ->findOrFail($this->productId);
+
+        if ($product->product_category) {
             $related_products = Product::query()
-                ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
+                ->select(
+                    'id',
+                    'title',
+                    'slug',
+                    'featured',
+                    'is_visible',
+                    'selling_price',
+                    'discount_price',
+                    'stock_count',
+                    'category_id'
+                )
                 ->with(['product_images', 'product_category:id,title,slug'])
-                ->where('category_id', $this->product->category_id)
-                ->where('id', '!=', $this->product->id)
+                ->where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
                 ->where('is_visible', true)
-                ->OrderBy('title')
+                ->orderBy('title')
                 ->limit(6)
                 ->get();
         } else {
             $related_products = Product::query()
-                ->select('id', 'title', 'slug', 'featured', 'is_visible', 'selling_price', 'discount_price', 'stock_count', 'category_id')
+                ->select(
+                    'id',
+                    'title',
+                    'slug',
+                    'featured',
+                    'is_visible',
+                    'selling_price',
+                    'discount_price',
+                    'stock_count',
+                    'category_id'
+                )
                 ->with(['product_images', 'product_category:id,title,slug'])
-                ->where('id', '!=', $this->product->id)
+                ->where('id', '!=', $product->id)
                 ->where('is_visible', true)
                 ->where('featured', true)
-                ->OrderBy('title')
+                ->orderBy('title')
                 ->limit(6)
                 ->get();
-        }  
+        }
 
-        return view('livewire.pages.general.products.details', compact('related_products'))->layout('layouts.guest');
+        return view('livewire.pages.general.products.details', [
+            'product' => $product,
+            'related_products' => $related_products,
+        ])->layout('layouts.guest');
     }
 }

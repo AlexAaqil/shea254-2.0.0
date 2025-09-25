@@ -1,96 +1,112 @@
-<?php
+<div class="Products">
+    <section class="ProductDetails">
+        <div class="details container">
+            <div class="images" x-data="{ active_image: '{{ $product->image_url ?? asset('assets/images/default-image.jpg') }}' }">
+                <div class="main_image">
+                    <div class="image">
+                        <img :src="active_image" alt="{{ $product->slug }}" id="active_image" />
+                    </div>
+                </div>
 
-namespace App\Livewire\Pages\General\Products;
+                <div class="other_images">
+                    @forelse($product->product_images as $image)
+                        @php
+                            $imageUrl = Storage::url($image->image);
+                        @endphp
 
-use Livewire\Component;
-use App\Models\Products\Product;
-use App\Services\CartService;
+                        <div class="image" @click="active_image = '{{ $imageUrl }}'">
+                            <img
+                                src="{{ $imageUrl }}"
+                                alt="Other Image"
+                                :class="{ 'active ring-2 ring-blue-500': active_image === '{{ $imageUrl }}' }"
+                                class="transition duration-200"
+                            />
+                        </div>
+                    @empty
+                        <p>No other images available</p>
+                    @endforelse
+                </div>
+            </div>
 
-class Details extends Component
-{
-    public $productId;
+            <div class="content">
+                <h3 class="title">
+                    @if($product->slug)
+                        <a href="{{ Route::has('product-details-page') ? route('product-details-page', $product->slug) : '#' }}" wire:navigate>
+                            {{ $product->title }}
+                        </a>
+                    @else
+                        <span>{{ $product->title }} ---</span>
+                    @endif
+                </h3>
 
-    public function mount($slug)
-    {
-        // Store the product ID once (instead of serializing full model)
-        $product = Product::query()
-            ->select(
-                'id',
-                'title',
-                'slug',
-                'featured',
-                'is_visible',
-                'selling_price',
-                'discount_price',
-                'stock_count',
-                'category_id',
-                'description'
-            )
-            ->where('slug', $slug)
-            ->firstOrFail();
+                <p class="product_price">
+                    <span class="selling_price">
+                        Ksh. {{ number_format($product->effective_price, 2) }}
+                    </span>
+                    @if ($product->has_discount)
+                        <span class="discount_price">
+                            {{ number_format($product->selling_price, 2) }}
+                        </span>
+                        <span class="discount_percentage">
+                            {{ $product->discount_percentage }}% off
+                        </span>
+                    @endif
+                </p>
 
-        $this->productId = $product->id;
-    }
+                <div class="actions">
+                    <button wire:click="addToCart({{ $product->id }})" class="btn">Add to Cart</button>
 
-    public function addToCart(int $product_id): void
-    {
-        app(CartService::class)->add($product_id);
+                    <div class="action">
+                        <a href="{{ Route::has('product-reviews.create') ? route('product-reviews.create', $product->slug) : '#' }}" class="btn">Review Product</a>
+                    </div>
+                </div>
 
-        $this->dispatch('cart-updated');
-        $this->dispatch('notify', 'Added to cart', 'success');
-    }
+                <div class="extras">
+                    <p>
+                        <span>Category</span>
+                        <span>: 
+                            @if($product->category_slug)
+                                <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', $product->category_slug) : '#' }}" wire:navigate>
+                                    {{ $product->category_title }}
+                                </a>
+                            @else
+                                <span>{{ $product->category_title }}</span>
+                            @endif
+                        </span>
+                    </p>
+                    <p>
+                        <span>In stock</span>
+                        <span>: {{ $product->stock_count }}</span>
+                    </p>
+                    <p>
+                        <span>Rating</span>
+                        <span>: {{ $product->average_rating }} / 5</span>
+                    </p>
+                </div>
+            </div>
+        </div>
 
-    public function render()
-    {
-        $product = Product::query()
-            ->with(['product_images', 'product_category'])
-            ->findOrFail($this->productId);
+        <div class="more_details container">
+            <div class="description">
+                {!! $product->description !!}
+            </div>
 
-        if ($product->product_category) {
-            $related_products = Product::query()
-                ->select(
-                    'id',
-                    'title',
-                    'slug',
-                    'featured',
-                    'is_visible',
-                    'selling_price',
-                    'discount_price',
-                    'stock_count',
-                    'category_id'
-                )
-                ->with(['product_images', 'product_category:id,title,slug'])
-                ->where('category_id', $product->category_id)
-                ->where('id', '!=', $product->id)
-                ->where('is_visible', true)
-                ->orderBy('title')
-                ->limit(6)
-                ->get();
-        } else {
-            $related_products = Product::query()
-                ->select(
-                    'id',
-                    'title',
-                    'slug',
-                    'featured',
-                    'is_visible',
-                    'selling_price',
-                    'discount_price',
-                    'stock_count',
-                    'category_id'
-                )
-                ->with(['product_images', 'product_category:id,title,slug'])
-                ->where('id', '!=', $product->id)
-                ->where('is_visible', true)
-                ->where('featured', true)
-                ->orderBy('title')
-                ->limit(6)
-                ->get();
-        }
+            {{-- <div class="reviews">
+                TODO: Reviews should go here
+            </div> --}}
+        </div>
+    </section>
 
-        return view('livewire.pages.general.products.details', [
-            'product' => $product,
-            'related_products' => $related_products,
-        ])->layout('layouts.guest');
-    }
-}
+    <section class="RelatedProducts">
+        <div class="container">
+            <h2 class="related_products_title">People Also Bought</h2>
+            <div class="products_list custom_cards">
+                @forelse($related_products as $product)
+                    @include('livewire.pages.general.products.card')
+                @empty
+                    <p>No related products found</p>
+                @endforelse
+            </div>
+        </div>
+    </section>
+</div>
