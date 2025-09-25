@@ -10,7 +10,6 @@ class Categorized extends Component
 {
     public $category;
     public $categories;
-    public $products;
 
     public function mount(string $category)
     {
