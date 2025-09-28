@@ -88,6 +88,13 @@
                                 @endif
                             </p>
 
+                            @if($product->priceTiers->isNotEmpty())
+                                @foreach($product->priceTiers as $tier)
+                                    <span>{{ $tier->min_quantity }}+ @ {{ $tier->price }}</span>
+                                @endforeach
+                            @else
+                            @endif
+
                             <div class="extras">
                                 <div class="extra">
                                     <span>Category:</span>

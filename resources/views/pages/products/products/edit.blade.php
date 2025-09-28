@@ -88,6 +88,30 @@
                 </div>
             </div>
 
+            <div class="input_group">
+                <h3>Wholesale Price Tiers</h3>
+
+                <div id="price_tiers">
+                    @php
+                        $tiers = old('price_tiers', $product->priceTiers->toArray() ?? []);
+                    @endphp
+
+                    @forelse($tiers as $index => $tier)
+                        <div class="tier flex gap-2 mb-2">
+                            <input type="number" name="price_tiers[{{ $index }}][min_quantity]" value="{{ $tier['min_quantity'] ?? '' }}" placeholder="Min Quantity">
+
+                            <input type="number" name="price_tiers[{{ $index }}][price]" value="{{ $tier['price'] ?? '' }}" placeholder="Tier Price">
+
+                            <button class="remove_tier">X</button>
+                        </div>
+                    @empty
+                        {{-- No tiers initially --}}
+                    @endforelse
+                </div>
+
+                <button type="button" id="add_tier" class="btn">+ Add Tier</button>
+            </div>
+
             <div class="inputs_group_3">
                 <div class="inputs">
                     <label for="product_measurement">Product Measurement</label>
@@ -136,6 +160,26 @@
 
     @push('scripts')
         <x-ckeditor />
+
+        <script>
+            document.getElementById('add_tier').addEventListener('click', function () {
+                let container = document.getElementById('price_tiers');
+                let index = container.children.length;
+                let html = `
+                    <div class="tier flex gap-2 mb-2">
+                        <input type="number" name="price_tiers[${index}][min_quantity]" placeholder="Min Quantity" class="input" />
+                        <input type="number" step="0.01" name="price_tiers[${index}][price]" placeholder="Tier Price" class="input" />
+                        <button type="button" class="remove_tier">✕</button>
+                    </div>`;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove_tier')) {
+                    e.target.closest('.tier').remove();
+                }
+            });
+        </script>
     @endpush
 </x-app-layout>
 

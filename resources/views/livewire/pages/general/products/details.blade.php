@@ -62,6 +62,16 @@
                 </div>
 
                 <div class="extras">
+                    @if($product->priceTiers->isNotEmpty())
+                        <p>
+                            <span>Wholesale</span>
+                            <span>: 
+                                @foreach($product->priceTiers as $tier) 
+                                    Buy {{ $tier->min_quantity }}+ at {{ number_format($tier->price) }} 
+                                @endforeach
+                            </span>
+                        </p>
+                    @endif
                     <p>
                         <span>Category</span>
                         <span>: 

@@ -82,7 +82,8 @@ class ProductController extends Controller
         try {
             $validated_data = $request->validated();
 
-            unset($validated_data['images']);
+            $price_tiers = $validated_data['price_tiers'] ?? [];
+            unset($validated_data['images'], $validated_data['price_tiers']);
 
             // Basic fallbacks
             $validated_data['featured'] = $request->boolean('featured');
@@ -98,6 +99,16 @@ class ProductController extends Controller
                     $filename = $product->slug . '-' . Str::random(6) . '.' . $image->getClientOriginalExtension();
                     $image->storeAs('products', $filename, 'public');
                     $product->productImages()->create(['image' => $filename]);
+                }
+            }
+
+            $product->priceTiers()->delete();
+            foreach ($price_tiers as $tier) {
+                if (!empty($tier['min_quantity']) && !empty($tier['price'])) {
+                    $product->priceTiers()->create([
+                        'min_quantity' => $tier['min_quantity'],
+                        'price' => $tier['price'],
+                    ]);
                 }
             }
 

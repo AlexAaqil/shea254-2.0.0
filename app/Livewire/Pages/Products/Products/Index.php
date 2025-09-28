@@ -82,7 +82,7 @@ class Index extends Component
     {
         $products = Product::query()
             ->select(['id', 'title', 'slug', 'selling_price', 'discount_price', 'stock_count', 'is_visible', 'featured', 'category_id'])
-            ->with(['product_category', 'product_images'])
+            ->with(['product_category', 'product_images', 'priceTiers'])
             ->when($this->search && $this->search_performed, function ($query) {
                 $query->where(function($q) {
                     $q->where('title', 'like', '%' . $this->search . '%');

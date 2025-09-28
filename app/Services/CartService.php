@@ -18,7 +18,7 @@ class CartService
         $cart = Session::get('cart', []);
         $cart[$product_id] = ($cart[$product_id] ?? 0) + $quantity;
         Session::put('cart', $cart);
-        $this->cachedItems = null; // Clear cache on modification
+        $this->cachedItems = null;
     }
 
     public function update(int $product_id, int $quantity): void
@@ -32,7 +32,7 @@ class CartService
         }
         
         Session::put('cart', $cart);
-        $this->cachedItems = null; // Clear cache on modification
+        $this->cachedItems = null;
     }
 
     public function remove(int $product_id): void
@@ -40,13 +40,13 @@ class CartService
         $cart = Session::get('cart', []);
         unset($cart[$product_id]);
         Session::put('cart', $cart);
-        $this->cachedItems = null; // Clear cache on modification
+        $this->cachedItems = null;
     }
 
     public function clear(): void
     {
         Session::forget('cart');
-        $this->cachedItems = null; // Clear cache on modification
+        $this->cachedItems = null;
     }
 
     public function count(): int
@@ -56,7 +56,6 @@ class CartService
 
     public function getItems()
     {
-        // Return cached items if available
         if ($this->cachedItems !== null) {
             return $this->cachedItems;
         }
@@ -64,12 +63,12 @@ class CartService
         $cart = Session::get('cart', []);
         
         if (empty($cart)) {
-            $this->cachedItems = collect();
-            return $this->cachedItems;
+            return $this->cachedItems = collect();
         }
 
-        $products = Product::whereIn('id', array_keys($cart))
-            ->select('id', 'title', 'selling_price', 'discount_price', 'buying_price')
+        $products = Product::with('priceTiers')
+            ->whereIn('id', array_keys($cart))
+            ->select('id', 'title', 'slug', 'buying_price', 'selling_price', 'discount_price')
             ->get()
             ->keyBy('id');
 
@@ -77,18 +76,17 @@ class CartService
             $product = $products->get($productId);
             
             if (!$product) {
-                $this->remove($productId); // Clean up invalid products
+                $this->remove($productId);
                 return null;
             }
 
-            $effective_price = $product->discount_price > 0 && $product->discount_price < $product->selling_price
-                ? $product->discount_price
-                : $product->selling_price;
+            $unit_price = $product->getEffectivePriceForQuantity($quantity);
 
             return (object) [
                 'product'  => $product,
                 'quantity' => $quantity,
-                'subtotal' => $quantity * $effective_price,
+                'unit_price' => $unit_price,
+                'subtotal' => $unit_price * $quantity,
             ];
         })->filter();
 

@@ -45,6 +45,10 @@ class ProductRequest extends FormRequest
 
             'category_id' => ['nullable', 'exists:product_categories,id'],
             'measurement_id' => ['nullable', 'exists:product_measurements,id'],
+
+            'price_tiers' => 'nullable|array',
+            'price_tiers.*.min_quantity' => 'required_with:price_tiers.*.price|integer|min:2',
+            'price_tiers.*.price' => 'required_with:price_tiers.*.min_quantity|numeric|min:0',
         ];
     }
 

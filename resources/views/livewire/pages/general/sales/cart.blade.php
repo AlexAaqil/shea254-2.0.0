@@ -12,11 +12,18 @@
                 @foreach($cart_items as $item)
                     <div class="cart_item">
                         <div class="product">
-                            <span>{{ $item->product->title }}</span>
+                            <span>
+                                <a href="{{ Route::has('product-details-page') ? route('product-details-page', $item->product->slug) : '#' }}">
+                                    {{ $item->product->title }}
+                                </a>
+                            </span>
                         </div>
 
                         <div class="price">
-                            <span>{{ number_format($item->product->effective_price, 2) }}</span>
+                            <span>{{ number_format($item->unit_price, 2) }}</span>
+                            @if($item->product->isWholesalePriceAppliedForQuantity($item->quantity))
+                                <span class="text-xs text-green-600 block">Wholesale price</span>
+                            @endif
                         </div>
 
                         <div class="quantity">
@@ -26,7 +33,7 @@
                         </div>
 
                         <div class="sub_total">
-                            <span class="total">{{ number_format($item->product->effective_price * $item->quantity, 2) }}</span>
+                            <span class="total">{{ number_format($item->subtotal, 2) }}</span>
                         </div>
 
                         <div class="cart_actions">

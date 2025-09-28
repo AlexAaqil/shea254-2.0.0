@@ -114,7 +114,7 @@ class SaleController extends Controller
                     'title'         => $item->product->title,
                     'quantity'      => $item->quantity,
                     'buying_price'  => $item->product->buying_price,
-                    'selling_price' => $item->product->selling_price,
+                    'selling_price' => $item->unit_price,
                     'order_id'      => $order->id,
                 ]);
             }

@@ -85,10 +85,11 @@ class Product extends Model
     protected $appends = [
         'image_url', 
         'effective_price', 
-        'has_discount', 
         'average_rating',
         'category_title',
         'category_slug',
+        'has_discount', 
+        'wholesale_price_applied',
     ];
 
     public function product_category()
@@ -115,10 +116,10 @@ class Product extends Model
         return $this->hasOne(ProductImage::class, 'product_id')->orderBy('image_order', 'asc')->orderBy('id', 'asc');
     }
 
-    // public function priceTiers()
-    // {
-    //     return $this->hasMany(ProductPriceTier::class)->orderByDesc('min_quantity');
-    // }
+    public function priceTiers()
+    {
+        return $this->hasMany(ProductPriceTier::class, 'product_id')->orderByDesc('min_quantity');
+    }
 
     public function getImageUrlAttribute(): string
     {
@@ -153,25 +154,20 @@ class Product extends Model
 
     public function getEffectivePriceAttribute(): float
     {
-        if ($this->discount_price > 0 && $this->discount_price < $this->selling_price) {
-            return $this->discount_price;
-        }
-        return $this->selling_price;
+        return $this->getEffectivePriceForQuantity(1);
     }
 
     public function getEffectivePriceForQuantity(int $quantity): float
     {
-        $price = $this->effective_price;
+        $price = ($this->discount_price != 0 && $this->discount_price < $this->selling_price) ? $this->discount_price : $this->selling_price;
 
-        if ($quantity > 1 && $this->relationLoaded('priceTiers')) {
-            $tier = $this->priceTiers
-                ->where('min_quantity', '<=', $quantity)
-                ->sortByDesc('min_quantity')
-                ->first();
-
-            if ($tier && $tier->price < $price) {
-                $price = $tier->price;
-            }
+        $tier = $this->priceTiers()
+            ->where('min_quantity', '<=', $quantity)
+            ->orderByDesc('min_quantity')
+            ->first();
+        
+        if ($tier && $tier->price < $price) {
+            $price = $tier->price;
         }
 
         return $price;
@@ -201,5 +197,24 @@ class Product extends Model
     public function getHasDiscountAttribute(): bool
     {
         return $this->discount_percentage > 0;
+    }
+
+    public function getWholesalePriceAppliedAttribute(): bool
+    {
+        return $this->isWholesalePriceAppliedForQuantity(1);
+    }
+
+    public function isWholesalePriceAppliedForQuantity(int $quantity): bool
+    {
+        $basePrice = ($this->discount_price != 0 && $this->discount_price < $this->selling_price)
+            ? $this->discount_price
+            : $this->selling_price;
+
+        $tier = $this->priceTiers()
+            ->where('min_quantity', '<=', $quantity)
+            ->orderByDesc('min_quantity')
+            ->first();
+
+        return $tier && $tier->price < $basePrice;
     }
 }
