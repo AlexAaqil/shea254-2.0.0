@@ -83,12 +83,12 @@
                                     <input type="text" name="address" id="address" placeholder="Enter delivery address" value="{{ old('address') }}">
                                     <x-form-input-error field="address" />
                                 </div>
+                            </div>
 
-                                <div class="inputs">
-                                    <label for="additional_information">Additional Information</label>
-                                    <input type="text" name="additional_information" id="additional_information" placeholder="Eg. Apartment name, directions, etc." value="{{ old('additional_information') }}">
-                                    <x-form-input-error field="additional_information" />
-                                </div>
+                            <div class="inputs">
+                                <label for="additional_information">Additional Information</label>
+                                <input type="text" name="additional_information" id="additional_information" placeholder="Eg. Apartment name, directions, etc." value="{{ old('additional_information') }}">
+                                <x-form-input-error field="additional_information" />
                             </div>
 
                             <button type="submit">Confirm Order</button>
