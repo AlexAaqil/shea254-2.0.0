@@ -135,7 +135,7 @@ return [
 
         'inventory_management' => [
             'driver' => 'single',
-            'path' => storage_path('logs/inventory_management.log'),
+            'path' => storage_path('logs/inventory-management.log'),
             'level' => 'debug',
         ],
     ],
