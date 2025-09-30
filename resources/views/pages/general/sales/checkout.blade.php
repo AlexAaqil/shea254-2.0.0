@@ -15,26 +15,26 @@
 
                             <div class="inputs_group">
                                 <div class="inputs">
-                                    <label for="full_name">Full Name</label>
+                                    <label for="full_name" class="required">Full Name</label>
                                     <input type="text" name="full_name" id="full_name" placeholder="Enter your Full Name" value="{{ $user ? $user->full_name : old('full_name') }}">
                                     <x-form-input-error field="full_name" />
                                 </div>
 
                                 <div class="inputs">
-                                    <label for="email">Email Address</label>
+                                    <label for="email" class="required">Email Address</label>
                                     <input type="email" name="email" id="email" placeholder="example@gmail.com" value="{{ $user ? $user->email : old('email') }}">
                                     <x-form-input-error field="email" />
                                 </div>
                             </div>
 
                             <div class="inputs">
-                                <label for="phone_number">Phone Number <span class="text-gray-100">(For payment)</span></label>
+                                <label for="phone_number" class="required">Phone Number <span class="text-gray-400">(For payment)</span></label>
                                 <input type="text" name="phone_number" id="phone_number" placeholder="2547xxxxxxxx" value="{{ $user ? $user->phone_number : old('phone_number') }}">
                                 <x-form-input-error field="phone_number" />
                             </div>
 
                             <div class="inputs">
-                                <label for="delivery_method">How would you like to receive your Order?</label>
+                                <label for="delivery_method" class="required">How would you like to receive your Order?</label>
                                 <div class="custom_radio_buttons">
                                     <label>
                                         <input class="option_radio" type="radio" name="delivery_method" value="delivery" {{ old('delivery_method', 'delivery') === 'delivery' ? 'checked' : '' }}>
@@ -52,7 +52,7 @@
                             <div class="delivery_details" id="delivery_details" style="display:none;">
                                 <div class="inputs_group">
                                     <div class="inputs">
-                                        <label for="location">Location</label>
+                                        <label for="location" class="required">Location</label>
                                         <select name="location" id="location">
                                             <option value="">Select Location</option>
                                             @foreach($locations as $location)
@@ -65,7 +65,7 @@
                                     </div>
 
                                     <div class="inputs">
-                                        <label for="area">Area</label>
+                                        <label for="area" class="required">Area</label>
                                         <select name="area" id="area">
                                             <option value="">Select Area</option>
                                             @foreach($areas as $area)
@@ -79,15 +79,15 @@
                                 </div>
 
                                 <div class="inputs">
-                                    <label for="address">Address</label>
-                                    <input type="text" name="address" id="address" placeholder="Enter delivery address" value="{{ old('address') }}">
+                                    <label for="address" class="required">Address</label>
+                                    <input type="text" name="address" id="address" placeholder="Enter delivery address (apartment name, directions)" value="{{ old('address') }}">
                                     <x-form-input-error field="address" />
                                 </div>
                             </div>
 
                             <div class="inputs">
                                 <label for="additional_information">Additional Information</label>
-                                <input type="text" name="additional_information" id="additional_information" placeholder="Eg. Apartment name, directions, etc." value="{{ old('additional_information') }}">
+                                <input type="text" name="additional_information" id="additional_information" placeholder="Any extra information about your order" value="{{ old('additional_information') }}">
                                 <x-form-input-error field="additional_information" />
                             </div>
 
