@@ -1,5 +1,12 @@
 <div class="ProductReviews">
     <div class="container">
+        <div class="breadcrumbs">
+            <a href="{{ Route::has('product.index') ? route('products.index') : '#' }}" wire:navigate>Products</a>
+            <a href="{{ Route::has('product-categories.index') ? route('product-categories.index') : '#' }}" wire:navigate>Categories</a>
+            <a href="{{ Route::has('product-measurements.index') ? route('product-measurements.index') : '#' }}" wire:navigate>Measurements</a>
+            <span>Reviews</span>
+        </div>
+
         <div class="app_header">
             <div class="info">
                 <h2>Reviews</h2>

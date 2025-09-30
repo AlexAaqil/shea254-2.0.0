@@ -56,12 +56,6 @@
                             'navigate' => true,
                         ],
                         [
-                            'route' => 'product-reviews.index',
-                            'label' => 'Reviews',
-                            'can' => $user && $user->isAdmin(),
-                            'navigate' => true,
-                        ],
-                        [
                             'route' => 'delivery-locations.index',
                             'label' => 'Locations',
                             'can' => $user && $user->isAdmin(),

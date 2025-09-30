@@ -3,6 +3,7 @@
         <div class="breadcrumbs">
             <a href="{{ Route::has('products.index') ? route('products.index') : '#' }}" wire:navigate>Products</a>
             <a href="{{ Route::has('product-categories.index') ? route('product-categories.index') : '#' }}" wire:navigate>Categories</a>
+            <a href="{{ Route::has('product-reviews.index') ? route('product-reviews.index') : '#' }}" wire:navigate>Reviews</a>
             <span>Measurements</span>
         </div>
 
