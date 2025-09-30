@@ -1,7 +1,7 @@
 # TODOs
-- wholesale price when quantity hits 10.
 - google, meta, tiktok conversions APIs.
-- stock management (CRUD).
+~~- wholesale price when quantity hits price tier quantity.~~
+~~- stock management (CRUD).~~
 
 - admin dashboard - sales amounts and locations filters.
 - user dashboard - purchases.
@@ -12,6 +12,8 @@
 - reward points (sh. 200 = 1 point).
 - display reviews and ratings on products.
 - count down timers when running offers.
+
+- cashiers dashboard.
 
 ===========================================
 
