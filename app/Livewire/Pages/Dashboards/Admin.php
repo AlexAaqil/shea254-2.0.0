@@ -46,17 +46,6 @@ class Admin extends Component
         return (($current_period_orders - $previous_period_orders) / $previous_period_orders) * 100;
     }
 
-    // Get actual cash received from payments table (for cash flow insight)
-    private function getPaidAmountFromPayments()
-    {
-        return Payment::where('status', 'paid')
-            ->get()
-            ->sum(function($payment) {
-                $responseData = json_decode($payment->response_description, true);
-                return $responseData['amount'] ?? 0;
-            });
-    }
-
     // Gross Sales Trend (all sales, including unpaid)
     public function getGrossSalesTrend()
     {
@@ -140,38 +129,6 @@ class Admin extends Component
         return (($current_gross_profit - $previous_gross_profit) / $previous_gross_profit) * 100;
     }
 
-    // Cash Received Trend (actual payments)
-    public function getCashReceivedTrend()
-    {
-        $now = Carbon::now();
-
-        $current_period_start = Carbon::create($now->year, 1, 1);
-        $current_period_end = $now;
-
-        $previous_period_start = $current_period_start->copy()->subYear();
-        $previous_period_end = $current_period_end->copy()->subYear();
-
-        $current_period_cash = Payment::where('status', 'paid')
-            ->whereBetween('created_at', [$current_period_start, $current_period_end])
-            ->get()
-            ->sum(function($payment) {
-                $responseData = json_decode($payment->response_description, true);
-                return $responseData['amount'] ?? 0;
-            });
-            
-        $previous_period_cash = Payment::where('status', 'paid')
-            ->whereBetween('created_at', [$previous_period_start, $previous_period_end])
-            ->get()
-            ->sum(function($payment) {
-                $responseData = json_decode($payment->response_description, true);
-                return $responseData['amount'] ?? 0;
-            });
-        
-        if ($previous_period_cash == 0) return 0;
-
-        return (($current_period_cash - $previous_period_cash) / $previous_period_cash) * 100;
-    }
-
     public function getTopProducts($limit = 5)
     {
         return OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
@@ -235,10 +192,6 @@ class Admin extends Component
         $net_sales = $gross_sales - $total_discounts;
         $cost_of_sales = OrderItem::sum('buying_price');
         $gross_profit = $net_sales - $cost_of_sales;
-        
-        // Cash flow metrics (separate from accounting)
-        $cash_received = $this->getPaidAmountFromPayments();
-        $accounts_receivable = $net_sales - $cash_received; // Money owed to us
 
         // Charts data
         $monthly_sales = Sale::selectRaw("MONTH(created_at) as month, SUM(total_amount) as total_sales")
@@ -278,10 +231,6 @@ class Admin extends Component
             'net_sales' => $net_sales,
             'cost_of_sales' => $cost_of_sales,
             'gross_profit' => $gross_profit,
-            
-            // Cash Flow Metrics
-            'cash_received' => $cash_received,
-            'accounts_receivable' => $accounts_receivable,
 
             // Chart data
             'sales_data' => $sales_data,
@@ -293,7 +242,6 @@ class Admin extends Component
             'gross_sales_trend' => $this->getGrossSalesTrend(),
             'net_sales_trend' => $this->getNetSalesTrend(),
             'gross_profit_trend' => $this->getGrossProfitTrend(),
-            'cash_received_trend' => $this->getCashReceivedTrend(),
 
             'top_products' => $this->getTopProducts(),
             'recent_orders' => $this->getRecentOrders(),

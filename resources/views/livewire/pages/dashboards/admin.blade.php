@@ -80,9 +80,7 @@
                         <span class="{{ $net_sales_trend >= 0 ? 'success' : 'danger' }}">
                             {{ $net_sales_trend >= 0 ? '+' : '' }} {{ number_format(abs($net_sales_trend), 1) }}% vs last year
                         </span>
-                        <span class="text-gray-500 text-xs block mt-1">
-                            {{ number_format($accounts_receivable, 2) }} outstanding
-                        </span>
+                        <span class="text-gray-500 text-xs block mt-1">All sales minus discounts</span>
                     </p>
                 </div>
 
