@@ -77,7 +77,12 @@ class Index extends Component
                     ->orWhere('last_name', 'like', '%' . $this->search . '%');
                 });
             })
-            ->orderBy('user_level')
+            ->orderByRaw("FIELD(user_level, ?, ?, ?, ?)", [
+                UserRoles::SUPER_ADMIN->value,
+                UserRoles::ADMIN->value,
+                UserRoles::CASHIER->value,
+                UserRoles::USER->value,
+            ])
             ->orderBy('first_name')
             ->paginate(50)
             ->withQueryString();

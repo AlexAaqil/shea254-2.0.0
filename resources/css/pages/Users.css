@@ -4,9 +4,9 @@
             .user_name {
                 @apply flex items-center gap-2;
 
-                svg {
+                /* svg {
                     @apply stroke-green-600 w-4 h-4;
-                }
+                } */
             }
         }
     }

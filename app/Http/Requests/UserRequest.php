@@ -39,6 +39,7 @@ class UserRequest extends FormRequest
                 'string', 'confirmed', Rules\Password::defaults(),
             ],
             'user_level'   => ['required', new Enum(UserRoles::class)],
+            'email_verified' => ['nullable', 'boolean'],
         ];
     }
 

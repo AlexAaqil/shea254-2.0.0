@@ -59,8 +59,12 @@
                                 <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
                                 <td class="user_name">
                                     <span>{{ $user->full_name }}</span>
-                                    @if ($user->isAdmin())
-                                        <x-svgs.shield-with-checkmark />
+                                    @if ($user->isSuperAdmin())
+                                        <x-svgs.shield-with-checkmark class="stroke-red-500" />
+                                    @elseif($user->isAdmin())
+                                        <x-svgs.shield-with-checkmark class="stroke-green-500" />
+                                    @elseif($user->isCashier())
+                                        <x-svgs.shield-halved class="fill-blue-500" />
                                     @endif
                                 </td>
                                 <td>{{ $user->phone_number }}</td>

@@ -7,6 +7,8 @@
 
     @if(auth()->user()->isAdmin())
         <livewire:pages.dashboards.admin />
+    @elseif(auth()->user()->isCashier())
+        <livewire:pages.dashboards.cashier />
     @else
         <livewire:pages.dashboards.user />
     @endif

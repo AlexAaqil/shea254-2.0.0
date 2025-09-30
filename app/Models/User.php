@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'user_level',
         'user_status',
         'password',
+        'email_verified',
     ];
 
     /**
@@ -131,6 +132,11 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
     }
 
+    public function isCashier(): bool
+    {
+        return $this->user_level === UserRoles::CASHIER;
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->last_name;
@@ -144,5 +150,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getPhoneNumbersAttribute(): string
     {
         return $this->phone_number.''. $this->secondary_phone_number;
+    }
+
+    public function setEmailVerifiedAttribute($value)
+    {
+        if ($value) {
+            $this->attributes['email_verified_at'] = now();
+        } else {
+            $this->attributes['email_verified_at'] = null;
+        }
+    }
+
+    public function getEmailVerifiedAttribute(): bool
+    {
+        return !is_null($this->email_verified_at);
     }
 }

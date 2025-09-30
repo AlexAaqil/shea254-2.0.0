@@ -1,14 +1,34 @@
 .Dashboard {
+    section {
+        h2 {
+            @apply text-xl font-medium text-gray-800 mb-2;
+        }
+    }
+
     .stats {
         .stat {
             @apply flex flex-col py-4 px-6 rounded-lg bg-blue-50;
 
             p:first-of-type {
-                @apply text-xl font-semibold tracking-wider;
+                @apply text-xl font-bold tracking-wider mb-2;
             }
 
-            p:last-of-type {
-                @apply text-sm text-gray-700;
+            p:nth-of-type(2) {
+                @apply text-base font-medium text-gray-700;
+            }
+
+            p.extras {
+                span {
+                    @apply text-xs text-gray-500;
+                }
+
+                .danger {
+                    @apply text-red-600;
+                }
+
+                .success {
+                    @apply text-green-600;
+                }
             }
         }
     }
@@ -22,8 +42,10 @@
     }
 
     .Statistics {
-        .stats {
-            @apply grid grid-cols-1 md:grid-cols-6 gap-4;
+        .container {
+            .stats {
+                @apply grid grid-cols-1 md:grid-cols-6 gap-4 space-y-1;
+            }
         }
     }
 
@@ -39,25 +61,59 @@
         @apply mt-6;
 
         .container {
-            @apply grid grid-cols-1 md:grid-cols-12 gap-4;
+            .charts_wrapper {
+                @apply grid grid-cols-1 xl:grid-cols-12 gap-6;
 
-            .chart {
-                @apply h-[50dvh] bg-blue-50 p-6 rounded-2xl shadow-md;
+                .chart {
+                    @apply bg-white p-6 rounded-2xl shadow-sm border border-gray-200;
 
-                &:first-of-type {
-                    @apply md:col-span-8;
+                    h2 {
+                        @apply font-bold text-xl text-gray-800 mb-6 pb-3 border-b border-gray-100;
+                    }
                 }
 
-                &:last-of-type {
-                    @apply md:col-span-4;
+                .sales {
+                    @apply xl:col-span-8;
                 }
 
-                h2 {
-                    @apply font-bold text-lg text-center mb-4;
+                .orders {
+                    @apply  xl:col-span-4;
                 }
 
-                canvas {
-                    @apply max-h-[300px];
+                .chart_container {
+                    @apply relative h-[300px];
+                }
+            }
+        }
+    }
+
+    .RecentActivity {
+        .container {
+            .activities_wrapper {
+                @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+
+                .activity {
+                    @apply bg-white p-6 rounded-2xl shadow-sm border border-gray-200;
+                    
+                    .activity_header {
+                        @apply flex justify-between items-center mb-6;
+
+                        h3 {
+                            @apply text-lg font-semibold text-gray-800;
+                        }
+
+                        span {
+                            @apply text-xs text-gray-500;
+                        }
+
+                        a {
+                            @apply text-xs text-blue-600 hover:text-blue-800 font-medium;
+                        }
+                    }
+
+                    .activity_content {
+                        @apply space-y-4;
+                    }
                 }
             }
         }

@@ -172,7 +172,7 @@
                     <a href="{{ route('orders.index') }}" class="btn btn_danger">Cancel</a>
 
                     @auth
-                        @if(auth()->user()->isSuperAdmin())
+                        @if(auth()->user()->isAdmin())
                             <button x-data x-on:click.prevent="$wire.set('delete_order_id', {{ $order->id }}); $dispatch('open-modal', 'confirm-order-deletion')" class="btn btn_danger">Delete</button>
                         @endif
                     @endauth

@@ -7,6 +7,7 @@ use App\Models\Sales\OrderItem;
 use App\Models\User;
 use App\Models\Products\Product;
 use App\Models\Payments\Payment;
+use Carbon\Carbon;
 
 class Sale extends Model
 {
@@ -51,5 +52,25 @@ class Sale extends Model
         ->where('order_type', 1)
         ->orderBy('id','desc')
         ->get();
+    }
+
+    public function scopeToday($query) {
+        return $query->whereDate('sales.created_at', Carbon::today());
+    }
+
+    public function scopeYesterday($query) {
+        return $query->whereDate('sales.created_at', Carbon::yesterday());
+    }
+
+    public function scopeThisWeek($query) {
+        return $query->whereBetween('sales.created_at', [
+            Carbon::now()->startOfWeek(), 
+            Carbon::now()->endOfWeek(),
+        ]);
+    }
+
+    public function scopeThisMonth($query) {
+        return $query->whereMonth('sales.created_at', Carbon::now()->month)
+            ->whereYear('sales.created_at', Carbon::now()->year);
     }
 }
