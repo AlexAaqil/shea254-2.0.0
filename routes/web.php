@@ -65,7 +65,17 @@ Route::middleware(['authenticated_user'])->group(function() {
 Route::middleware(['admin_only'])->group(function() {
     Route::get('users', UsersPage::class)->name('users.index');
     Route::resource('users', UserController::class)->only(['create', 'store', 'edit', 'update']);
+    
+    Route::get('product-offers', ProductOffers::class)->name('product-offers.index');
 
+    Route::get('blogs', BlogsPage::class)->name('blogs.index');
+    Route::resource('blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::get('blog-categories', BlogCategoriesPage::class)->name('blog-categories.index');
+    Route::resource('blog-categories', BlogCategoryController::class)->only(['create', 'store', 'edit', 'update']);
+});
+
+Route::middleware(['admin_or_cashier'])->group(function() {
     Route::get('products', ProductsPage::class)->name('products.index');
     Route::resource('products', ProductController::class)->only(['create', 'store', 'edit', 'update']);
 
@@ -78,8 +88,6 @@ Route::middleware(['admin_only'])->group(function() {
     Route::get('product-reviews', ProductReviews::class)->name('product-reviews.index');
     Route::resource('product-reviews', ProductReviewController::class)->only(['edit', 'update']);
 
-    Route::get('product-offers', ProductOffers::class)->name('product-offers.index');
-
     Route::get('delivery-locations', DeliveryLocationsPage::class)->name('delivery-locations.index');
     Route::resource('delivery-locations', DeliveryLocationController::class)->only(['create', 'store', 'edit', 'update']);
 
@@ -89,12 +97,6 @@ Route::middleware(['admin_only'])->group(function() {
     Route::get('orders', OrdersPage::class)->name('orders.index');
     Route::get('orders/{order}/edit', EditOrder::class)->name('orders.edit');
     Route::post('orders/{order}/retry-payment', [SaleController::class, 'requestSTKPush'])->name('orders.request_stkpush');
-
-    Route::get('blogs', BlogsPage::class)->name('blogs.index');
-    Route::resource('blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
-
-    Route::get('blog-categories', BlogCategoriesPage::class)->name('blog-categories.index');
-    Route::resource('blog-categories', BlogCategoryController::class)->only(['create', 'store', 'edit', 'update']);
 
     Route::get('contact-messages', ContactMessagesPage::class)->name('contact-messages.index');
     Route::get('contact-messages/{message}/edit', EditContactMessage::class)->name('contact-messages.edit');

@@ -13,9 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'active' => \App\Http\Middleware\ActiveMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
-            'active' => \App\Http\Middleware\ActiveMiddleware::class,
+            'cashier' => \App\Http\Middleware\CashierMiddleware::class,
+            'admin_cashier' => \App\Http\Middleware\AdminOrCashierMiddleware::class,
         ]);
 
         $middleware->group('authenticated_user', [
@@ -36,6 +38,20 @@ return Application::configure(basePath: dirname(__DIR__))
             'active',
             'verified',
             'super_admin',
+        ]);
+
+        $middleware->group('cashier_only', [
+            'auth',
+            'active',
+            'verified',
+            'cashier',
+        ]);
+
+        $middleware->group('admin_or_cashier', [
+            'auth',
+            'active',
+            'verified',
+            'admin_cashier',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

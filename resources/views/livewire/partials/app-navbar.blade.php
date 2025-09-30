@@ -28,19 +28,19 @@
                         [
                             'route' => 'user-orders.index',
                             'label' => 'Purchases',
-                            'can' => $user && !$user->isAdmin(),
+                            'can' => $user && (!$user->isAdmin() && !$user->isCashier()),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'user-reviews.index',
                             'label' => 'Reviews',
-                            'can' => $user && !$user->isAdmin(),
+                            'can' => $user && (!$user->isAdmin() && !$user->isCashier()),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'orders.index',
                             'label' => 'Orders',
-                            'can' => $user && $user->isAdmin(),
+                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
                             'navigate' => true,
                         ],
                         [
@@ -52,13 +52,13 @@
                         [
                             'route' => 'products.index',
                             'label' => 'Products',
-                            'can' => $user && $user->isAdmin(),
+                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'delivery-locations.index',
                             'label' => 'Locations',
-                            'can' => $user && $user->isAdmin(),
+                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
                             'navigate' => true,
                         ],
                         [
@@ -70,7 +70,7 @@
                         [
                             'route' => 'contact-messages.index',
                             'label' => 'Messages',
-                            'can' => $user && $user->isAdmin(),
+                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
                             'navigate' => true,
                         ],
                         [

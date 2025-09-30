@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CashierMiddleware
+class AdminOrCashierMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,10 @@ class CashierMiddleware
     {
         $user = auth()->user();
 
-        if (!$user || !$user->isCashier()) {
-            abort(403);
+        if ($user && ($user->isAdmin() || $user->isCashier())) {
+            return $next($request);
         }
 
-        return $next($request);
+        abort(403);
     }
 }
