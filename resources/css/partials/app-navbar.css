@@ -1,5 +1,9 @@
 .app_navbar {
-    @apply sticky top-0 left-0 right-0 z-100 bg-gray-900 text-white font-semibold;
+    @apply sticky top-0 left-0 right-0 z-100 font-semibold;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    z-index: 100;
 
     [x-cloak] {
         display: none !important;
@@ -11,7 +15,7 @@
 
     .branding {
         a {
-            @apply text-lg font-bold text-white;
+            @apply text-lg font-bold text-gray-900;
 
             img {
                 @apply h-[35px] w-[35px] rounded-full;
@@ -23,7 +27,7 @@
         @apply flex flex-col justify-center items-center space-y-1 cursor-pointer md:hidden;
 
         span {
-            @apply w-6 h-0.5 bg-white block transition duration-300 ease-in-out;
+            @apply w-6 h-0.5 bg-gray-900 block transition duration-300 ease-in-out;
         }
     }
 
@@ -38,11 +42,11 @@
             @apply flex flex-col md:flex-row md:space-x-12;
 
             a, button {
-                @apply block py-2 md:py-0 text-white font-semibold hover:text-blue-200 transition-colors;
+                @apply block py-2 md:py-0 text-gray-900 font-semibold hover:text-blue-700 transition-colors;
             }
 
             a.active {
-                @apply font-bold border-b-2 border-white;
+                @apply font-bold border-b-2 border-gray-900;
             }
 
             .mobile_only {
@@ -55,7 +59,7 @@
         @apply relative;
 
         .user_dropdown_toggle {
-            @apply flex items-center space-x-2 bg-white text-gray-800 rounded-full py-2 px-4 hover:bg-gray-100 transition;
+            @apply flex items-center space-x-2 bg-gray-900 text-white rounded-full py-2 px-4 hover:bg-gray-700 transition;
         }
 
         .caret {
