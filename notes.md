@@ -4,9 +4,9 @@
 ~~- stock management (CRUD).~~
 
 - admin dashboard - sales amounts and locations filters.
-- user dashboard - purchases.
-- user dashboard - reviews.
 - profile pictures for users.
+~~- user dashboard - purchases.~~
+~~- user dashboard - reviews.~~
 
 - last 10 transactions with name and phone number.
 - reward points (sh. 200 = 1 point).
