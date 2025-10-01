@@ -29,7 +29,7 @@
             </form>
 
             <div class="extra_links">
-                <p>Don't have an account? <a href="{{ Route::has('signup') ? route('signup') : '#' }}">Signup</a></p>
+                <p>Don't have an account? <a href="{{ Route::has('signup') ? route('signup') : '#' }}" wire:navigate>Signup</a></p>
             </div>
         </div>
     </div>

@@ -13,23 +13,32 @@ class User extends Component
     {
         $user = Auth::user();
 
-        $orders = Sale::where(function ($q) use ($user) {
-            $q->where('user_id', $user->id)
-              ->orWhereHas('order_delivery', function ($q2) use ($user) {
-                  $q2->where('email', $user->email);
-              });
-        });
+        $orders = Sale::with(['payment', 'order_delivery', 'order_items'])
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhereHas('order_delivery', function ($q2) use ($user) {
+                      $q2->where('email', $user->email);
+                  });
+            })
+            ->latest()
+            ->take(10)
+            ->get();
 
-        $count_paid = (clone $orders)->whereHas('payment', function ($q) {
-            $q->where('status', 'paid');
+        $count_paid = $orders->filter(function ($order) {
+            return optional($order->payment)->status === 'paid';
         })->count();
 
-        $count_unpaid = (clone $orders)->whereDoesntHave('payment', function ($q) {
-            $q->where('status', 'paid');
-        })->count();
+        $count_unpaid = $orders->count() - $count_paid;
 
+        $reviews = ProductReview::where('user_id', $user->id)->take(10)->get();
         $count_reviews = ProductReview::where('user_id', $user->id)->count();
 
-        return view('livewire.pages.dashboards.user', compact('count_paid', 'count_unpaid', 'count_reviews'));
+        return view('livewire.pages.dashboards.user', [
+            'orders' => $orders,
+            'count_paid' => $count_paid,
+            'count_unpaid' => $count_unpaid,
+            'reviews' => $reviews,
+            'count_reviews' => $count_reviews,
+        ]);
     }
 }

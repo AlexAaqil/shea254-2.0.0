@@ -49,7 +49,7 @@
             </form>
 
             <div class="extra_links">
-                <p>Already have an account? <a href="{{ Route::has('login') ? route('login') : '#' }}">Login</a></p>
+                <p>Already have an account? <a href="{{ Route::has('login') ? route('login') : '#' }}" wire:navigate>Login</a></p>
             </div>
         </div>
     </div>

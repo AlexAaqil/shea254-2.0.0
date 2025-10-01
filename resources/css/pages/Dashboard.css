@@ -136,4 +136,14 @@
             }
         }
     }
+
+    .UserDashboard {
+        .RecentActivity {
+            .container {
+                svg {
+                    @apply w-3 h-3;
+                }
+            }
+        }
+    }
 }
