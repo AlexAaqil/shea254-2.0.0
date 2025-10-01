@@ -26,13 +26,13 @@
                             'navigate' => false,
                         ],
                         [
-                            'route' => 'user-orders.index',
+                            'route' => 'users-orders.index',
                             'label' => 'Purchases',
                             'can' => $user && (!$user->isAdmin() && !$user->isCashier()),
                             'navigate' => true,
                         ],
                         [
-                            'route' => 'user-reviews.index',
+                            'route' => 'users-reviews.index',
                             'label' => 'Reviews',
                             'can' => $user && (!$user->isAdmin() && !$user->isCashier()),
                             'navigate' => true,

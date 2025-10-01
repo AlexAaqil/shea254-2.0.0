@@ -14,6 +14,8 @@ use App\Livewire\Pages\General\Blogs\Index as UsersBlogsPage;
 use App\Livewire\Pages\General\Blogs\Details as UsersBlogsDetailsPage;
 
 use App\Livewire\Pages\Dashboards\Index as Dashboard;
+use App\Livewire\Pages\Orders\UsersOrders;
+use App\Livewire\Pages\Products\Reviews\UsersReviews;
 use App\Http\Controllers\Products\ProductReviewController;
 
 use App\Livewire\Pages\Users\Index as UsersPage;
@@ -57,6 +59,10 @@ Route::get('blog/{blog}', UsersBlogsDetailsPage::class)->name('users-blogs-detai
 
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
+
+    Route::get('users-orders', UsersOrders::class)->name('users-orders.index');
+
+    Route::get('users-reviews', UsersReviews::class)->name('users-reviews.index');
 
     Route::get('product-reviews/{product}', [ProductReviewController::class, 'create'])->name('product-reviews.create');
     Route::post('product-reviews/{product}', [ProductReviewController::class, 'store'])->name('product-reviews.store');

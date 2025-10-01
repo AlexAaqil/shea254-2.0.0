@@ -87,3 +87,9 @@ body {
         @apply text-[var(--theme-bg)];
     }
 }
+
+.UserReviews {
+    svg {
+        @apply w-3 h-3;
+    }
+}
