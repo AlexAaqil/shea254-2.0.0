@@ -13,7 +13,7 @@
 - display reviews and ratings on products.
 - count down timers when running offers.
 
-- cashiers dashboard.
+~~- cashiers dashboard.~~
 
 ===========================================
 
