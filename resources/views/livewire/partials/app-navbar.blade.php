@@ -52,13 +52,13 @@
                         [
                             'route' => 'products.index',
                             'label' => 'Products',
-                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
                             'route' => 'delivery-locations.index',
                             'label' => 'Locations',
-                            'can' => $user && ($user->isAdmin() || $user->isCashier()),
+                            'can' => $user && $user->isAdmin(),
                             'navigate' => true,
                         ],
                         [
