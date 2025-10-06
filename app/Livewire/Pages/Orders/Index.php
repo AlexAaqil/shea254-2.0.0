@@ -73,7 +73,7 @@ class Index extends Component
                             SELECT 1
                             FROM order_deliveries
                             WHERE order_deliveries.order_id = s.id
-                            AND order_deliveries.delivery_status <> 'delivered'
+                            AND order_deliveries.delivery_status <> 'processed'
                         ) THEN 1 ELSE 0
                     END
                 ) as undelivered_orders,
