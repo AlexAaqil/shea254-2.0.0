@@ -27,7 +27,7 @@ class CheckoutRequest extends FormRequest
             'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:200'],
             'phone_number' => [
                 'required',
-                'regex:/^2547\d{8}$/',
+                'regex:/^254(7|1)\d{8}$/',
             ],
             'delivery_method' => ['required', Rule::in(['delivery','shop'])],
 
