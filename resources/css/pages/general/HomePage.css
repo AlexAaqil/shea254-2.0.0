@@ -180,6 +180,37 @@
             }
         }
     }
+
+    .RecentTransactions {
+        .container {
+            .transactions_list {
+                @apply space-y-4;
+                .transaction_card {
+                    @apply bg-[var(--theme-light-bg)] py-2 rounded-[8px] lg:grid lg:grid-cols-3 lg:justify-between;
+
+                    .transaction_header {
+                        @apply flex justify-between mb-1 lg:flex-col lg:justify-start lg:col-span-1;
+
+                        .full_name {
+                            @apply font-semibold;
+                        }
+
+                        .phone_number {
+                            @apply text-sm text-gray-600;
+                        }
+                    }
+
+                    .transaction_body {
+                        @apply lg:flex lg:justify-between lg:col-span-2;
+
+                        .total_amount {
+                            @apply font-bold mt-1 lg:mt-0;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @keyframes spin {

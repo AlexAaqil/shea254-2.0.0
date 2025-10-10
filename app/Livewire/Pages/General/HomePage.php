@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\Products\Product;
 use App\Models\Products\ProductReview;
 use App\Services\CartService;
+use App\Models\Sales\Sale;
 
 class HomePage extends Component
 {
@@ -40,6 +41,20 @@ class HomePage extends Component
             ->take(12)
             ->get();
 
-        return view('livewire.pages.general.home-page', compact('featured_products'))->layout('layouts.guest');
+        $latest_orders = Sale::query()
+            ->select(['id', 'order_number', 'total_amount', 'amount_paid', 'created_at'])
+            ->with([
+                'order_delivery:id,full_name,phone_number,order_id', 
+                'order_items:id,title,quantity,order_id', 
+                'payment:id,status,order_id'
+            ])
+            ->whereHas('payment', function ($query) {
+                $query->where('status', 'paid');
+            })
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('livewire.pages.general.home-page', compact('featured_products', 'latest_orders'))->layout('layouts.guest');
     }
 }

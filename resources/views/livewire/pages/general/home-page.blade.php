@@ -147,11 +147,39 @@
         </div>
     </section>
 
-    <section class="CTA">
+    {{-- <section class="CTA">
         <div class="container">
             <h2>Explore Our Wide Range of Products</h2>
             <p>From nourishing shea butters to rejuvenating toners and serums, our collection has something for every skin type and concern. Discover the perfect products to elevate your skincare routine.</p>
             <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}">Explore Our Collection</a>
+        </div>
+    </section> --}}
+
+    <section class="RecentTransactions">
+        <div class="container" wire:poll.30s>
+            <div class="section_header">
+                <h2>Recent Purchases</h2>
+            </div>
+
+            <div class="transactions_list">
+                @foreach($latest_orders as $order)
+                    <div class="transaction_card">
+                        <div class="transaction_header">
+                            <span class="full_name">{{ $order->order_delivery->full_name }}</span>
+                            <span class="phone_number">{{ $order->order_delivery->blurred_phone_number }}</span>
+                            {{-- <span class="date">{{ $order->created_at->format('M d, Y') }}</span> --}}
+                        </div>
+                        <div class="transaction_body">
+                            <ul class="items_list">
+                                @foreach($order->order_items as $item)
+                                    <li>{{ $item->title }} (x {{ $item->quantity }})</li>
+                                @endforeach
+                            </ul>
+                            <p class="total_amount">Ksh. {{ number_format($order->total_amount, 2) }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </section>
 </div>
