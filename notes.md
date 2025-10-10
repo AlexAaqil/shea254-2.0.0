@@ -8,7 +8,7 @@
 ~~- user dashboard - purchases.~~
 ~~- user dashboard - reviews.~~
 
-- last 10 transactions with name and phone number.
+~~- last 10 transactions with name and phone number.~~
 - reward points (sh. 200 = 1 point).
 - display reviews and ratings on products.
 - count down timers when running offers.
