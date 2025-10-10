@@ -22,10 +22,10 @@ footer {
             }
 
             .branding {
-                @apply md:col-span-2;
+                @apply md:col-span-1;
 
                 .image {
-                    @apply h-[150px] w-[150px] mb-6;
+                    @apply h-[100px] w-[100px] mb-6;
 
                     img {
                         @apply rounded-full;
@@ -36,7 +36,7 @@ footer {
                     @apply space-y-2 w-[75%];
 
                     h3 {
-                        @apply text-4xl font-extrabold tracking-wide uppercase;
+                        @apply text-3xl font-extrabold tracking-wide uppercase;
                     }
 
                     p {
@@ -49,7 +49,7 @@ footer {
                 @apply grid gap-2;
 
                 a {
-                    @apply text-gray-200 hover:text-gray-900 transition-colors duration-300 font-semibold;
+                    @apply text-gray-200 hover:text-gray-400 transition-colors duration-300 font-semibold;
                 }
             }
 

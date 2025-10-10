@@ -18,13 +18,27 @@
             </div>
 
             <div class="quick_links">
-                <h3>Explore</h3>
+                <h3>Quick Links</h3>
                 <div class="links">
                     <a href="{{ Route::has('home-page') ? route('home-page') : '#' }}" wire:navigate>Home</a>
                     <a href="{{ Route::has('shop-page') ? route('shop-page') : '#' }}" wire:navigate>Shop</a>
                     <a href="{{ Route::has('about-page') ? route('about-page') : '#' }}" wire:navigate>About</a>
                     <a href="{{ Route::has('contact-page') ? route('contact-page') : '#' }}" wire:navigate>Contact</a>
                     <a href="{{ Route::has('blogs-page') ? route('blogs-page') : '#' }}" wire:navigate>Blogs</a>
+                </div>
+            </div>
+
+            <div class="categories">
+                <h3>Explore</h3>
+                <div class="links">
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'raw-butters') : '#' }}" wire:navigate>Raw Butters</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'whipped-butters') : '#' }}" wire:navigate>Whipped Butters</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'black-soap') : '#' }}" wire:navigate>African Black Soap</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'scrub') : '#' }}" wire:navigate>Scrubs</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'essential-oil') : '#' }}" wire:navigate>Essential Oils</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'carrier-oil') : '#' }}" wire:navigate>Carrier Oils</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'toners-and-serums') : '#' }}" wire:navigate>Toners & Serums</a>
+                    <a href="{{ Route::has('products-categorized-page') ? route('products-categorized-page', 'creams-gels') : '#' }}" wire:navigate>Cream & Gels</a>
                 </div>
             </div>
 
