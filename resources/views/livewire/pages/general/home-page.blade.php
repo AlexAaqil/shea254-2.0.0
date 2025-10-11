@@ -158,27 +158,25 @@
     <section class="RecentTransactions">
         <div class="container" wire:poll.30s>
             <div class="section_header">
-                <h2>Recent Purchases</h2>
+                <h2>Recent Orders</h2>
             </div>
 
             <div class="transactions_list">
-                @foreach($latest_orders as $order)
-                    <div class="transaction_card">
-                        <div class="transaction_header">
-                            <span class="full_name">{{ $order->order_delivery->full_name }}</span>
-                            <span class="phone_number">{{ $order->order_delivery->blurred_phone_number }}</span>
-                            {{-- <span class="date">{{ $order->created_at->format('M d, Y') }}</span> --}}
+                @forelse($latest_orders as $order)
+                    <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <p class="text-sm font-medium text-gray-900">#{{ $order->order_number }}</p>
+                                {{-- <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">{{ $order['status'] }}</span> --}}
+                            </div>
+                            {{-- <p class="text-xs text-gray-500 mt-1">{{ $order->order_delivery->full_name }} • {{ $order->created_at->format('M d, Y') }}</p> --}}
+                            <p class="text-xs text-gray-500 mt-1">{{ $order->order_delivery->full_name }} • {{ $order->order_delivery->blurred_phone_number }}</p>
                         </div>
-                        <div class="transaction_body">
-                            <ul class="items_list">
-                                @foreach($order->order_items as $item)
-                                    <li>{{ $item->title }} (x {{ $item->quantity }})</li>
-                                @endforeach
-                            </ul>
-                            <p class="total_amount">Ksh. {{ number_format($order->total_amount, 2) }}</p>
-                        </div>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold">{{ $order->payment->status }}</span>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-gray-500 text-sm text-center py-4">No recent orders</p>
+                @endforelse
             </div>
         </div>
     </section>
