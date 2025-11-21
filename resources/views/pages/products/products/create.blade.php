@@ -18,14 +18,14 @@
                 </div>
 
                 <div class="inputs">
-                    <label for="product_category_id">Category</label>
-                    <select name="product_category_id" id="product_category_id">
+                    <label for="category_id">Category</label>
+                    <select name="category_id" id="category_id">
                         <option value="">Select Category</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('product_category_id') == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
                         @endforeach
                     </select>
-                    <x-form-input-error field="product_category_id" />
+                    <x-form-input-error field="category_id" />
                 </div>
 
                 <div class="inputs">
