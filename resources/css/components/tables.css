@@ -56,6 +56,12 @@
 
                 .actions {
                     @apply flex items-baseline justify-center gap-4 mt-0;
+
+                    .action {
+                        .delete {
+                            @apply text-red-600;
+                        }
+                    }
                 }
             }
 

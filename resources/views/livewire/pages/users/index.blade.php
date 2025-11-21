@@ -76,6 +76,18 @@
                                             <x-svgs.edit class="text-green-600" />
                                         </a>
                                     </div>
+
+                                    @auth
+                                        @if(auth()->user()->isSuperAdmin())
+                                            <div class="action">
+                                                <button x-data
+                                                    x-on:click.prevent="$wire.set('delete_user_id', {{ $user->id }}); $dispatch('open-modal', 'confirm-user-deletion')"
+                                                    class="delete">
+                                                    <x-svgs.trash />
+                                                </button>
+                                            </div>
+                                        @endif
+                                    @endauth
                                 </td>
                             </tr>
                         @empty
