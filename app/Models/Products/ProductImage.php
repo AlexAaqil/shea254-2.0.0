@@ -3,6 +3,7 @@
 namespace App\Models\Products;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -15,10 +16,8 @@ class ProductImage extends Model
 
     public function getProductImageURL() {
         if(!empty($this->image)) {
-            return url('storage/'.$this->image);
+            return Storage::disk('public')->url('products/' . $this->image);
         }
-        else {
-            return asset('assets/images/default_product.jpg');
-        }
+        return asset('assets/images/default_product.jpg');
     }
 }

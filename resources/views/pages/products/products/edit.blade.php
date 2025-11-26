@@ -23,7 +23,7 @@
                     <select name="category_id" id="category_id">
                         <option value="">Select Category</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
+                            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
                         @endforeach
                     </select>
                     <x-form-input-error field="category_id" />
@@ -124,7 +124,7 @@
                     <select name="measurement_id" id="measurement_id">
                         <option value="">Select Measurement Unit</option>
                         @foreach($measurements as $measurement)
-                            <option value="{{ $measurement->id }}" {{ old('measurement_id') == $measurement->id ? 'selected' : '' }}>{{ $measurement->measurement_name }}</option>
+                            <option value="{{ $measurement->id }}" {{ old('measurement_id', $product->measurement_id) == $measurement->id ? 'selected' : '' }}>{{ $measurement->measurement_name }}</option>
                         @endforeach
                     </select>
                     <span class="inline_alert">{{ $errors->first('measurement_id') }}</span>
@@ -145,6 +145,34 @@
                 </div>
             </div>
 
+            @if($product->product_images->count() > 0)
+            <div class="existing_images mt-4">
+                <h4 class="text-base font-medium mb-3">Existing Images</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4" id="product_images">
+                    @foreach($product->product_images as $image)
+                        @php
+                            $image_url = Storage::url($image->image);
+                        @endphp
+
+                        <div class="product_image relative border rounded-lg p-2" data-image-id="{{ $image->id }}">
+                            <img src="{{ $image_url }}" 
+                                alt="Product Image" 
+                                class="w-full h-32 object-cover rounded">
+
+                            <button type="submit" 
+                                form="deleteImageForm"
+                                formaction="{{ route('product-images.delete', $image->id) }}"
+                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs hover:bg-red-600 transition-colors btn_danger"
+                                onclick="return confirm('Are you sure you want to delete this image?')"
+                                title="Delete this image">
+                                X
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <div class="inputs">
                 <label for="description">Description</label>
                 <textarea name="description" id="ckeditor" cols="30" rows="10">{{ old('description', $product->description) }}</textarea>
@@ -155,6 +183,12 @@
                 <button type="submit">Update Product</button>
                 <a href="{{ Route::has('products.index') ? route('products.index') : '#' }}" wire:navigate class="btn btn_danger">Cancel</a>
             </div>
+        </form>
+
+        <form action="" method="POST" id="deleteImageForm">
+            @csrf
+            @method('DELETE')
+            <!-- This form will be dynamically updated -->
         </form>
     </div>
 

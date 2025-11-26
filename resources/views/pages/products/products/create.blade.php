@@ -95,26 +95,26 @@
                 </div>
 
                 <div class="inputs">
-                    <label for="measurement_unit">Measurement Unit</label>
-                    <select name="measurement_unit" id="measurement_unit">
+                    <label for="measurement_id">Measurement Unit</label>
+                    <select name="measurement_id" id="measurement_id">
                         <option value="">Select Measurement Unit</option>
                         @foreach($measurements as $measurement)
-                            <option value="{{ $measurement->measurement_name }}" {{ old('measurement_unit') == $measurement->measurement_name ? 'selected' : '' }}>{{ $measurement->measurement_name }}</option>
+                            <option value="{{ $measurement->id }}" {{ old('measurement_id') == $measurement->id ? 'selected' : '' }}>{{ $measurement->measurement_name }}</option>
                         @endforeach
                     </select>
-                    <span class="inline_alert">{{ $errors->first('measurement_unit') }}</span>
+                    <span class="inline_alert">{{ $errors->first('measurement_id') }}</span>
                 </div>
 
                 <div class="inputs">
-                    <label for="sort_order">Sort Order</label>
-                    <input type="number" name="sort_order" id="sort_order" min="1" value={{ old('sort_order') }}>
-                    <span class="inline_alert">{{ $errors->first('sort_order') }}</span>
+                    <label for="product_order">Sort Order</label>
+                    <input type="number" name="product_order" id="product_order" min="1" value={{ old('product_order', 200) }}>
+                    <span class="inline_alert">{{ $errors->first('product_order') }}</span>
                 </div>
             </div>
 
             <div class="inputs_group_3">
                 <div class="inputs">
-                    <label for="image">Images (Max allowed images is 5 and < 2MB)</label>
+                    <label for="images">Images (Max allowed images is 5 and < 2MB)</label>
                     <input type="file" name="images[]" id="images" accept=".png, .jpg, .jpeg, .webp, .svg" multiple>
                     <x-form-input-error field="images.*" />
                 </div>

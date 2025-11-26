@@ -46,12 +46,17 @@ class Product extends Model
         });
 
         static::deleting(function ($product) {
+            $product->priceTiers()->delete();
+            $product->product_reviews()->delete();
+
             foreach($product->product_images as $image) {
-                $path = "products/{$image->image}";
+                $path = "{$image->image}";
 
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
                 }
+
+                $image->delete();
             }
         });
     }

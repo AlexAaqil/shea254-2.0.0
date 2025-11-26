@@ -26,6 +26,7 @@ use App\Livewire\Pages\Products\Categories\Index as ProductCategoriesPage;
 use App\Http\Controllers\Products\ProductCategoryController;
 use App\Livewire\Pages\Products\Measurements\Index as ProductMeasurementsPage;
 use App\Http\Controllers\Products\ProductMeasurementController;
+use App\Http\Controllers\Products\ProductImageController;
 use App\Livewire\Pages\Products\Reviews\Index as ProductReviews;
 use App\Livewire\Pages\Products\Offers\Index as ProductOffers;
 use App\Livewire\Pages\Deliveries\Locations\Index as DeliveryLocationsPage;
@@ -74,6 +75,8 @@ Route::middleware(['admin_only'])->group(function() {
 
     Route::get('products', ProductsPage::class)->name('products.index');
     Route::resource('products', ProductController::class)->only(['create', 'store', 'edit', 'update']);
+
+    Route::delete('product-images/delete/{image}', [ProductImageController::class, 'delete'])->name('product-images.delete');
 
     Route::get('product-categories', ProductCategoriesPage::class)->name('product-categories.index');
     Route::resource('product-categories', ProductCategoryController::class)->only(['create', 'store', 'edit', 'update']);

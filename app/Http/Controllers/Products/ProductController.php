@@ -43,8 +43,8 @@ class ProductController extends Controller
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $filename = $product->slug . '-' . Str::random(6) . '.' . $image->getClientOriginalExtension();
-                    $image->storeAs('products', $filename, 'public');
-                    $product->productImages()->create(['image' => $filename]);
+                    $image_path = $image->storeAs('products', $filename, 'public');
+                    $product->product_images()->create(['image' => $image_path]);
                 }
             }
 
@@ -97,8 +97,8 @@ class ProductController extends Controller
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $filename = $product->slug . '-' . Str::random(6) . '.' . $image->getClientOriginalExtension();
-                    $image->storeAs('products', $filename, 'public');
-                    $product->productImages()->create(['image' => $filename]);
+                    $image_path = $image->storeAs('products', $filename, 'public');
+                    $product->product_images()->create(['image' => $image_path]);
                 }
             }
 
