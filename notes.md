@@ -1,4 +1,7 @@
 # TODOs
+- add options for delivery using country, zip code.
+- add payments: mastercard, paypal, visa, amex, discover.
+
 - google, meta, tiktok conversions APIs.
 ~~- wholesale price when quantity hits price tier quantity.~~
 ~~- stock management (CRUD).~~
