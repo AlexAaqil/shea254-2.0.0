@@ -138,5 +138,11 @@ return [
             'path' => storage_path('logs/inventory-management.log'),
             'level' => 'debug',
         ],
+
+        'paystack' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/paystack.log'),
+            'level' => 'debug',
+        ]
     ],
 ];
