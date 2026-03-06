@@ -15,6 +15,7 @@ use App\Http\Requests\Sales\CheckoutRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Payments\KCBMpesaExpressController;
+use App\Http\Controllers\Payments\PaystackController;
 use Throwable;
 
 class SaleController extends Controller
@@ -56,6 +57,8 @@ class SaleController extends Controller
         $location_name = null;
         $area_name = null;
 
+        $payment_method = $validated_data['payment_method'];
+
         if ($delivery_method === 'delivery') {
             $location = DeliveryLocation::findOrFail($validated_data['location']);
             $area = DeliveryArea::findOrFail($validated_data['area']);
@@ -75,66 +78,41 @@ class SaleController extends Controller
         $order_number = 'ord_' . Str::upper(Str::random(6)) . '_' . now()->format('dmy');
         $user_id = Auth::check() ? Auth::user()->id : null;
 
+        if ($payment_method === 'kcb_mpesa') {
+            return $this->processKcbMpesaPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
+        } else {
+            return $this->processPayStackPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
+        }
+    }
+
+    private function processKcbMpesaPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name) 
+    {
         try {
             $kcb_mpesa_express = app(KCBMpesaExpressController::class);
-            $response = $kcb_mpesa_express->initiatePayment($phone_number, $total_amount, $order_number);
+            $response = $kcb_mpesa_express->initiatePayment($validated_data['phone_number'], $total_amount, $order_number);
         } catch (Throwable $e) {
             report($e);
-            session()->flash('notify', ['message' => 'Payment initiation failed. Please try again', 'type' => 'error']);
+            session()->flash('notify', ['message' => 'Payment initialization failed. Please try again', 'type' => 'error']);
             return redirect()->route('checkout-page');
         }
 
         if (isset($response->response->ResponseCode) && $response->response->ResponseCode === '0') {
-            $order = Sale::create([
-                'order_number' => $order_number,
-                'order_type' => 1,
-                'discount_code' => null,
-                'discount' => 0,
-                'total_amount' => $total_amount,
-                'payment_method' => 'kcb_mpesa',
-                'status' => 'payment_pending',
-                'user_id' => $user_id,
-            ]);
+            $order = $this->createOrder(
+                $validated_data,
+                $cart_items,
+                $total_amount,
+                $order_number,
+                $user_id,
+                $shipping_cost,
+                $address,
+                $location_name,
+                $area_name,
+                'kcb_mpesa',
+            );
 
-            OrderDelivery::create([
-                'order_id' => $order->id,
-                'full_name' => $full_name,
-                'email' => $email,
-                'phone_number' => $phone_number,
-                'address' => $address,
-                'additional_information' => $additional_information,
-                'location' => $location_name,
-                'area' => $area_name,
-                'shipping_cost' => $shipping_cost,
-            ]);
+            $this->createPaymentRecord($order, $response, 'kcb_mpesa', $order_number);
 
-            foreach ($cart_items as $item) {
-                OrderItem::create([
-                    'product_id'    => $item->product->id,
-                    'title'         => $item->product->title,
-                    'quantity'      => $item->quantity,
-                    'buying_price'  => $item->product->buying_price,
-                    'selling_price' => $item->unit_price,
-                    'order_id'      => $order->id,
-                ]);
-            }
-
-            $order->payment()->create([
-                'payment_gateway' => 'kcb_mpesa',
-                'merchant_request_id' => $response->response->MerchantRequestID ?? '',
-                'checkout_request_id' => $response->response->CheckoutRequestID ?? '',
-                'transaction_reference' => $order_number,
-                'response_code' => $response->response->ResponseCode ?? '',
-                'response_description' => $response->response->ResponseDescription ?? '',
-                'customer_message' => $response->response->CustomerMessage ?? '',
-                'status' => $response->response->ResponseCode === '0' ? 'pending' : 'failed',
-                'order_id' => $order->id,
-            ]);
-
-            Session::put([
-                'order_number' => $order->order_number,
-                'order_id' => $order->id
-            ]);
+            Session::put(['order_number' => $order->order_number, 'order_id' => $order->id]);
 
             Session::forget(['cart', 'cart_count']);
 
@@ -144,6 +122,81 @@ class SaleController extends Controller
 
         session()->flash('notify', ['message' => "{$response->response->CustomerMessage}. Payment initiation failed. Please try again.", 'type' => 'error']);
         return redirect()->route('checkout-page');
+    }
+
+    private function processPayStackPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name)
+    {
+        // Create order first with 'pending' status
+        $order = $this->createOrder(
+            $validated_data,
+            $cart_items,
+            $total_amount,
+            $order_number,
+            $user_id,
+            $shipping_cost,
+            $address,
+            $location_name,
+            $area_name,
+            'paystack'
+        );
+
+        // Initialize Paystack transaction
+        $paystackController = app(PaystackController::class);
+        return $paystackController->initializeTransaction($order, $validated_data['email'], $total_amount);
+    }
+
+    private function createOrder($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name, $payment_method)
+    {
+        $order = Sale::create([
+            'order_number' => $order_number,
+            'order_type' => 1,
+            'discount_code' => null,
+            'discount' => 0,
+            'total_amount' => $total_amount,
+            'payment_method' => $payment_method,
+            'status' => 'payment_pending',
+            'user_id' => $user_id,
+        ]);
+
+        OrderDelivery::create([
+            'order_id' => $order->id,
+            'full_name' => $validated_data['full_name'],
+            'email' => $validated_data['email'],
+            'phone_number' => $validated_data['phone_number'],
+            'address' => $address,
+            'additional_information' => $validated_data['additional_information'] ?? null,
+            'location' => $location_name,
+            'area' => $area_name,
+            'shipping_cost' => $shipping_cost,
+        ]);
+
+        foreach ($cart_items as $item) {
+            OrderItem::create([
+                'product_id'    => $item->product->id,
+                'title'         => $item->product->title,
+                'quantity'      => $item->quantity,
+                'buying_price'  => $item->product->buying_price,
+                'selling_price' => $item->unit_price,
+                'order_id'      => $order->id,
+            ]);
+        }
+
+        return $order;
+    }
+
+    private function createPaymentRecord($order, $response, $gateway, $order_number)
+    {
+        $order->payment()->create([
+            'payment_gateway' => $gateway,
+            'merchant_request_id' => $response->response->MerchantRequestID ?? '',
+            'checkout_request_id' => $response->response->CheckoutRequestID ?? '',
+            'transaction_reference' => $order_number,
+            'response_code' => $response->response->ResponseCode ?? '',
+            'response_description' => $response->response->ResponseDescription ?? '',
+            'customer_message' => $response->response->CustomerMessage ?? '',
+            'status' => $response->response->ResponseCode === '0' ? 'pending' : 'failed',
+            'order_id' => $order->id,
+        ]);
     }
 
     public function success()

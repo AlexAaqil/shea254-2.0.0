@@ -19,6 +19,78 @@
                 button {
                     @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)];
                 }
+
+                .form_section {
+                    @apply mb-8;
+
+                    .form_section_header {
+                        @apply mb-4;
+
+                        p {
+                            @apply flex items-center gap-3;
+
+                            span {
+                                &:first-of-type {
+                                    @apply inline-flex items-center justify-center bg-gray-200 text-gray-700 rounded-full w-[20px] h-[20px] p-[4px] text-sm font-medium;
+                                }
+
+                                &:last-of-type {
+                                    @apply font-semibold;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .delivery_method_section {
+                    .custom_radio_buttons {
+                        @apply flex gap-4;
+
+                        label {
+                            @apply bg-blue-50 py-[8px] px-[12px] rounded-[8px];
+                        }
+                    }
+                }
+
+                .payment_method_section {
+                    .payment_info_box {
+                        @apply bg-green-50 p-[16px] mt-[16px] border border-green-200 rounded-[8px];
+
+                        ul {
+                            li {
+                                @apply flex gap-2;
+                                
+                                .image {
+                                    @apply w-[20px] h-[20px];
+
+                                    img {
+                                        @apply object-contain;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    .custom_radio_buttons {
+                        @apply flex gap-4;
+
+                        label {
+                            @apply flex gap-1 bg-blue-50 py-[8px] px-[12px] rounded-[8px];;
+                        }
+
+                        .images {
+                            @apply flex gap-4 items-center;
+
+                            .image {
+                                @apply h-[25px] w-[25px];
+
+                                img {
+                                    @apply object-contain;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             .checkout_summary {

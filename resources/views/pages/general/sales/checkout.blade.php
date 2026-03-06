@@ -2,7 +2,7 @@
     <div class="CheckoutPage">
         <section class="Hero">
             <div class="container">
-                <h1>Billing Information</h1>
+                <h1>Checkout</h1>
             </div>
         </section>
 
@@ -13,75 +13,149 @@
                         <form action="{{ Route::has('checkout.store') ? route('checkout.store') : '#' }}" method="post">
                             @csrf
 
-                            <div class="inputs_group">
-                                <div class="inputs">
-                                    <label for="full_name" class="required">Full Name</label>
-                                    <input type="text" name="full_name" id="full_name" placeholder="Enter your Full Name" value="{{ $user ? $user->full_name : old('full_name') }}">
-                                    <x-form-input-error field="full_name" />
+                            <div class="form_section contact_information_section">
+                                <div class="form_section_header">
+                                    <p>
+                                        <span>1</span>
+                                        <span>Contact Information</span>
+                                    </p>
                                 </div>
-
-                                <div class="inputs">
-                                    <label for="email" class="required">Email Address</label>
-                                    <input type="email" name="email" id="email" placeholder="example@gmail.com" value="{{ $user ? $user->email : old('email') }}">
-                                    <x-form-input-error field="email" />
-                                </div>
-                            </div>
-
-                            <div class="inputs">
-                                <label for="phone_number" class="required">Phone Number <span class="text-gray-400">(For payment)</span></label>
-                                <input type="text" name="phone_number" id="phone_number" placeholder="2547xxxxxxxx" value="{{ $user ? $user->phone_number : old('phone_number') }}">
-                                <x-form-input-error field="phone_number" />
-                            </div>
-
-                            <div class="inputs">
-                                <label for="delivery_method" class="required">How would you like to receive your Order?</label>
-                                <div class="custom_radio_buttons">
-                                    <label>
-                                        <input class="option_radio" type="radio" name="delivery_method" value="delivery" {{ old('delivery_method', 'delivery') === 'delivery' ? 'checked' : '' }}>
-                                        <span>Delivery</span>
-                                    </label>
-
-                                    <label>
-                                        <input class="option_radio" type="radio" name="delivery_method" value="shop" {{ old('delivery_method') === 'shop' ? 'checked' : '' }}>
-                                        <span>Pick it from the shop</span>
-                                    </label>
-                                </div>
-                                <x-form-input-error field="delivery_method" />
-                            </div>
-
-                            <div class="delivery_details" id="delivery_details" style="display:none;">
                                 <div class="inputs_group">
                                     <div class="inputs">
-                                        <label for="location" class="required">Location</label>
-                                        <select name="location" id="location">
-                                            <option value="">Select Location</option>
-                                            @foreach($locations as $location)
-                                                <option value="{{ $location->id }}" {{ (string)old('location') === (string)$location->id ? 'selected' : '' }}>
-                                                    {{ $location->location_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <x-form-input-error field="location" />
+                                        <label for="full_name" class="required">Full Name</label>
+                                        <input type="text" name="full_name" id="full_name" placeholder="Enter your Full Name" value="{{ $user ? $user->full_name : old('full_name') }}">
+                                        <x-form-input-error field="full_name" />
                                     </div>
 
                                     <div class="inputs">
-                                        <label for="area" class="required">Area</label>
-                                        <select name="area" id="area">
-                                            <option value="">Select Area</option>
-                                            @foreach($areas as $area)
-                                                <option value="{{ $area->id }}" {{ (string)old('area') === (string)$area->id ? 'selected' : '' }}>
-                                                    {{ $area->area_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <x-form-input-error field="area" />
+                                        <label for="email" class="required">Email Address</label>
+                                        <input type="email" name="email" id="email" placeholder="example@gmail.com" value="{{ $user ? $user->email : old('email') }}">
+                                        <x-form-input-error field="email" />
                                     </div>
                                 </div>
 
+                                <div class="inputs_group">
+                                    <div class="inputs">
+                                        <label for="phone_number" class="required">Phone Number <span class="text-gray-400">(For payment)</span></label>
+                                        <input type="text" name="phone_number" id="phone_number" placeholder="2547xxxxxxxx" value="{{ $user ? $user->phone_number : old('phone_number') }}">
+                                        <x-form-input-error field="phone_number" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form_section delivery_method_section">
+                                <div class="form_section_header">
+                                    <p>
+                                        <span>2</span>
+                                        <span>Delivery Method</span>
+                                    </p>
+                                </div>
                                 <div class="inputs">
-                                    <label for="address" class="required">Address</label>
-                                    <input type="text" name="address" id="address" placeholder="Enter delivery address (apartment name, directions)" value="{{ old('address') }}">
-                                    <x-form-input-error field="address" />
+                                    {{-- <label for="delivery_method" class="required">How would you like to receive your Order?</label> --}}
+                                    <div class="custom_radio_buttons">
+                                        <label>
+                                            <input class="option_radio" type="radio" name="delivery_method" value="shop" {{ old('delivery_method', 'shop') === 'shop' ? 'checked' : '' }}>
+                                            <span>Shop</span>
+                                        </label>
+
+                                        <label>
+                                            <input class="option_radio" type="radio" name="delivery_method" value="delivery" {{ old('delivery_method') === 'delivery' ? 'checked' : '' }}>
+                                            <span>Delivery</span>
+                                        </label>
+                                    </div>
+                                    <x-form-input-error field="delivery_method" />
+                                </div>
+
+                                <div class="delivery_details" id="delivery_details" style="display:none;">
+                                    <div class="inputs_group">
+                                        <div class="inputs">
+                                            <label for="location" class="required">Location</label>
+                                            <select name="location" id="location">
+                                                <option value="">Select Location</option>
+                                                @foreach($locations as $location)
+                                                    <option value="{{ $location->id }}" {{ (string)old('location') === (string)$location->id ? 'selected' : '' }}>
+                                                        {{ $location->location_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <x-form-input-error field="location" />
+                                        </div>
+
+                                        <div class="inputs">
+                                            <label for="area" class="required">Area</label>
+                                            <select name="area" id="area">
+                                                <option value="">Select Area</option>
+                                                @foreach($areas as $area)
+                                                    <option value="{{ $area->id }}" {{ (string)old('area') === (string)$area->id ? 'selected' : '' }}>
+                                                        {{ $area->area_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <x-form-input-error field="area" />
+                                        </div>
+                                    </div>
+
+                                    <div class="inputs">
+                                        <label for="address" class="required">Address</label>
+                                        <input type="text" name="address" id="address" placeholder="Enter delivery address (apartment name, directions)" value="{{ old('address') }}">
+                                        <x-form-input-error field="address" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form_section payment_method_section">
+                                <div class="form_section_header">
+                                    <p>
+                                        <span>3</span>
+                                        <span>Payment Method</span>
+                                    </p>
+                                </div>
+
+                                <div class="inputs">
+                                    <div class="custom_radio_buttons">
+                                        <label>
+                                            <input class="option_radio" type="radio" name="payment_method" value="kcb_mpesa" {{ old('payment_method', 'kcb_mpesa') === 'kcb_mpesa' ? 'checked' : '' }}>
+                                            <span>MPesa</span>
+                                        </label>
+
+                                        <label>
+                                            <input class="option_radio" type="radio" name="payment_method" value="paystack" {{ old('payment_method') === 'paystack' ? 'checked' : '' }}>
+                                            <div class="images">
+                                                <div class="image">
+                                                    <img src="{{ asset('assets/images/icon-visa.svg') }}" alt="Visa Icon" />
+                                                </div>
+                                                <div class="image">
+                                                    <img src="{{ asset('assets/images/icon-mastercard.svg') }}" alt="Mastercard Icon" />
+                                                </div>
+                                            </div>
+                                            {{-- <span>Visa, Mastercard, Amex</span> --}}
+                                        </label>
+                                    </div>
+                                    <x-form-input-error field="payment_method" />
+                                </div>
+
+                                <div id="mpesa_info" class="payment_info_box mpesa_payment_info_box">
+                                    <p style="margin: 0;">An STK Push will be sent to <span id="phone_display">{{ old('phone_number', $user?->phone_number) ?: 'your phone' }}</span>. Enter your PIN to complete payment.</p>
+                                </div>
+
+                                <div id="paystack_info" class="payment_info_box paystack_payment_info_box">
+                                    <p style="margin: 0 0 10px;">You'll be redirected to Paystack's secure payment page where you can enter your card details.</p>
+                                    <p style="margin: 0; font-size: 14px;">We accept:</p>
+                                    <ul style="margin: 5px 0 0 20px;">
+                                        <li>
+                                            <div class="image">
+                                                <img src="{{ asset('assets/images/icon-visa.svg') }}" alt="Visa Icon" />
+                                            </div>
+                                            <span>Visa</span>
+                                        </li>
+                                        <li>
+                                            <div class="image">
+                                                <img src="{{ asset('assets/images/icon-mastercard.svg') }}" alt="Mastercard Icon" />
+                                            </div>
+                                            <span>Mastercard</span>
+                                        </li>
+                                        <li>American Express</li>
+                                    </ul>
                                 </div>
                             </div>
 
@@ -126,6 +200,8 @@
         const shippingCostElement = document.getElementById("shipping_cost");
         const totalElement = document.getElementById("total_amount");
         const deliveryDetails = document.getElementById("delivery_details");
+        const paystackInfo = document.getElementById("paystack_info");
+        const mpesaInfo = document.getElementById("mpesa_info");
 
         let areaPrice = 0;
 
@@ -209,6 +285,49 @@
             areaSelect.value = "{{ old('area') }}";
             areaSelect.dispatchEvent(new Event('change'));
         @endif
+
+        function togglePaymentInfo() {
+            const selectedPayment = document.querySelector("input[name='payment_method']:checked")?.value;
+            
+            if (selectedPayment === 'paystack') {
+                paystackInfo.style.display = 'block';
+                mpesaInfo.style.display = 'none';
+            } else {
+                paystackInfo.style.display = 'none';
+                mpesaInfo.style.display = 'block';
+            }
+
+            // Update the phone number in M-Pesa info
+            if (mpesaInfo.style.display !== 'none') {
+                const phoneDisplay = document.getElementById('phone_display');
+                const phoneInput = document.querySelector('input[name="phone_number"]');
+                if (phoneDisplay && phoneInput) {
+                    phoneDisplay.textContent = phoneInput.value || 'your phone';
+                }
+            }
+        }
+
+        const paymentMethodRadios = document.querySelectorAll("input[name='payment_method']");
+    
+        paymentMethodRadios.forEach(radio => {
+            radio.addEventListener('change', togglePaymentInfo);
+        });
+
+        togglePaymentInfo();
+
+        // Update phone number in M-Pesa info when phone number changes
+        const phoneInput = document.querySelector('input[name="phone_number"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                const selectedPayment = document.querySelector("input[name='payment_method']:checked")?.value;
+                if (selectedPayment !== 'paystack') {
+                    const phoneDisplay = document.getElementById('phone_display');
+                    if (phoneDisplay) {
+                        phoneDisplay.textContent = this.value || 'your phone';
+                    }
+                }
+            });
+        }
     });
     </script>
     @endpush
