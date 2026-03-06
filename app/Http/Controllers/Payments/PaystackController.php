@@ -292,6 +292,7 @@ class PaystackController extends Controller
             'response_description' => json_encode($responseData),
             'status' => 'pending',
             'order_id' => $order->id,
+            'customer_message' => $responseData['message'] ?? 'Payment initialization started',
         ]);
     }
 
