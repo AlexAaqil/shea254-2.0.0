@@ -286,7 +286,7 @@ class PaystackController extends Controller
         return $order->payment()->create([
             'payment_gateway' => 'paystack',
             'merchant_request_id' => $responseData['data']['reference'] ?? null,
-            'checkout_request_id' => null,
+            'checkout_request_id' => 'PAYSTACK_' . $reference,
             'transaction_reference' => $reference,
             'response_code' => $responseData['data']['reference'] ?? null,
             'response_description' => json_encode($responseData),
