@@ -232,7 +232,9 @@ class PaystackController extends Controller
                 'transaction_date' => $data['transaction_date'] ?? now(),
                 'payment_method' => 'paystack',
                 'authorization' => $data['authorization'] ?? null,
-                'full_response' => $data
+                'full_response' => $data,
+                'reference' => $data['reference'],
+                'paid_at' => $data['paid_at'] ?? now(),
             ]),
             'customer_message' => 'Payment completed successfully',
         ]);
