@@ -211,7 +211,13 @@ class SaleController extends Controller
             return redirect()->route('shop-page');
         }
 
-        return view('pages.general.sales.success', compact('order_number', 'order'));
+        session()->forget('order_number');
+
+        if ($order->payment_method === 'kcb_mpesa') {
+            return view('pages.general.sales.success-mpesa', compact('order_number', 'order'));
+        } else {
+            return view('pages.general.sales.success-paystack', compact('order_number', 'order'));
+        }
     }
 
     public function requestSTKPush($order)
