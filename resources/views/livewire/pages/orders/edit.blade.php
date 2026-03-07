@@ -71,7 +71,7 @@
                     <div class="payment_details">
                         @php
                             $payment_status = optional($order->payment)->status;
-                            $payment_description = optional($order->payment)->response_description;
+                            $payment_description = optional($order->payment)->response_description ?? [];
                             $status_class = match($payment_status) {
                                 'paid' => 'text-green-600',
                                 'success' => 'text-green-600',
