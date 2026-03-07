@@ -79,17 +79,21 @@
                                 'failed' => 'text-red-600',
                                 default => ''
                             };
-
-                            // Decode the JSON payment description
-                            // $payment_info = json_decode($payment_description, true) ?? [];
                         @endphp
 
                         <div class="payment_info">
                             <h4 class="{{ $status_class }}">Payment Status: {{ ucfirst($payment_status ?? 'unknown') }}</h4>
-                            @if($payment_status == 'failed' && isset($payment_description))
-                                <p class="text-danger"><strong>Reason:</strong> {{ $payment_description }}</p>
+                            @if($payment_status == 'failed' && !empty($payment_info))
+                                @if(is_string($payment_info))
+                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info }}</p>
+                                @elseif(isset($payment_info['customer_message']))
+                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info['customer_message'] }}</p>
+                                @elseif(isset($payment_info['gateway_response']))
+                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info['gateway_response'] }}</p>
+                                @endif
                             @endif
-                            @if(!empty($payment_info))
+
+                            @if(!empty($payment_info) && is_array($payment_info))
                                 <div class="payment_details_grid">
                                     @if(isset($payment_info['mpesa_receipt']))
                                         <p>
@@ -97,25 +101,77 @@
                                             <span>{{ $payment_info['mpesa_receipt'] }}</span>
                                         </p>
                                     @endif
+                                    
                                     @if(isset($payment_info['amount']))
                                         <p>
                                             <span>Amount Paid:</span>
                                             <span>KES {{ number_format($payment_info['amount'], 2) }}</span>
                                         </p>
                                     @endif
+                                    
                                     @if(isset($payment_info['phone_number']))
                                         <p>
                                             <span>Phone Number:</span>
                                             <span>+{{ $payment_info['phone_number'] }}</span>
                                         </p>
                                     @endif
+                                    
                                     @if(isset($payment_info['transaction_date']))
                                         <p>
                                             <span>Transaction Date:</span>
-                                            <span>{{ \Carbon\Carbon::createFromFormat('YmdHis', $payment_info['transaction_date'])->format('d M Y \a\t h:i A') }}</span>
+                                            <span>
+                                                @php
+                                                    $transaction_date = $payment_info['transaction_date'];
+                                                    $formatted_date = 'N/A';
+                                                    
+                                                    if (!empty($transaction_date)) {
+                                                        try {
+                                                            // Handle M-Pesa format (YmdHis)
+                                                            if (is_string($transaction_date) && preg_match('/^\d{14}$/', $transaction_date)) {
+                                                                $formatted_date = \Carbon\Carbon::createFromFormat('YmdHis', $transaction_date)->format('d M Y \a\t h:i A');
+                                                            }
+                                                            // Handle Paystack ISO format
+                                                            elseif (is_string($transaction_date)) {
+                                                                $formatted_date = \Carbon\Carbon::parse($transaction_date)->format('d M Y \a\t h:i A');
+                                                            }
+                                                            // Handle timestamp
+                                                            elseif (is_numeric($transaction_date)) {
+                                                                $formatted_date = \Carbon\Carbon::createFromTimestamp($transaction_date)->format('d M Y \a\t h:i A');
+                                                            }
+                                                        } catch (\Exception $e) {
+                                                            $formatted_date = $transaction_date;
+                                                        }
+                                                    }
+                                                @endphp
+                                                {{ $formatted_date }}
+                                            </span>
+                                        </p>
+                                    @endif
+                                    
+                                    {{-- Paystack specific fields --}}
+                                    @if(isset($payment_info['reference']))
+                                        <p>
+                                            <span>Reference:</span>
+                                            <span>{{ $payment_info['reference'] }}</span>
+                                        </p>
+                                    @endif
+                                    
+                                    @if(isset($payment_info['authorization']['card_type']))
+                                        <p>
+                                            <span>Card Type:</span>
+                                            <span>{{ $payment_info['authorization']['card_type'] }}</span>
+                                        </p>
+                                    @endif
+                                    
+                                    @if(isset($payment_info['authorization']['last4']))
+                                        <p>
+                                            <span>Card Last 4:</span>
+                                            <span>**** **** **** {{ $payment_info['authorization']['last4'] }}</span>
                                         </p>
                                     @endif
                                 </div>
+                            @elseif(is_string($payment_info) && !empty($payment_info))
+                                <p>{{ $payment_info }}</p>
                             @endif
                         </div>
 
