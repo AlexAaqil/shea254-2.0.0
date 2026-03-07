@@ -81,7 +81,7 @@
                             };
 
                             // Decode the JSON payment description
-                            $payment_info = json_decode($payment_description, true) ?? [];
+                            // $payment_info = json_decode($payment_description, true) ?? [];
                         @endphp
 
                         <div class="payment_info">
