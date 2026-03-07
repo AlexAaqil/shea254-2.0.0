@@ -251,6 +251,12 @@ class PaystackController extends Controller
         // Store order number in session for success page
         session()->put('order_number', $order->order_number);
 
+        $this->logger->info('SUCCESS PAGE DEBUG', [
+            'order_number_stored' => $order->order_number,
+            'session_order_number' => session('order_number'),
+            'session_all' => session()->all()
+        ]);
+
         $this->logger->info('Payment successful', [
             'order_number' => $order->order_number,
             'reference' => $data['reference']
@@ -334,6 +340,12 @@ class PaystackController extends Controller
                 'message' => "Payment successful! Your order {$order->order_number} has been confirmed.",
                 'type' => 'success'
             ]);
+
+            $this->logger->info('Redirecting to success page', [
+                'order_number' => $order->order_number,
+                'session_data' => session()->all()
+            ]);
+            
             return redirect()->route('checkout.success');
         } else {
             session()->flash('notify', [
