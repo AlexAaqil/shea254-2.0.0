@@ -9,6 +9,10 @@ class Payment extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'response_description' => 'array',
+    ];
+
     public function order()
     {
         return $this->belongsTo(Sale::class, 'order_id');
