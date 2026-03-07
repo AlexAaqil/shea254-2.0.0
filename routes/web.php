@@ -58,6 +58,9 @@ Route::get('areas/shipping-cost/{area}', [DeliveryAreaController::class, 'areasS
 Route::get('blog', UsersBlogsPage::class)->name('users-blogs-page');
 Route::get('blog/{blog}', UsersBlogsDetailsPage::class)->name('users-blogs-details-page');
 
+Route::get('/paystack/callback', [App\Http\Controllers\Payments\PaystackController::class, 'handleCallback'])->name('paystack.callback');
+Route::post('/paystack/webhook', [App\Http\Controllers\Payments\PaystackController::class, 'handleWebhook'])->name('paystack.webhook');
+
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
 
