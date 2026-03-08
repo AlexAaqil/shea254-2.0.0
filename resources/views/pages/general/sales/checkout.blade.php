@@ -115,12 +115,28 @@
                                     <div class="custom_radio_buttons">
                                         <label>
                                             <input class="option_radio" type="radio" name="payment_method" value="kcb_mpesa" {{ old('payment_method', 'kcb_mpesa') === 'kcb_mpesa' ? 'checked' : '' }}>
-                                            <span>MPesa</span>
+                                            <div class="image">
+                                                <img src="{{ asset("assets/images/brand-icons/icon-mpesa.svg") }}" alt="Mpesa Icon" />
+                                            </div>
+                                            {{-- <span>MPesa</span> --}}
                                         </label>
 
                                         <label>
                                             <input class="option_radio" type="radio" name="payment_method" value="paystack" {{ old('payment_method') === 'paystack' ? 'checked' : '' }}>
-                                            <span>Card</span>
+                                            <div class="images">
+                                                <div class="image">
+                                                    <img src="{{ asset("assets/images/brand-icons/icon-visa.svg") }}" alt="Visa Icon" />
+                                                </div>
+
+                                                <div class="image">
+                                                    <img src="{{ asset("assets/images/brand-icons/icon-mastercard.svg") }}" alt="Mastercard Icon" />
+                                                </div>
+
+                                                <div class="image">
+                                                    <img src="{{ asset("assets/images/brand-icons/icon-amex.svg") }}" alt="Amex Icon" />
+                                                </div>
+                                            </div>
+                                            {{-- <span>Card</span> --}}
                                         </label>
 
                                         {{-- <label>
@@ -141,17 +157,22 @@
                                     <ul style="margin: 5px 0 0 20px;">
                                         <li>
                                             <div class="image">
-                                                <img src="{{ asset('assets/images/icon-visa.svg') }}" alt="Visa Icon" />
+                                                <img src="{{ asset('assets/images/brand-icons/icon-visa.svg') }}" alt="Visa Icon" />
                                             </div>
                                             <span>Visa</span>
                                         </li>
                                         <li>
                                             <div class="image">
-                                                <img src="{{ asset('assets/images/icon-mastercard.svg') }}" alt="Mastercard Icon" />
+                                                <img src="{{ asset('assets/images/brand-icons/icon-mastercard.svg') }}" alt="Mastercard Icon" />
                                             </div>
                                             <span>Mastercard</span>
                                         </li>
-                                        <li>American Express</li>
+                                        <li>
+                                            <div class="image">
+                                                <img src="{{ asset("assets/images/brand-icons/icon-amex.svg") }}" alt="Amex Icon">
+                                            </div>
+                                            <span>American Express</span>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

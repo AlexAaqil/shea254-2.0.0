@@ -64,7 +64,7 @@
                                     @apply w-[20px] h-[20px];
 
                                     img {
-                                        @apply object-contain;
+                                        @apply object-contain rounded-[2px];
                                     }
                                 }
                             }
@@ -72,22 +72,22 @@
                     }
 
                     .custom_radio_buttons {
-                        @apply flex gap-4;
+                        @apply flex gap-8;
 
                         label {
-                            @apply flex gap-1 bg-blue-50 py-[8px] px-[12px] rounded-[8px];;
+                            @apply flex gap-2 bg-blue-50 py-[8px] px-[12px] rounded-[8px];;
+                        }
+
+                        .image {
+                            @apply h-[50px] w-[50px];
+
+                            img {
+                                @apply object-contain rounded-[2px];
+                            }
                         }
 
                         .images {
-                            @apply flex gap-4 items-center;
-
-                            .image {
-                                @apply h-[25px] w-[25px];
-
-                                img {
-                                    @apply object-contain;
-                                }
-                            }
+                            @apply flex gap-6 items-center;
                         }
                     }
                 }
