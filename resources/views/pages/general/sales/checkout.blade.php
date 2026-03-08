@@ -120,16 +120,13 @@
 
                                         <label>
                                             <input class="option_radio" type="radio" name="payment_method" value="paystack" {{ old('payment_method') === 'paystack' ? 'checked' : '' }}>
-                                            <div class="images">
-                                                <div class="image">
-                                                    <img src="{{ asset('assets/images/icon-visa.svg') }}" alt="Visa Icon" />
-                                                </div>
-                                                <div class="image">
-                                                    <img src="{{ asset('assets/images/icon-mastercard.svg') }}" alt="Mastercard Icon" />
-                                                </div>
-                                            </div>
-                                            {{-- <span>Visa, Mastercard, Amex</span> --}}
+                                            <span>Card</span>
                                         </label>
+
+                                        {{-- <label>
+                                            <input class="option_radio" type="radio" name="payment_method" value="paypal" {{ old('payment_method') === 'paypal' ? 'checked' : '' }}>
+                                            <span>Paypal</span>
+                                        </label> --}}
                                     </div>
                                     <x-form-input-error field="payment_method" />
                                 </div>
