@@ -83,8 +83,10 @@ class PayPalController extends Controller
         try {
             $access_token = $this->getAccessToken();
 
-            // Format amount (PayPal uses decimal with 2 places)
-            $amount = number_format($total_amount, 2, '.', '');
+            $currency = env('STORE_CURRENCY', 'KES');
+
+            // Format amount based on currency rules
+            $amount = $this->formatAmountForPaypal($total_amount, $currency);
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
@@ -96,11 +98,11 @@ class PayPalController extends Controller
                         'reference_id' => $order->order_number,
                         'description' => 'Order #' . $order->order_number,
                         'amount' => [
-                            'currency_code' => 'USD', // or your currency
+                            'currency_code' => $currency,
                             'value' => $amount,
                             'breakdown' => [
                                 'item_total' => [
-                                    'currency_code' => 'USD',
+                                    'currency_code' => $currency,
                                     'value' => $amount
                                 ]
                             ]
@@ -198,11 +200,6 @@ class PayPalController extends Controller
             'all_params' => $request->all()
         ]);
 
-        $this->logger->info('Session data in capture', [
-            'session_all' => session()->all(),
-            'request_params' => $request->all()
-        ]);
-
         if (!$token) {
             $this->logger->error('No token in capture request');
             session()->flash('notify', [
@@ -219,10 +216,15 @@ class PayPalController extends Controller
                 'order_id' => $token
             ]);
 
-            // Capture the payment
+            // Send an empty JSON object in the body
             $response = Http::withToken($access_token)
-                ->withHeaders(['Content-Type' => 'application/json'])
-                ->post("{$this->base_url}/v2/checkout/orders/{$token}/capture");
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ])
+                ->send('POST', "{$this->base_url}/v2/checkout/orders/{$token}/capture", [
+                    'body' => '{}'
+            ]);
 
             $capture_data = $response->json();
 
@@ -491,16 +493,19 @@ class PayPalController extends Controller
     /**
      * Format order items for PayPal
      */
-    private function formatOrderItems($order)
+    private function formatOrderItems($order, $currency = 'KES')
     {
         $items = [];
         
         foreach ($order->order_items as $item) {
+            // Format each item price according to currency rules
+            $item_price = $this->formatAmountForPayPal($item->selling_price, $currency);
+
             $items[] = [
                 'name' => $item->title,
                 'unit_amount' => [
-                    'currency_code' => 'USD',
-                    'value' => number_format($item->selling_price, 2, '.', '')
+                    'currency_code' => $currency,
+                    'value' => $item_price,
                 ],
                 'quantity' => $item->quantity,
                 'description' => 'Product: ' . $item->title,
@@ -539,6 +544,28 @@ class PayPalController extends Controller
 
         // Remove empty fields
         return array_filter($address);
+    }
+
+    /**
+     * Format amount according to PayPal's currency rules
+     * 
+     * @param float $amount
+     * @param string $currency
+     * @return string
+     */
+    private function formatAmountForPayPal($amount, $currency)
+    {
+        // List of currencies that don't support decimals (from PayPal docs)
+        // Source: https://developer.paypal.com/api/rest/reference/currency-codes/
+        $non_decimal_currencies = ['HUF', 'JPY', 'TWD', 'KES'];
+        
+        if (in_array($currency, $non_decimal_currencies)) {
+            // For non-decimal currencies: round to integer and return as whole number
+            return (string) round($amount, 0);
+        }
+        
+        // For decimal currencies: format with 2 decimal places
+        return number_format($amount, 2, '.', '');
     }
 
     /**
