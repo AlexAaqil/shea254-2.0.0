@@ -85,17 +85,19 @@ class PayPalController extends Controller
 
             $store_currency = env('STORE_CURRENCY', 'KES');
             $paypal_currency = env('PAYPAL_CURRENCY', 'USD');
+            $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
 
-            // Format amount based on currency rules
-            // Convert KES to USD
-            $amount_in_usd = $total_amount;
-            if ($store_currency === 'KES' && $paypal_currency === 'USD') {
-                $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
-                $amount_in_usd = $total_amount * $conversion_rate;
+            // Format items with PayPal currency
+            $items = $this->formatOrderItems($order, $paypal_currency);
+
+            // Calculate total from items to ensure accuracy
+            $calculated_total = 0;
+            foreach ($items as $item) {
+                $calculated_total += (float)$item['unit_amount']['value'] * $item['quantity'];
             }
 
             // Format for PayPal
-            $amount = number_format($amount_in_usd, 2, '.', '');
+            $amount = number_format($calculated_total, 2, '.', '');
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
@@ -105,7 +107,7 @@ class PayPalController extends Controller
                 'purchase_units' => [
                     [
                         'reference_id' => $order->order_number,
-                        'description' => 'Order #' . $order->order_number,
+                        'description' => 'Order #' . $order->order_number . ' (' . $store_currency . ' ' . number_format($total_amount, 2) . ')',
                         'amount' => [
                             'currency_code' => $paypal_currency,
                             'value' => $amount,
@@ -116,7 +118,7 @@ class PayPalController extends Controller
                                 ]
                             ]
                         ],
-                        'items' => $this->formatOrderItems($order),
+                        'items' => $items,
                         'shipping' => [
                             'name' => [
                                 'full_name' => $order->order_delivery->full_name,
@@ -502,22 +504,37 @@ class PayPalController extends Controller
     /**
      * Format order items for PayPal
      */
-    private function formatOrderItems($order, $paypal_currency = 'KES')
+    private function formatOrderItems($order, $paypal_currency)
     {
         $items = [];
+
+        // Get the store currency for reference only
+        $store_currency = env('STORE_CURRENCY', 'KES');
+        $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
         
         foreach ($order->order_items as $item) {
-            // Format each item price according to currency rules
-            $item_price = $this->formatAmountForPayPal($item->selling_price, $paypal_currency);
+            // Calculate item price in PayPal currency (USD)
+            $item_price_in_store_currency = $item->selling_price;
+            
+            // Convert to PayPal currency
+            if ($store_currency === 'KES' && $paypal_currency === 'USD') 
+            {
+                $item_price_in_paypal_currency = $item_price_in_store_currency * $conversion_rate;
+            } else {
+                $item_price_in_paypal_currency = $item_price_in_store_currency;
+            }
+
+            // Format according to currency rules (USD uses 2 decimals)
+            $formatted_price = $this->formatAmountForPayPal($item_price_in_paypal_currency, $paypal_currency);
 
             $items[] = [
                 'name' => $item->title,
                 'unit_amount' => [
                     'currency_code' => $paypal_currency,
-                    'value' => $item_price,
+                    'value' => $formatted_price,
                 ],
                 'quantity' => $item->quantity,
-                'description' => 'Product: ' . $item->title,
+                'description' => 'Product: ' . $item->title . ' (' . $store_currency . ' ' . number_format($item_price_in_store_currency, 2) . ')',
                 'sku' => 'PROD-' . $item->product_id,
                 'category' => 'PHYSICAL_GOODS'
             ];
