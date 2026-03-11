@@ -83,10 +83,19 @@ class PayPalController extends Controller
         try {
             $access_token = $this->getAccessToken();
 
-            $currency = env('STORE_CURRENCY', 'KES');
+            $store_currency = env('STORE_CURRENCY', 'KES');
+            $paypal_currency = env('PAYPAL_CURRENCY', 'USD');
 
             // Format amount based on currency rules
-            $amount = $this->formatAmountForPaypal($total_amount, $currency);
+            // Convert KES to USD
+            $amount_in_usd = $total_amount;
+            if ($store_currency === 'KES' && $paypal_currency === 'USD') {
+                $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
+                $amount_in_usd = $total_amount * $conversion_rate;
+            }
+
+            // Format for PayPal
+            $amount = number_format($amount_in_usd, 2, '.', '');
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
@@ -98,11 +107,11 @@ class PayPalController extends Controller
                         'reference_id' => $order->order_number,
                         'description' => 'Order #' . $order->order_number,
                         'amount' => [
-                            'currency_code' => $currency,
+                            'currency_code' => $paypal_currency,
                             'value' => $amount,
                             'breakdown' => [
                                 'item_total' => [
-                                    'currency_code' => $currency,
+                                    'currency_code' => $paypal_currency,
                                     'value' => $amount
                                 ]
                             ]
@@ -493,18 +502,18 @@ class PayPalController extends Controller
     /**
      * Format order items for PayPal
      */
-    private function formatOrderItems($order, $currency = 'KES')
+    private function formatOrderItems($order, $paypal_currency = 'KES')
     {
         $items = [];
         
         foreach ($order->order_items as $item) {
             // Format each item price according to currency rules
-            $item_price = $this->formatAmountForPayPal($item->selling_price, $currency);
+            $item_price = $this->formatAmountForPayPal($item->selling_price, $paypal_currency);
 
             $items[] = [
                 'name' => $item->title,
                 'unit_amount' => [
-                    'currency_code' => $currency,
+                    'currency_code' => $paypal_currency,
                     'value' => $item_price,
                 ],
                 'quantity' => $item->quantity,
@@ -550,16 +559,16 @@ class PayPalController extends Controller
      * Format amount according to PayPal's currency rules
      * 
      * @param float $amount
-     * @param string $currency
+     * @param string $paypal_currency
      * @return string
      */
-    private function formatAmountForPayPal($amount, $currency)
+    private function formatAmountForPayPal($amount, $paypal_currency)
     {
         // List of currencies that don't support decimals (from PayPal docs)
         // Source: https://developer.paypal.com/api/rest/reference/currency-codes/
         $non_decimal_currencies = ['HUF', 'JPY', 'TWD', 'KES'];
         
-        if (in_array($currency, $non_decimal_currencies)) {
+        if (in_array($paypal_currency, $non_decimal_currencies)) {
             // For non-decimal currencies: round to integer and return as whole number
             return (string) round($amount, 0);
         }
