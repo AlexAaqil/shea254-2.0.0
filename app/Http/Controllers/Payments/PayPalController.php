@@ -38,6 +38,8 @@ class PayPalController extends Controller
         $this->logger->info('PayPalController initialized', [
             'mode' => $this->mode,
             'base_url' => $this->base_url,
+            'client_id_length' => strlen($this->client_id),
+            'client_secret_length' => strlen($this->client_secret)
         ]);
     }
 
@@ -55,7 +57,8 @@ class PayPalController extends Controller
 
             $this->logger->info('Access token response', [
                 'status' => $response->status(),
-                'body' => $response->json()
+                'body' => $response->json(),
+                'headers' => $response->headers(),
             ]);
 
             if ($response->failed()) {
