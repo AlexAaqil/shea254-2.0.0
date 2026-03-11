@@ -51,7 +51,7 @@ class PayPalController extends Controller
         try {
             $response = Http::withBasicAuth($this->client_id, $this->client_secret)
                 ->asForm()
-                ->post("{$this->base_url}/v1/oauth/token", [
+                ->post("{$this->base_url}/v1/oauth2/token", [
                     'grant_type' => 'client_credentials',
                 ]);
 
