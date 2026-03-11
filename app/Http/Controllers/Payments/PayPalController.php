@@ -190,10 +190,26 @@ class PayPalController extends Controller
     public function capturePayment(Request $request)
     {
         $token = $request->token; // PayPal returns order ID in 'token' parameter
+        $payerId = $request->PayerID; // PayPal also returns PayerID
+
+        $this->logger->info('PayPal capture callback received', [
+            'token' => $token,
+            'payer_id' => $payerId,
+            'all_params' => $request->all()
+        ]);
+
+        $this->logger->info('Session data in capture', [
+            'session_all' => session()->all(),
+            'request_params' => $request->all()
+        ]);
 
         if (!$token) {
             $this->logger->error('No token in capture request');
-            return redirect()->route('checkout-page')->with('error', 'Invalid payment session');
+            session()->flash('notify', [
+                'message' => 'Invalid payment session. Please try again.',
+                'type' => 'error'
+            ]);
+            return redirect()->route('checkout-page');
         }
 
         try {
@@ -216,7 +232,16 @@ class PayPalController extends Controller
             ]);
 
             if (!$response->successful()) {
-                throw new Exception('Payment capture failed: ' . ($capture_data['message'] ?? 'Unknown error'));
+                $this->logger->error('PayPal capture failed', [
+                    'status' => $response->status(),
+                    'data' => $capture_data
+                ]);
+                
+                session()->flash('notify', [
+                    'message' => 'Payment capture failed: ' . ($capture_data['message'] ?? 'Unknown error'),
+                    'type' => 'error'
+                ]);
+                return redirect()->route('checkout-page');
             }
 
             // Find payment record by PayPal order ID
@@ -224,14 +249,28 @@ class PayPalController extends Controller
 
             if (!$payment) {
                 $this->logger->error('Payment not found for PayPal order', ['token' => $token]);
-                return redirect()->route('checkout-page')->with('error', 'Payment record not found');
+                
+                // Try to find by transaction_reference as fallback
+                $payment = Payment::where('transaction_reference', $token)->first();
+                
+                if (!$payment) {
+                    session()->flash('notify', [
+                        'message' => 'Payment record not found. Please contact support.',
+                        'type' => 'error'
+                    ]);
+                    return redirect()->route('shop-page');
+                }
             }
 
             $order = Sale::find($payment->order_id);
 
             if (!$order) {
                 $this->logger->error('Order not found for payment', ['payment_id' => $payment->id]);
-                return redirect()->route('checkout-page')->with('error', 'Order not found');
+                session()->flash('notify', [
+                    'message' => 'Order not found. Please contact support.',
+                    'type' => 'error'
+                ]);
+                return redirect()->route('shop-page');
             }
 
             // Check payment status
@@ -244,7 +283,8 @@ class PayPalController extends Controller
         } catch (Throwable $e) {
             $this->logger->error('Capture handling failed', [
                 'token' => $token,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             session()->flash('notify', [
@@ -430,9 +470,14 @@ class PayPalController extends Controller
      */
     private function createPaymentRecord($order, $paypal_response)
     {
+        $this->logger->info('Creating payment record', [
+            'paypal_order_id' => $paypal_response['id'],
+            'order_id' => $order->id
+        ]);
+
         return $order->payment()->create([
             'payment_gateway' => 'paypal',
-            'merchant_request_id' => $paypal_response['id'], // PayPal order ID
+            'merchant_request_id' => $paypal_response['id'], // This should match the token
             'checkout_request_id' => 'PAYPAL_' . $paypal_response['id'],
             'transaction_reference' => $paypal_response['id'],
             'response_code' => $paypal_response['status'],
