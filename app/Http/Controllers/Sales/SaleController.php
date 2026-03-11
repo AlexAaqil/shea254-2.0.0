@@ -247,7 +247,7 @@ class SaleController extends Controller
         } elseif ($order->payment_method === 'paystack') {
             return view('pages.general.sales.success-paystack', compact('order_number', 'order'));
         } else {
-            return view('pages.general.sales.sucess-paypal', compact('order_number', 'order'));
+            return view('pages.general.sales.success-paypal', compact('order_number', 'order'));
         }
     }
 
