@@ -164,6 +164,8 @@ class SaleController extends Controller
             'paypal'
         );
 
+        $order->load('order_delivery');
+
         // Store order ID in session for tracking
         session()->put('paypal_order_id', $order->id);
 

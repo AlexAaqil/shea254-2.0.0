@@ -86,6 +86,8 @@ class PayPalController extends Controller
             // Format amount (PayPal uses decimal with 2 places)
             $amount = number_format($total_amount, 2, '.', '');
 
+            $shipping_address = $this->formatShippingAddress($order->order_delivery);
+
             // Prepare order data for PayPal
             $order_data = [
                 'intent' => 'CAPTURE',
@@ -103,7 +105,13 @@ class PayPalController extends Controller
                                 ]
                             ]
                         ],
-                        'items' => $this->formatOrderItems($order)
+                        'items' => $this->formatOrderItems($order),
+                        'shipping' => [
+                            'name' => [
+                                'full_name' => $order->order_delivery->full_name,
+                            ],
+                            'address' => $shipping_address,
+                        ]
                     ]
                 ],
                 'application_context' => [
@@ -457,6 +465,35 @@ class PayPalController extends Controller
         }
 
         return $items;
+    }
+
+    /**
+     * Format shipping address for PayPal
+     */
+    private function formatShippingAddress($orderDelivery)
+    {
+        // For shop pickup, use a default address or handle differently
+        if ($orderDelivery->location === 'Shop') {
+            return [
+                'address_line_1' => 'Shop Pickup',
+                'admin_area_2' => 'Nairobi', // City
+                'admin_area_1' => 'Nairobi', // State/Region
+                'postal_code' => '00100',
+                'country_code' => 'KE',
+            ];
+        }
+
+        // For delivery, use the provided address
+        $address = [
+            'address_line_1' => $orderDelivery->address,
+            'admin_area_2' => $orderDelivery->area, // City/Area
+            'admin_area_1' => $orderDelivery->location, // State/Region (if applicable)
+            'postal_code' => '00100', // You might want to add postal_code to your orders table
+            'country_code' => 'KE',
+        ];
+
+        // Remove empty fields
+        return array_filter($address);
     }
 
     /**
