@@ -33,7 +33,7 @@ class CheckoutRequest extends FormRequest
             
             'additional_information' => ['nullable', 'string', 'max:255'],
 
-            'payment_method' => ['required', Rule::in(['kcb_mpesa', 'paystack'])],
+            'payment_method' => ['required', Rule::in(['kcb_mpesa', 'paystack', 'paypal'])],
         ];
 
         if ($this->input('payment_method') === 'kcb_mpesa') {
@@ -71,7 +71,7 @@ class CheckoutRequest extends FormRequest
             'phone_number.max' => 'Phone number must not exceed :max characters.',
             
             'payment_method.required' => 'Please select a payment method.',
-            'payment_method.in' => 'Invalid payment method selected.',
+            'payment_method.in' => 'Invalid payment method selected. Choose MPesa, Paystack or PayPal',
             
             'delivery_method.required' => 'Please select a delivery method.',
             'location.required_if' => 'Please select a delivery location.',

@@ -79,7 +79,7 @@
                         }
 
                         .image {
-                            @apply h-[50px] w-[50px];
+                            @apply h-[45px] w-[45px];
 
                             img {
                                 @apply object-contain rounded-[2px];
@@ -88,6 +88,18 @@
 
                         .images {
                             @apply flex gap-6 items-center;
+                        }
+
+                        .paypal_button {
+                            @apply flex gap-0 font-bold italic items-center text-lg;
+                            span {
+                                &:first-of-type {
+                                    color: #00457c;
+                                }
+                                &:last-of-type {
+                                    color: #0079c1;
+                                }
+                            }
                         }
                     }
                 }

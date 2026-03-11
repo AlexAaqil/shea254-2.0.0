@@ -13,3 +13,5 @@ Route::post('payment/callback', [KCBMpesaExpressController::class, 'handleCallba
 
 // Route::get('/paystack/callback', [PaystackController::class, 'handleCallback'])->name('paystack.callback');
 // Route::post('/paystack/webhook', [PaystackController::class, 'handleWebhook'])->name('paystack.webhook');
+
+Route::post('/paypal/webhook', [App\Http\Controllers\Payments\PayPalController::class, 'handleWebhook'])->name('paypal.webhook');

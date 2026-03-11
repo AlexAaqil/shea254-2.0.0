@@ -143,6 +143,12 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/paystack.log'),
             'level' => 'debug',
+        ],
+
+        'paypal' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/paypal.log'),
+            'level' => 'debug',
         ]
     ],
 ];

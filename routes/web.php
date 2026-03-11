@@ -61,6 +61,9 @@ Route::get('blog/{blog}', UsersBlogsDetailsPage::class)->name('users-blogs-detai
 Route::get('/paystack/callback', [App\Http\Controllers\Payments\PaystackController::class, 'handleCallback'])->name('paystack.callback');
 Route::post('/paystack/webhook', [App\Http\Controllers\Payments\PaystackController::class, 'handleWebhook'])->name('paystack.webhook');
 
+Route::get('/paypal/capture', [App\Http\Controllers\Payments\PayPalController::class, 'capturePayment'])->name('paypal.capture');
+Route::get('/paypal/cancel', [App\Http\Controllers\Payments\PayPalController::class, 'cancelPayment'])->name('paypal.cancel');
+
 Route::middleware(['authenticated_user'])->group(function() {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
 

@@ -221,3 +221,7 @@ product_price_tiers {
     unique(['product_id', 'min_quantity']);
 }
 ```
+
+
+## Git commit harsh
+c94403f (HEAD -> main, origin/main, origin/HEAD) npm build assets.
