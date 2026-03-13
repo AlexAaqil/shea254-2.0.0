@@ -71,7 +71,14 @@
                     <div class="payment_details">
                         @php
                             $payment_status = optional($order->payment)->status;
-                            $payment_info = optional($order->payment)->response_description ?? [];
+                            $payment_info = optional($order->payment)->response_description;
+                            $payment_gateway = optional($order->payment)->payment_gateway;
+                            
+                            // Decode payment info if it's JSON
+                            if (is_string($payment_info)) {
+                                $payment_info = json_decode($payment_info, true);
+                            }
+                            
                             $status_class = match($payment_status) {
                                 'paid' => 'text-green-600',
                                 'success' => 'text-green-600',
@@ -83,6 +90,17 @@
 
                         <div class="payment_info">
                             <h4 class="{{ $status_class }}">Payment Status: {{ ucfirst($payment_status ?? 'unknown') }}</h4>
+                            
+                            {{-- Payment Gateway Badge --}}
+                            @if($payment_gateway)
+                                <div class="payment_gateway_badge mt-2 mb-3">
+                                    <span class="px-3 py-1 bg-gray-100 rounded-full text-sm font-medium">
+                                        {{ strtoupper($payment_gateway) }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            {{-- Failed Payment Reason --}}
                             @if($payment_status == 'failed' && !empty($payment_info))
                                 @if(is_string($payment_info))
                                     <p class="text-danger"><strong>Reason:</strong> {{ $payment_info }}</p>
@@ -93,35 +111,183 @@
                                 @endif
                             @endif
 
+                            {{-- Payment Details Grid --}}
                             @if(!empty($payment_info) && is_array($payment_info))
-                                <div class="payment_details_grid">
-                                    @if(isset($payment_info['mpesa_receipt']))
-                                        <p>
-                                            <span>M-Pesa Receipt:</span>
-                                            <span>{{ $payment_info['mpesa_receipt'] }}</span>
-                                        </p>
-                                    @endif
+                                <div class="payment_details_grid mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                                     
-                                    @if(isset($payment_info['amount']))
-                                        <p>
-                                            <span>Amount Paid:</span>
-                                            <span>KES {{ number_format($payment_info['amount'], 2) }}</span>
-                                        </p>
+                                    {{-- M-PESA Specific Fields --}}
+                                    @if($payment_gateway === 'kcb_mpesa')
+                                        @if(isset($payment_info['mpesa_receipt']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">M-Pesa Receipt:</span>
+                                                <span class="block mt-1 font-mono">{{ $payment_info['mpesa_receipt'] }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['amount']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Amount Paid:</span>
+                                                <span class="block mt-1">KES {{ number_format($payment_info['amount'], 2) }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['phone_number']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Phone Number:</span>
+                                                <span class="block mt-1">+{{ $payment_info['phone_number'] }}</span>
+                                            </div>
+                                        @endif
                                     @endif
-                                    
-                                    @if(isset($payment_info['phone_number']))
-                                        <p>
-                                            <span>Phone Number:</span>
-                                            <span>+{{ $payment_info['phone_number'] }}</span>
-                                        </p>
+
+                                    {{-- PayStack Specific Fields --}}
+                                    @if($payment_gateway === 'paystack')
+                                        @if(isset($payment_info['reference']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Reference:</span>
+                                                <span class="block mt-1 font-mono text-sm">{{ $payment_info['reference'] }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['authorization']['card_type']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Card Type:</span>
+                                                <span class="block mt-1">{{ $payment_info['authorization']['card_type'] }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['authorization']['last4']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Card Last 4:</span>
+                                                <span class="block mt-1 font-mono">**** **** **** {{ $payment_info['authorization']['last4'] }}</span>
+                                            </div>
+                                        @endif
                                     @endif
-                                    
-                                    @if(isset($payment_info['transaction_date']))
-                                        <p>
-                                            <span>Transaction Date:</span>
-                                            <span>
+
+                                    {{-- PayPal Specific Fields --}}
+                                    @if($payment_gateway === 'paypal')
+                                        {{-- PayPal Order ID --}}
+                                        @if(isset($payment_info['paypal_order_id']))
+                                            <div class="detail-item col-span-2 bg-blue-50 p-3 rounded border border-blue-200">
+                                                <span class="font-semibold text-blue-800">PayPal Order ID:</span>
+                                                <span class="block mt-1 font-mono text-blue-600 break-all">{{ $payment_info['paypal_order_id'] }}</span>
+                                            </div>
+                                        @endif
+
+                                        {{-- Capture ID --}}
+                                        @if(isset($payment_info['capture_id']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Capture ID:</span>
+                                                <span class="block mt-1 font-mono text-sm break-all">{{ $payment_info['capture_id'] }}</span>
+                                            </div>
+                                        @endif
+
+                                        {{-- Currency Conversion Info --}}
+                                        <div class="detail-item col-span-2 bg-yellow-50 p-3 rounded border border-yellow-200">
+                                            <span class="font-semibold text-yellow-800">Currency Conversion:</span>
+                                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                                <div>
+                                                    <span class="text-sm text-gray-600">KES Amount:</span>
+                                                    <span class="block font-bold">KES {{ number_format($payment_info['kes_amount'] ?? $order->total_amount, 2) }}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-sm text-gray-600">USD Amount:</span>
+                                                    <span class="block font-bold">${{ number_format($payment_info['usd_amount'] ?? 0, 2) }}</span>
+                                                </div>
+                                                @if(isset($payment_info['exchange_rate']))
+                                                    <div>
+                                                        <span class="text-sm text-gray-600">Exchange Rate:</span>
+                                                        <span class="block">1 USD = {{ number_format(1 / $payment_info['exchange_rate'], 2) }} KES</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-sm text-gray-600">Rate Source:</span>
+                                                        <span class="block capitalize">{{ $payment_info['rate_source'] ?? 'Unknown' }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        {{-- Transaction Times --}}
+                                        @if(isset($payment_info['create_time']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Created (UTC):</span>
+                                                <span class="block mt-1">{{ \Carbon\Carbon::parse($payment_info['create_time'])->format('d M Y H:i:s') }}</span>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['update_time']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Updated (UTC):</span>
+                                                <span class="block mt-1">{{ \Carbon\Carbon::parse($payment_info['update_time'])->format('d M Y H:i:s') }}</span>
+                                            </div>
+                                        @endif
+
+                                        {{-- PayPal Fee Information --}}
+                                        @if(isset($payment_info['full_response']['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown']))
+                                            @php
+                                                $breakdown = $payment_info['full_response']['purchase_units'][0]['payments']['captures'][0]['seller_receivable_breakdown'];
+                                            @endphp
+                                            <div class="detail-item col-span-2 bg-gray-100 p-3 rounded">
+                                                <span class="font-semibold text-gray-700">Fee Breakdown:</span>
+                                                <div class="grid grid-cols-3 gap-2 mt-2 text-sm">
+                                                    <div>
+                                                        <span class="text-gray-600">Gross:</span>
+                                                        <span class="block font-medium">${{ $breakdown['gross_amount']['value'] ?? '0.00' }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-600">Fee:</span>
+                                                        <span class="block font-medium text-red-600">-${{ $breakdown['paypal_fee']['value'] ?? '0.00' }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-600">Net:</span>
+                                                        <span class="block font-medium text-green-600">${{ $breakdown['net_amount']['value'] ?? '0.00' }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Seller Protection Status --}}
+                                        @if(isset($payment_info['full_response']['purchase_units'][0]['payments']['captures'][0]['seller_protection']))
+                                            @php
+                                                $protection = $payment_info['full_response']['purchase_units'][0]['payments']['captures'][0]['seller_protection'];
+                                            @endphp
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Seller Protection:</span>
+                                                <span class="block mt-1">
+                                                    <span class="px-2 py-1 {{ $protection['status'] === 'ELIGIBLE' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }} rounded text-sm">
+                                                        {{ $protection['status'] }}
+                                                    </span>
+                                                </span>
+                                                @if(!empty($protection['dispute_categories']))
+                                                    <span class="text-xs text-gray-500 block mt-1">
+                                                        Dispute Categories: {{ implode(', ', $protection['dispute_categories']) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        {{-- Payer Information --}}
+                                        @if(isset($payment_info['full_response']['payer']))
+                                            @php
+                                                $payer = $payment_info['full_response']['payer'];
+                                            @endphp
+                                            <div class="detail-item col-span-2">
+                                                <span class="font-semibold text-gray-600">Payer Details:</span>
+                                                <div class="mt-1 text-sm">
+                                                    <div>{{ $payer['name']['given_name'] ?? '' }} {{ $payer['name']['surname'] ?? '' }}</div>
+                                                    <div class="text-gray-600">{{ $payer['email_address'] ?? '' }}</div>
+                                                    <div class="text-gray-600">Account ID: {{ $payer['payer_id'] ?? '' }}</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endif
+
+                                    {{-- Common Fields for All Gateways --}}
+                                    @if(isset($payment_info['transaction_date']) || isset($payment_info['create_time']) || isset($payment_info['paid_at']))
+                                        <div class="detail-item">
+                                            <span class="font-semibold text-gray-600">Transaction Date:</span>
+                                            <span class="block mt-1">
                                                 @php
-                                                    $transaction_date = $payment_info['transaction_date'];
+                                                    $transaction_date = $payment_info['transaction_date'] ?? $payment_info['create_time'] ?? $payment_info['paid_at'] ?? null;
                                                     $formatted_date = 'N/A';
                                                     
                                                     if (!empty($transaction_date)) {
@@ -130,7 +296,7 @@
                                                             if (is_string($transaction_date) && preg_match('/^\d{14}$/', $transaction_date)) {
                                                                 $formatted_date = \Carbon\Carbon::createFromFormat('YmdHis', $transaction_date)->format('d M Y \a\t h:i A');
                                                             }
-                                                            // Handle Paystack ISO format
+                                                            // Handle ISO format
                                                             elseif (is_string($transaction_date)) {
                                                                 $formatted_date = \Carbon\Carbon::parse($transaction_date)->format('d M Y \a\t h:i A');
                                                             }
@@ -145,30 +311,20 @@
                                                 @endphp
                                                 {{ $formatted_date }}
                                             </span>
-                                        </p>
+                                        </div>
                                     @endif
-                                    
-                                    {{-- Paystack specific fields --}}
-                                    @if(isset($payment_info['reference']))
-                                        <p>
-                                            <span>Reference:</span>
-                                            <span>{{ $payment_info['reference'] }}</span>
-                                        </p>
-                                    @endif
-                                    
-                                    @if(isset($payment_info['authorization']['card_type']))
-                                        <p>
-                                            <span>Card Type:</span>
-                                            <span>{{ $payment_info['authorization']['card_type'] }}</span>
-                                        </p>
-                                    @endif
-                                    
-                                    @if(isset($payment_info['authorization']['last4']))
-                                        <p>
-                                            <span>Card Last 4:</span>
-                                            <span>**** **** **** {{ $payment_info['authorization']['last4'] }}</span>
-                                        </p>
-                                    @endif
+
+                                    {{-- Raw Response Toggle (for admin use) --}}
+                                    @auth
+                                        @if(auth()->user()->isAdmin() && isset($payment_info['full_response']))
+                                            <div class="detail-item col-span-2 mt-4">
+                                                <details class="bg-gray-100 p-3 rounded">
+                                                    <summary class="cursor-pointer font-semibold text-gray-700">View Raw PayPal Response</summary>
+                                                    <pre class="mt-3 text-xs overflow-auto max-h-96 p-3 bg-gray-800 text-white rounded">{{ json_encode($payment_info['full_response'], JSON_PRETTY_PRINT) }}</pre>
+                                                </details>
+                                            </div>
+                                        @endif
+                                    @endauth
                                 </div>
                             @elseif(is_string($payment_info) && !empty($payment_info))
                                 <p>{{ $payment_info }}</p>
@@ -176,7 +332,7 @@
                         </div>
 
                         @if($payment_status == 'failed' || $payment_status == 'pending')
-                            <form action="{{ Route::has('orders.request_stkpush') ? route('orders.request_stkpush', $order->order_number) : '#' }}" method="post">
+                            <form action="{{ Route::has('orders.request_stkpush') ? route('orders.request_stkpush', $order->order_number) : '#' }}" method="post" class="mt-4">
                                 @csrf
                                 <button type="submit" class="btn btn-primary">Request STK Push</button>
                             </form>
