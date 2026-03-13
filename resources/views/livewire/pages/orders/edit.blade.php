@@ -319,7 +319,7 @@
                                         @if(auth()->user()->isAdmin() && isset($payment_info['full_response']))
                                             <div class="detail-item col-span-2 mt-4">
                                                 <details class="bg-gray-100 p-3 rounded">
-                                                    <summary class="cursor-pointer font-semibold text-gray-700">View Raw PayPal Response</summary>
+                                                    <summary class="cursor-pointer font-semibold text-gray-700">View Raw Response</summary>
                                                     <pre class="mt-3 text-xs overflow-auto max-h-96 p-3 bg-gray-800 text-white rounded">{{ json_encode($payment_info['full_response'], JSON_PRETTY_PRINT) }}</pre>
                                                 </details>
                                             </div>
