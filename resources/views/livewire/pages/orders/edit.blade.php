@@ -142,23 +142,57 @@
                                     {{-- PayStack Specific Fields --}}
                                     @if($payment_gateway === 'paystack')
                                         @if(isset($payment_info['reference']))
-                                            <div class="detail-item">
+                                            <div class="detail-item col-span-2">
                                                 <span class="font-semibold text-gray-600">Reference:</span>
-                                                <span class="block mt-1 font-mono text-sm">{{ $payment_info['reference'] }}</span>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="font-mono text-sm bg-gray-100 px-3 py-2 rounded-l border border-gray-300 flex-1 truncate" 
+                                                        title="{{ $payment_info['reference'] }}">
+                                                        {{ $payment_info['reference'] }}
+                                                    </span>
+                                                    <button onclick="copyToClipboard('{{ $payment_info['reference'] }}')" 
+                                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-r text-sm flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                                        </svg>
+                                                        Copy
+                                                    </button>
+                                                </div>
+                                                <div class="text-xs text-gray-500 mt-1 flex items-center">
+                                                    <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full mr-2">
+                                                        {{ substr($payment_info['reference'], 0, 3) }}...{{ substr($payment_info['reference'], -6) }}
+                                                    </span>
+                                                    <span>Full reference available - click copy for support queries</span>
+                                                </div>
                                             </div>
                                         @endif
                                         
                                         @if(isset($payment_info['authorization']['card_type']))
                                             <div class="detail-item">
                                                 <span class="font-semibold text-gray-600">Card Type:</span>
-                                                <span class="block mt-1">{{ $payment_info['authorization']['card_type'] }}</span>
+                                                <span class="block mt-1">
+                                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+                                                        {{ $payment_info['authorization']['card_type'] }}
+                                                    </span>
+                                                </span>
                                             </div>
                                         @endif
                                         
                                         @if(isset($payment_info['authorization']['last4']))
                                             <div class="detail-item">
-                                                <span class="font-semibold text-gray-600">Card Last 4:</span>
-                                                <span class="block mt-1 font-mono">**** **** **** {{ $payment_info['authorization']['last4'] }}</span>
+                                                <span class="font-semibold text-gray-600">Card Details:</span>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="font-mono">**** **** **** {{ $payment_info['authorization']['last4'] }}</span>
+                                                    @if(isset($payment_info['authorization']['bank']))
+                                                        <span class="ml-2 text-sm text-gray-600">({{ $payment_info['authorization']['bank'] }})</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(isset($payment_info['authorization']['country_code']))
+                                            <div class="detail-item">
+                                                <span class="font-semibold text-gray-600">Country:</span>
+                                                <span class="block mt-1">{{ $payment_info['authorization']['country_code'] }}</span>
                                             </div>
                                         @endif
                                     @endif
@@ -412,3 +446,24 @@
         </div>
     </x-modal>
 </div>
+
+{{-- Add this JavaScript at the bottom of your view or in your layout --}}
+@push('scripts')
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show a temporary notification
+        let notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+        notification.textContent = 'Reference copied to clipboard!';
+        document.body.appendChild(notification);
+        
+        setTimeout(function() {
+            notification.remove();
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+</script>
+@endpush
