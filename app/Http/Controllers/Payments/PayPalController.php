@@ -10,6 +10,7 @@ use App\Models\Products\Product;
 use App\Models\Sales\Sale;
 use App\Models\Payments\Payment;
 use Illuminate\Support\Facades\Http;
+use App\Services\CurrencyExchangeService;
 use Exception;
 use Throwable;
 
@@ -21,8 +22,9 @@ class PayPalController extends Controller
     protected $base_url;
     protected $logger;
     protected $inventory_logger;
+    protected $exchange_service;
 
-    public function __construct()
+    public function __construct(CurrencyExchangeService $exchange_service)
     {
         // PayPal Credentials
         $this->client_id = env('PAYPAL_CLIENT_ID');
@@ -35,11 +37,11 @@ class PayPalController extends Controller
         $this->logger = Log::channel('paypal');
         $this->inventory_logger = Log::channel('inventory_management');
 
+        $this->exchange_service = $exchange_service;
+
         $this->logger->info('PayPalController initialized', [
             'mode' => $this->mode,
-            'base_url' => $this->base_url,
-            'client_id_length' => strlen($this->client_id),
-            'client_secret_length' => strlen($this->client_secret)
+            'base_url' => $this->base_url
         ]);
     }
 
@@ -57,8 +59,8 @@ class PayPalController extends Controller
 
             $this->logger->info('Access token response', [
                 'status' => $response->status(),
-                'body' => $response->json(),
-                'headers' => $response->headers(),
+                // 'body' => $response->json(),
+                // 'headers' => $response->headers(),
             ]);
 
             if ($response->failed()) {
@@ -78,17 +80,24 @@ class PayPalController extends Controller
     /**
      * Initialize PayPal payment
      */
-    public function initializePayment($order, $total_amount)
+    public function initializePayment($order, $total_amount_kes)
     {
         try {
+            // Generate unique transaction ID for rate locking
+            $transactionId = $order->order_number . '_' . uniqid();
+            
+            // Get locked rate for this transaction
+            $conversionData = $this->exchange_service->convertForTransaction(
+                $transactionId, 
+                $total_amount_kes
+            );
+
+            $this->logger->info('Currency conversion for transaction', $conversionData);
+
             $access_token = $this->getAccessToken();
 
-            $store_currency = env('STORE_CURRENCY', 'KES');
-            $paypal_currency = env('PAYPAL_CURRENCY', 'USD');
-            $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
-
-            // Format items with PayPal currency
-            $items = $this->formatOrderItems($order, $paypal_currency);
+            // Format items with PayPal currency USING THE LOCKED RATE
+            $items = $this->formatOrderItems($order, 'USD', $conversionData['rate_used']);
 
             // Calculate total from items to ensure accuracy
             $calculated_total = 0;
@@ -96,8 +105,16 @@ class PayPalController extends Controller
                 $calculated_total += (float)$item['unit_amount']['value'] * $item['quantity'];
             }
 
-            // Format for PayPal
-            $amount = number_format($calculated_total, 2, '.', '');
+            // Verify our calculated total matches the conversion data
+            if (abs($calculated_total - $conversionData['usd_amount']) > 0.01) {
+                $this->logger->warning('Total mismatch detected', [
+                    'calculated_total' => $calculated_total,
+                    'conversion_total' => $conversionData['usd_amount']
+                ]);
+                // Use the conversion data as source of truth
+            }
+
+            $amount = number_format($conversionData['usd_amount'], 2, '.', '');
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
@@ -107,17 +124,30 @@ class PayPalController extends Controller
                 'purchase_units' => [
                     [
                         'reference_id' => $order->order_number,
-                        'description' => 'Order #' . $order->order_number . ' (' . $store_currency . ' ' . number_format($total_amount, 2) . ')',
+                        'description' => 'Order #{$order->order_number}',
                         'amount' => [
-                            'currency_code' => $paypal_currency,
+                            'currency_code' => 'USD',
                             'value' => $amount,
                             'breakdown' => [
                                 'item_total' => [
-                                    'currency_code' => $paypal_currency,
+                                    'currency_code' => 'USD',
                                     'value' => $amount
                                 ]
                             ]
                         ],
+                        
+                        // Store ALL conversion data in custom_id for audit
+                        'custom_id' => json_encode([
+                            'order_id' => $order->id,
+                            'order_number' => $order->order_number,
+                            'kes_amount' => $conversionData['kes_amount'],
+                            'usd_amount' => $conversionData['usd_amount'],
+                            'exchange_rate' => $conversionData['rate_used'],
+                            'rate_source' => $conversionData['rate_source'],
+                            'rate_timestamp' => $conversionData['rate_timestamp']->toIso8601String(),
+                            'transaction_id' => $conversionData['transaction_id']
+                        ]),
+
                         'items' => $items,
                         'shipping' => [
                             'name' => [
@@ -140,8 +170,8 @@ class PayPalController extends Controller
             $this->logger->info('Initializing PayPal payment', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
-                'amount' => $amount,
-                'payload' => $order_data
+                'amount_usd' => $amount,
+                'amount_kes' => $total_amount_kes,
             ]);
 
             // Create order in PayPal
@@ -151,15 +181,15 @@ class PayPalController extends Controller
 
             $response_data = $response->json();
 
-            $this->logger->info('PayPal order creation response', [
-                'status' => $response->status(),
-                'response' => $response_data
-            ]);
+            // $this->logger->info('PayPal order creation response', [
+            //     'status' => $response->status(),
+            //     'response' => $response_data
+            // ]);
 
             // Check if order was created successfully
             if ($response->successful() && isset($response_data['id'])) {
                 // Store payment record
-                $this->createPaymentRecord($order, $response_data);
+                $this->createPaymentRecord($order, $response_data, $conversionData);
 
                 // Find approval URL and redirect user
                 foreach ($response_data['links'] as $link) {
@@ -183,9 +213,10 @@ class PayPalController extends Controller
             return redirect()->route('checkout-page');
 
         } catch (Throwable $e) {
-            $this->logger->error('PayPal initialization exception', [
+            $this->logger->error('PayPal initialization failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'order' => $order->order_number
             ]);
 
             session()->flash('notify', [
@@ -383,6 +414,12 @@ class PayPalController extends Controller
             // Extract capture details
             $capture = $capture_data['purchase_units'][0]['payments']['captures'][0] ?? $capture_data;
 
+            // Extract custom_id data if available
+            $custom_data = [];
+            if (isset($capture_data['purchase_units'][0]['custom_id'])) {
+                $custom_data = json_decode($capture_data['purchase_units'][0]['custom_id'], true);
+            }
+
             // Update payment record
             $payment->update([
                 'status' => 'paid',
@@ -391,7 +428,9 @@ class PayPalController extends Controller
                 'response_description' => json_encode([
                     'paypal_order_id' => $capture_data['id'] ?? null,
                     'capture_id' => $capture['id'] ?? null,
-                    'amount' => $capture['amount']['value'] ?? null,
+                    'usd_amount' => $capture['amount']['value'] ?? null,
+                    'kes_amount' => $custom_data['kes_amount'] ?? $order->total_amount,
+                    'exchange_rate' => $custom_data['exchange_rate'] ?? null,
                     'currency' => $capture['amount']['currency_code'] ?? 'USD',
                     'create_time' => $capture['create_time'] ?? null,
                     'update_time' => $capture['update_time'] ?? null,
@@ -401,10 +440,10 @@ class PayPalController extends Controller
                 'customer_message' => 'Payment completed successfully via PayPal',
             ]);
 
-            // Update order
+            // Update order - KES amount remains unchanged
             $order->update([
                 'status' => 'paid',
-                'amount_paid' => $capture['amount']['value'] ?? $order->total_amount,
+                // 'amount_paid' already has KES amount from order creation
             ]);
 
             // Decrement product stock (similar to Paystack/M-Pesa)
@@ -481,7 +520,7 @@ class PayPalController extends Controller
     /**
      * Create initial payment record
      */
-    private function createPaymentRecord($order, $paypal_response)
+    private function createPaymentRecord($order, $paypal_response, $conversionData)
     {
         $this->logger->info('Creating payment record', [
             'paypal_order_id' => $paypal_response['id'],
@@ -494,7 +533,10 @@ class PayPalController extends Controller
             'checkout_request_id' => 'PAYPAL_' . $paypal_response['id'],
             'transaction_reference' => $paypal_response['id'],
             'response_code' => $paypal_response['status'],
-            'response_description' => json_encode($paypal_response),
+            'response_description' => json_encode([
+                'paypal_response' => $paypal_response,
+                'conversion_data' => $conversionData
+            ]),
             'status' => 'pending',
             'order_id' => $order->id,
             'customer_message' => 'PayPal payment initiated',
@@ -504,25 +546,14 @@ class PayPalController extends Controller
     /**
      * Format order items for PayPal
      */
-    private function formatOrderItems($order, $paypal_currency)
+    private function formatOrderItems($order, $paypal_currency, $exchange_rate)
     {
         $items = [];
-
-        // Get the store currency for reference only
         $store_currency = env('STORE_CURRENCY', 'KES');
-        $conversion_rate = env('KES_TO_USD_RATE', 0.00077);
         
         foreach ($order->order_items as $item) {
-            // Calculate item price in PayPal currency (USD)
-            $item_price_in_store_currency = $item->selling_price;
-            
-            // Convert to PayPal currency
-            if ($store_currency === 'KES' && $paypal_currency === 'USD') 
-            {
-                $item_price_in_paypal_currency = $item_price_in_store_currency * $conversion_rate;
-            } else {
-                $item_price_in_paypal_currency = $item_price_in_store_currency;
-            }
+            // Convert to PayPal currency using the locked exchange rate
+            $item_price_in_paypal_currency = $item->selling_price * $exchange_rate;
 
             // Format according to currency rules (USD uses 2 decimals)
             $formatted_price = $this->formatAmountForPayPal($item_price_in_paypal_currency, $paypal_currency);
@@ -534,7 +565,7 @@ class PayPalController extends Controller
                     'value' => $formatted_price,
                 ],
                 'quantity' => $item->quantity,
-                'description' => 'Product: ' . $item->title . ' (' . $store_currency . ' ' . number_format($item_price_in_store_currency, 2) . ')',
+                'description' => substr($item->title . ' (KES ' . number_format($item->selling_price, 2) . ')', 0, 127),
                 'sku' => 'PROD-' . $item->product_id,
                 'category' => 'PHYSICAL_GOODS'
             ];
@@ -595,13 +626,24 @@ class PayPalController extends Controller
     }
 
     /**
+     * Helper for consistent error redirects
+     */
+    private function redirectWithError($message)
+    {
+        session()->flash('notify', [
+            'message' => $message . ' Please try again or contact support.',
+            'type' => 'error'
+        ]);
+
+        return redirect()->route('checkout-page');
+    }
+
+    /**
      * Verify webhook signature
      */
     private function verifyWebhookSignature(Request $request)
     {
-        // PayPal webhook verification is more complex
-        // For simplicity, we'll skip for now
-        // In production, implement proper signature verification
+        // TODO: Implement proper PayPal webhook verification
         return true;
     }
 }
