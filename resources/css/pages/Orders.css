@@ -66,6 +66,12 @@
                             }
                         }
                     }
+                    .payment_details_grid .detail-item {
+                        @apply p-2 border-b border-gray-200;
+                    }
+                    .payment_details_grid .detail-item:last-child {
+                        @apply border-b-0;
+                    }
                 }
             }
         }
