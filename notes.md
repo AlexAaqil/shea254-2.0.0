@@ -224,4 +224,39 @@ product_price_tiers {
 
 
 ## Git commit harsh
+To be used to go back to before implementing paypal.
+
 c94403f (HEAD -> main, origin/main, origin/HEAD) npm build assets.
+
+## Monitoring Dashboard
+Sample code to be used for monitoring exhange rate apis health
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use App\Services\CurrencyExchangeService;
+use Illuminate\Support\Facades\Log;
+
+class MonitorExchangeRates extends Command
+{
+    protected $signature = 'monitor:exchange-rates';
+    protected $description = 'Monitor exchange rate API health';
+
+    public function handle(CurrencyExchangeService $exchangeService)
+    {
+        $result = $exchangeService->getRate();
+        
+        if ($result['source'] === 'fallback_config') {
+            Log::critical('EXCHANGE RATE CRITICAL: All APIs failed, using fallback');
+            
+            // Send alert to admin
+            // You could implement email/SMS notification here
+        }
+        
+        $this->info("Current rate: {$result['rate']} from {$result['source']}");
+    }
+}
+```
