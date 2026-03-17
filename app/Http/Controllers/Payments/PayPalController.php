@@ -162,7 +162,7 @@ class PayPalController extends Controller
                             'usd_amount' => $conversionData['usd_amount'],
                             'exchange_rate' => $conversionData['rate_used'],
                             'rate_source' => $conversionData['rate_source'],
-                            'rate_timestamp' => $conversionData['rate_timestamp']->toIso8601String(),
+                            'rate_timestamp' => $conversionData['rate_timestamp']->format('d-m-Y H:i:s'),
                             'transaction_id' => $conversionData['transaction_id'],
                             'item_total_usd' => $item_total,
                             'shipping_cost_usd' => $shipping_cost_usd,
