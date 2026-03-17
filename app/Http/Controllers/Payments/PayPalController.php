@@ -643,7 +643,7 @@ class PayPalController extends Controller
             'admin_area_2' => $orderDelivery->area, // City/Area
             'admin_area_1' => $orderDelivery->location, // State/Region (if applicable)
             'postal_code' => '00100', // You might want to add postal_code to your orders table
-            'country_code' => $orderDelivery->area,
+            'country_code' => 'KE',
         ];
 
         // Remove empty fields
