@@ -96,7 +96,7 @@ class PayPalController extends Controller
             // Format items with PayPal currency USING THE LOCKED RATE
             $items = $this->formatOrderItems($order, 'USD', $conversionData['rate_used']);
 
-            // Calculate item total from items to ensure accuracy
+            // Calculate totals from items
             $item_total = 0;
             foreach ($items as $item) {
                 $item_total += (float)$item['unit_amount']['value'] * $item['quantity'];
@@ -105,10 +105,9 @@ class PayPalController extends Controller
             // Calculate shipping cost in USD
             $shipping_cost_kes = $order->shipping_cost ?? 0;
             $shipping_cost_usd = $this->formatAmountForPayPal($shipping_cost_kes * $conversionData['rate_used'], 'USD');
-            $shipping_cost_usd_float = (float)$shipping_cost_usd;
 
             // Calculate total amount (items + shipping)
-            $total_amount_usd = $item_total + $shipping_cost_usd_float;
+            $total_amount_usd = $item_total + (float)$shipping_cost_usd;
 
             // Handle rounding mismatches without touching shipping
             $difference = $total_amount_usd - $conversionData['usd_amount'];
@@ -120,7 +119,7 @@ class PayPalController extends Controller
                     'item_total' => $item_total,
                     'shipping_usd' => $shipping_cost_usd,
                     'calculated_total' => $total_amount_usd,
-                    'conversion_total' => $conversionData['usd_amount'],
+                    'expected_total' => $conversionData['usd_amount'],
                     'difference' => $difference,
                     'order_number' => $order->order_number,
                 ]);
@@ -172,12 +171,7 @@ class PayPalController extends Controller
                         ]),
 
                         'items' => $items,
-                        'shipping' => [
-                            'name' => [
-                                'full_name' => $order->order_delivery->full_name,
-                            ],
-                            'address' => $shipping_address,
-                        ]
+                        'shipping' => $this->formatShippingAddress($order->order_delivery)
                     ]
                 ],
                 'application_context' => [
@@ -590,40 +584,38 @@ class PayPalController extends Controller
     private function formatOrderItems($order, $paypal_currency, $exchange_rate)
     {
         $items = [];
-        $store_currency = env('STORE_CURRENCY', 'KES');
+        $total_amount_cents = (int)round($order->total_amount * $exchange_rate * 100);
+
+        // Calculate each item's raw cent value
+        $item_cents = [];
+        $sum_cents = 0;
         
         foreach ($order->order_items as $item) {
-            // Convert to PayPal currency using the locked exchange rate
-            $item_price_in_paypal_currency = $item->selling_price * $exchange_rate;
+            $raw_cents = (int)round($item->selling_price * $exchange_rate * 100 * $item->quantity);
+            $item_cents[] = $raw_cents;
+            $sum_cents += $raw_cents;
+        }
 
-            // Ensure proper rounding to avoid floating point issues
-            // Format according to currency rules (USD uses 2 decimals)
-            $formatted_price = $this->formatAmountForPayPal($item_price_in_paypal_currency, $paypal_currency);
+        // Adjust last item to match the total exactly
+        $difference = $total_amount_cents - $sum_cents;
+        if ($difference != 0) {
+            $item_cents[count($item_cents) - 1] += $difference;
+        }
 
-            // Calculate item total for logging
-            $item_total_in_usd = (float)$formatted_price * $item->quantity;
+        // Format for PayPal
+        foreach($order->order_items as $index => $item) {
+            $unit_price_cents = (int)round($item_cents[$index] / $item->quantity);
+            $unit_price_usd = number_format($unit_price_cents / 100, 2, '.', '');
 
             $items[] = [
-                'name' => substr($item->title, 0, 127), // Paypal name limit
+                'name' => substr($item->title, 0, 127),
                 'unit_amount' => [
-                    'currency_code' => $paypal_currency,
-                    'value' => $formatted_price,
+                    'currency_code' => 'USD',
+                    'value' => $unit_price_usd
                 ],
                 'quantity' => $item->quantity,
-                'description' => substr($item->title . ' (KES ' . number_format($item->selling_price, 2) . ')', 0, 127),
-                'sku' => 'PROD-' . $item->product_id,
                 'category' => 'PHYSICAL_GOODS'
             ];
-
-            // Log item-level conversion for debugging
-            $this->logger->debug('Item converted for PayPal', [
-                'product_id' => $item->product_id,
-                'kes_price' => $item->selling_price,
-                'usd_price' => $formatted_price,
-                'quantity' => $item->quantity,
-                'item_total_usd' => $item_total_in_usd,
-                'rate_used' => $exchange_rate
-            ]);
         }
 
         return $items;
@@ -651,7 +643,7 @@ class PayPalController extends Controller
             'admin_area_2' => $orderDelivery->area, // City/Area
             'admin_area_1' => $orderDelivery->location, // State/Region (if applicable)
             'postal_code' => '00100', // You might want to add postal_code to your orders table
-            'country_code' => 'KE',
+            'country_code' => $orderDelivery->area,
         ];
 
         // Remove empty fields
