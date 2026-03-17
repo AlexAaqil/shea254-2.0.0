@@ -97,7 +97,6 @@ class PayPalController extends Controller
             $items = $this->formatOrderItems($order, 'USD', $conversionData['rate_used']);
 
             // Calculate item total from items to ensure accuracy
-            // Sum of all items
             $item_total = 0;
             foreach ($items as $item) {
                 $item_total += (float)$item['unit_amount']['value'] * $item['quantity'];
@@ -106,25 +105,31 @@ class PayPalController extends Controller
             // Calculate shipping cost in USD
             $shipping_cost_kes = $order->shipping_cost ?? 0;
             $shipping_cost_usd = $this->formatAmountForPayPal($shipping_cost_kes * $conversionData['rate_used'], 'USD');
+            $shipping_cost_usd_float = (float)$shipping_cost_usd;
 
             // Calculate total amount (items + shipping)
-            $total_amount_usd = $item_total + (float)$shipping_cost_usd;
+            $total_amount_usd = $item_total + $shipping_cost_usd_float;
+
+            // Handle rounding mismatches without touching shipping
+            $difference = $total_amount_usd - $conversionData['usd_amount'];
 
             // Verify total matches converson data
-            if (abs($total_amount_usd - $conversionData['usd_amount']) > 0.01) {
+            if (abs($difference) > 0.01) {
+                // Large mismatch - Log warning but use conversion total as source of truth
                 $this->logger->warning('Total mismatch detected', [
                     'item_total' => $item_total,
                     'shipping_usd' => $shipping_cost_usd,
                     'calculated_total' => $total_amount_usd,
                     'conversion_total' => $conversionData['usd_amount'],
-                    'difference' => $item_total - $conversionData['usd_amount'],
+                    'difference' => $difference,
                     'order_number' => $order->order_number,
                 ]);
+
                 // Use calculated total as source of truth
                 $total_amount_usd = $conversionData['usd_amount'];
 
                 // Recalculate shipping to absort any rounding differences
-                $shipping_cost_usd = $this->formatAmountForPayPal($total_amount_usd - $item_total, 'USD');
+                // $shipping_cost_usd = $this->formatAmountForPayPal($total_amount_usd - $item_total, 'USD');
             }
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
