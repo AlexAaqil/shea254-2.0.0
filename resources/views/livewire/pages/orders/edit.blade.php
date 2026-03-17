@@ -23,9 +23,21 @@
                         <span>{{ $order->order_delivery->email }}</span>
                     </p>
 
+                    @php
+                        use App\Helpers\PhoneHelper;
+
+                        $formatted_phone = PhoneHelper::formatForDisplay($order->order_delivery->phone_number);
+                        $phone_country = PhoneHelper::getCountry($order->order_delivery->phone_number);
+                    @endphp
+
                     <p>
                         <span>Phone Number</span>
-                        <span>+{{ $order->order_delivery->phone_number }}</span>
+                        <span>
+                            {{ $formatted_phone }}
+                            @if($phone_country != 'Kenya')
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">{{ $phone_country }}</span>
+                            @endif
+                        </span>
                     </p>
 
                     <p>
@@ -111,13 +123,47 @@
                             @endif
 
                             {{-- Failed Payment Reason --}}
-                            @if($payment_status == 'failed' && !empty($payment_info))
-                                @if(is_string($payment_info))
-                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info }}</p>
-                                @elseif(isset($payment_info['customer_message']))
-                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info['customer_message'] }}</p>
-                                @elseif(isset($payment_info['gateway_response']))
-                                    <p class="text-danger"><strong>Reason:</strong> {{ $payment_info['gateway_response'] }}</p>
+                            @if(in_array($payment_status, ['failed', 'pending']) && !empty($payment_info))
+                                @php
+                                    $failure_reason = null;
+
+                                    if ($payment_gateway === 'kcb_mpesa') {
+                                        $failure_reason = $payment_info['customer_message'] ?? 
+                                                        $payment_info['response_description'] ?? 
+                                                        'M-PESA payment failed';
+                                    
+                                    } elseif ($payment_gateway === 'paystack') {
+                                        $failure_reason = $payment_info['message'] ?? 
+                                                        ($payment_info['data']['gateway_response'] ?? null) ??
+                                                        'PayStack payment failed';
+                                    
+                                    } elseif ($payment_gateway === 'paypal') {
+                                        if (isset($payment_info['paypal_response']['details'][0]['description'])) {
+                                            $failure_reason = $payment_info['paypal_response']['details'][0]['description'];
+                                        } elseif (isset($payment_info['paypal_response']['message'])) {
+                                            $failure_reason = $payment_info['paypal_response']['message'];
+                                        } else {
+                                            $failure_reason = 'PayPal payment failed';
+                                        }
+                                    }
+                                @endphp
+
+                                @if($failure_reason)
+                                    <div class="mt-3 p-4 bg-red-50 border-l-4 border-red-500 rounded-r">
+                                        <div class="flex">
+                                            <div class="flex-shrink-0">
+                                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </div>
+                                            <div class="ml-3">
+                                                <h3 class="text-sm font-medium text-red-800">Payment Failed Reason</h3>
+                                                <div class="mt-2 text-sm text-red-700">
+                                                    <p>{{ $failure_reason }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endif
                             @endif
 
@@ -375,11 +421,21 @@
                             @endif
                         </div>
 
-                        @if($payment_status == 'failed' || $payment_status == 'pending')
-                            <form action="{{ Route::has('orders.request_stkpush') ? route('orders.request_stkpush', $order->order_number) : '#' }}" method="post" class="mt-4">
-                                @csrf
-                                <button type="submit" class="btn btn-primary">Request STK Push</button>
-                            </form>
+                        @if(in_array($payment_status, ['failed', 'pending']))
+                            {{-- Only show STK Push for M-PESA --}}
+                            @if ($payment_gateway === 'kcb_mpesa')
+                                <form action="{{ Route::has('orders.request_stkpush') ? route('orders.request_stkpush', $order->order_number) : '#' }}" method="post" class="mt-4">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary">Request STK Push</button>
+                                </form>
+                            @else
+                                <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                    <p class="text-sm text-yellow-700">
+                                        <strong>Note:</strong> This order used <span class="font-bold uppercase">{{ $payment_gateway }}</span>. 
+                                        STK Push is only available for M-PESA payments.
+                                    </p>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>

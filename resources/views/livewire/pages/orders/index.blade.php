@@ -63,7 +63,20 @@
                                     </a>
                                 </td>
                                 <td>{{ $order->order_delivery?->full_name }}</td>
-                                <td>{{ $order->order_delivery->phone_number }}</td>
+                                <td>
+                                    @php
+                                        $formatted_phone = PhoneHelper::formatForDisplay($order->order_delivery->phone_number);
+                                        $phone_country = PhoneHelper::getCountry($order->order_delivery->phone_number);
+                                    @endphp
+
+                                    <span>
+                                        {{ $formatted_phone }}
+                                        @if($phone_country != 'Kenya')
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">{{ $phone_country }}</span>
+                                        @endif
+                                    </span>
+                                    {{-- {{ $order->order_delivery->phone_number }} --}}
+                                </td>
                                 <td>{!! Illuminate\Support\Str::limit($order->order_delivery?->address, 15, ' ...') !!}</td>
                                 <td>{{ number_format($order->total_amount) }}</td>
                                 @php

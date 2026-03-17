@@ -24,6 +24,10 @@ return [
     'facebook' => "https://www.facebook.com/profile.php?id=100056436834853",
     'tiktok' => "https://www.tiktok.com/@shea.254?_t=8gJ9b2q8TP4&_r=1",
 
+    'aliases' => Illuminate\Support\Facades\Facade::defaultAliases()->merge([
+        'PhoneHelper' => App\Helpers\PhoneHelper::class,
+    ])->toArray(),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
