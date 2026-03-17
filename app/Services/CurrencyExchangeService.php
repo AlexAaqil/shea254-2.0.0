@@ -21,19 +21,27 @@ class CurrencyExchangeService
         // Multiple API sources for redundancy
         $this->apis = [
             'primary' => [
-                'url' => 'https://api.exchangerate.host/convert',
-                'params' => ['from' => 'KES', 'to' => 'USD'],
-                'response_path' => 'result'
+                'url' => 'https://api.exchangerate-api.com/v4/latest/KES',
+                'params' => [],
+                'response_path' => 'rates.USD',
+                'headers' => []
             ],
             'secondary' => [
-                'url' => 'https://api.frankfurter.app/latest',
-                'params' => ['from' => 'KES', 'to' => 'USD'],
-                'response_path' => 'rates.USD'
+                'url' => 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/kes.json',
+                'params' => [],
+                'response_path' => 'kes.usd',
+                'headers' => []
             ],
             'tertiary' => [
                 'url' => 'https://open.er-api.com/v6/latest/KES',
                 'params' => [],
                 'response_path' => 'rates.USD'
+            ],
+            'quaternary' => [
+                'url' => 'https://latest.currency-api.pages.dev/v1/currencies/kes.min.json',
+                'params' => [],
+                'response_path' => 'kes.usd',
+                'headers' => []
             ]
         ];
     }

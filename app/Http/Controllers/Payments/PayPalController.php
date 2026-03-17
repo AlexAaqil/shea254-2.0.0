@@ -87,10 +87,7 @@ class PayPalController extends Controller
             $transactionId = $order->order_number . '_' . uniqid();
             
             // Get locked rate for this transaction
-            $conversionData = $this->exchange_service->convertForTransaction(
-                $transactionId, 
-                $total_amount_kes
-            );
+            $conversionData = $this->exchange_service->convertForTransaction($transactionId, $total_amount_kes);
 
             $this->logger->info('Currency conversion for transaction', $conversionData);
 
@@ -99,22 +96,36 @@ class PayPalController extends Controller
             // Format items with PayPal currency USING THE LOCKED RATE
             $items = $this->formatOrderItems($order, 'USD', $conversionData['rate_used']);
 
-            // Calculate total from items to ensure accuracy
-            $calculated_total = 0;
+            // Calculate item total from items to ensure accuracy
+            // Sum of all items
+            $item_total = 0;
             foreach ($items as $item) {
-                $calculated_total += (float)$item['unit_amount']['value'] * $item['quantity'];
+                $item_total += (float)$item['unit_amount']['value'] * $item['quantity'];
             }
 
-            // Verify our calculated total matches the conversion data
-            if (abs($calculated_total - $conversionData['usd_amount']) > 0.01) {
+            // Calculate shipping cost in USD
+            $shipping_cost_kes = $order->shipping_cost ?? 0;
+            $shipping_cost_usd = $this->formatAmountForPayPal($shipping_cost_kes * $conversionData['rate_used'], 'USD');
+
+            // Calculate total amount (items + shipping)
+            $total_amount_usd = $item_total + (float)$shipping_cost_usd;
+
+            // Verify total matches converson data
+            if (abs($total_amount_usd - $conversionData['usd_amount']) > 0.01) {
                 $this->logger->warning('Total mismatch detected', [
-                    'calculated_total' => $calculated_total,
-                    'conversion_total' => $conversionData['usd_amount']
+                    'item_total' => $item_total,
+                    'shipping_usd' => $shipping_cost_usd,
+                    'calculated_total' => $total_amount_usd,
+                    'conversion_total' => $conversionData['usd_amount'],
+                    'difference' => $item_total - $conversionData['usd_amount'],
+                    'order_number' => $order->order_number,
                 ]);
-                // Use the conversion data as source of truth
-            }
+                // Use calculated total as source of truth
+                $total_amount_usd = $conversionData['usd_amount'];
 
-            $amount = number_format($conversionData['usd_amount'], 2, '.', '');
+                // Recalculate shipping to absort any rounding differences
+                $shipping_cost_usd = $this->formatAmountForPayPal($total_amount_usd - $item_total, 'USD');
+            }
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
@@ -127,11 +138,18 @@ class PayPalController extends Controller
                         'description' => "Order #{$order->order_number}",
                         'amount' => [
                             'currency_code' => 'USD',
-                            'value' => $amount,
+                            'value' => number_format($total_amount_usd, 2, '.', ''),
                             'breakdown' => [
                                 'item_total' => [
                                     'currency_code' => 'USD',
-                                    'value' => $amount
+                                    'value' => number_format($total_amount_usd, 2, '.', '')
+                                ],
+                                // Add shipping and tax breakdown
+                                // 'shipping' => [...],
+                                // 'tax_total' => [...]
+                                'shipping' => [
+                                    'currency_code' => 'USD',
+                                    'value' => number_format($shipping_cost_usd, 2, '.', '')
                                 ]
                             ]
                         ],
@@ -145,7 +163,11 @@ class PayPalController extends Controller
                             'exchange_rate' => $conversionData['rate_used'],
                             'rate_source' => $conversionData['rate_source'],
                             'rate_timestamp' => $conversionData['rate_timestamp']->toIso8601String(),
-                            'transaction_id' => $conversionData['transaction_id']
+                            'transaction_id' => $conversionData['transaction_id'],
+                            'item_total_usd' => $item_total,
+                            'shipping_cost_usd' => $shipping_cost_usd,
+                            'shipping_cost_kes' => $shipping_cost_kes,
+                            'tax_usd' => $order->tax ?? 0 * $conversionData['rate_used'] ?? 0
                         ]),
 
                         'items' => $items,
@@ -167,10 +189,20 @@ class PayPalController extends Controller
                 ]
             ];
 
+            // Log of the breakdown for debugging
+            $this->logger->info('PayPal amount breakdown', [
+                'order_number' => $order->order_number,
+                'item_total_usd' => $item_total,
+                'shipping_usd' => $shipping_cost_usd,
+                'total_usd' => $total_amount_usd,
+                'total_kes' => $total_amount_kes,
+                'shipping_kes' => $shipping_cost_kes
+            ]);
+
             $this->logger->info('Initializing PayPal payment', [
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
-                'amount_usd' => $amount,
+                'amount_usd' => $total_amount_usd,
                 'amount_kes' => $total_amount_kes,
             ]);
 
@@ -180,11 +212,6 @@ class PayPalController extends Controller
                 ->post("{$this->base_url}/v2/checkout/orders", $order_data);
 
             $response_data = $response->json();
-
-            // $this->logger->info('PayPal order creation response', [
-            //     'status' => $response->status(),
-            //     'response' => $response_data
-            // ]);
 
             // Check if order was created successfully
             if ($response->successful() && isset($response_data['id'])) {
@@ -201,8 +228,16 @@ class PayPalController extends Controller
                 throw new Exception('No approval link found in PayPal response');
             }
 
+            // Error logging for debugging
             $this->logger->error('PayPal order creation failed', [
-                'response' => $response_data
+                'status' => $response->status(),
+                'response' => $response_data,
+                'request_data' => [
+                    'total_usd' => $total_amount_usd,
+                    'item_total' => $item_total,
+                    'shipping_usd' => $shipping_cost_usd,
+                    'items_count' => count($items)
+                ]
             ]);
 
             session()->flash('notify', [
@@ -555,11 +590,15 @@ class PayPalController extends Controller
             // Convert to PayPal currency using the locked exchange rate
             $item_price_in_paypal_currency = $item->selling_price * $exchange_rate;
 
+            // Ensure proper rounding to avoid floating point issues
             // Format according to currency rules (USD uses 2 decimals)
             $formatted_price = $this->formatAmountForPayPal($item_price_in_paypal_currency, $paypal_currency);
 
+            // Calculate item total for logging
+            $item_total_in_usd = (float)$formatted_price * $item->quantity;
+
             $items[] = [
-                'name' => $item->title,
+                'name' => substr($item->title, 0, 127), // Paypal name limit
                 'unit_amount' => [
                     'currency_code' => $paypal_currency,
                     'value' => $formatted_price,
@@ -569,6 +608,16 @@ class PayPalController extends Controller
                 'sku' => 'PROD-' . $item->product_id,
                 'category' => 'PHYSICAL_GOODS'
             ];
+
+            // Log item-level conversion for debugging
+            $this->logger->debug('Item converted for PayPal', [
+                'product_id' => $item->product_id,
+                'kes_price' => $item->selling_price,
+                'usd_price' => $formatted_price,
+                'quantity' => $item->quantity,
+                'item_total_usd' => $item_total_in_usd,
+                'rate_used' => $exchange_rate
+            ]);
         }
 
         return $items;
@@ -614,15 +663,16 @@ class PayPalController extends Controller
     {
         // List of currencies that don't support decimals (from PayPal docs)
         // Source: https://developer.paypal.com/api/rest/reference/currency-codes/
-        $non_decimal_currencies = ['HUF', 'JPY', 'TWD', 'KES'];
+        $non_decimal_currencies = ['HUF', 'JPY', 'TWD'];
         
         if (in_array($paypal_currency, $non_decimal_currencies)) {
             // For non-decimal currencies: round to integer and return as whole number
             return (string) round($amount, 0);
         }
         
-        // For decimal currencies: format with 2 decimal places
-        return number_format($amount, 2, '.', '');
+        // Use proper rounding to avoid floating point issues
+        // Round to 2 decimal places and ensure sting format without trailing zeros issues
+        return number_format(round($amount, 2, PHP_ROUND_HALF_UP), 2, '.', '');
     }
 
     /**
