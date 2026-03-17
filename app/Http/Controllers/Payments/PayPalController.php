@@ -161,7 +161,9 @@ class PayPalController extends Controller
                             'kes' => $conversionData['kes_amount'],
                             'usd' => $conversionData['usd_amount'],
                             'rate' => $conversionData['rate_used'],
-                            'txn_id' => $conversionData['transaction_id'],
+                            'rate_source' => $conversionData['rate_source'],
+                            'rate_timestamp' => $conversionData['rate_timestamp']->format('d-m-Y H:i:s'),
+                            'transaction_id' => $conversionData['transaction_id'],
                         ]),
 
                         'items' => $items,
