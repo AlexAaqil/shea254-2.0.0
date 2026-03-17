@@ -47,7 +47,7 @@ class DeliveryAreaController extends Controller
 
     public function areasFetch($location)
     {
-        $areas = DeliveryArea::where('delivery_location_id', $location)->get(['id', 'area_name']);
+        $areas = DeliveryArea::where('delivery_location_id', $location)->orderBy('area_name')->get(['id', 'area_name']);
 
         return response()->json($areas);
     }
