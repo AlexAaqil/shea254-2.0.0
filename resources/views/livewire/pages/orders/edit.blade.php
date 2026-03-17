@@ -59,13 +59,19 @@
                         @endforeach
                     </ul>
 
+                    @php
+                        $items_total = $order->order_items->sum(function ($item) {
+                            return $item->selling_price * $item->quantity;
+                        });
+                    @endphp
+
                     <p>
                         <span>Items Total : </span>
-                        <span>Ksh. {{ $order->total_amount }}</span>
+                        <span>Ksh. {{ number_format($items_total, 2) }}</span>
                     </p>
                     <p>
                         <span>Shipping Cost : </span>
-                        <span>Ksh. {{ $order->order_delivery->shipping_cost }}</span>
+                        <span>Ksh. {{ number_format($order->order_delivery->shipping_cost, 2) }}</span>
                     </p>
                     <p class="font-bold">
                         <span>Total Amount : </span>
