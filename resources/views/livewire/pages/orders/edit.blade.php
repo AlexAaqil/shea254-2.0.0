@@ -431,8 +431,7 @@
                             @else
                                 <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
                                     <p class="text-sm text-yellow-700">
-                                        <strong>Note:</strong> This order used <span class="font-bold uppercase">{{ $payment_gateway }}</span>. 
-                                        STK Push is only available for M-PESA payments.
+                                        <strong>Note:</strong> This order used <span class="font-bold uppercase">{{ $payment_gateway }}</span>.
                                     </p>
                                 </div>
                             @endif
