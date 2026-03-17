@@ -133,6 +133,10 @@ class PayPalController extends Controller
 
             $shipping_address = $this->formatShippingAddress($order->order_delivery);
 
+            $this->logger->debug('Shipping address being sent', [
+                'address' => $shipping_address
+            ]);
+
             // Prepare order data for PayPal
             $order_data = [
                 'intent' => 'CAPTURE',
@@ -640,14 +644,22 @@ class PayPalController extends Controller
         // For delivery, use the provided address
         $address = [
             'address_line_1' => $orderDelivery->address,
-            'admin_area_2' => $orderDelivery->area, // City/Area
-            'admin_area_1' => $orderDelivery->location, // State/Region (if applicable)
-            'postal_code' => '00100', // You might want to add postal_code to your orders table
+            'admin_area_2' => $orderDelivery->area,
             'country_code' => 'KE',
         ];
 
-        // Remove empty fields
-        return array_filter($address);
+        // Only add optional fields if they have values
+        if (!empty($orderDelivery->location)) {
+            $address['admin_area_1'] = $orderDelivery->location;
+        }
+
+        if (!empty($orderDelivery->postal_code)) {
+            $address['postal_code'] = $orderDelivery->postal_code;
+        } else {
+            $address['postal_code'] = '00100'; // Default postal code
+        }
+
+        return $address;
     }
 
     /**
