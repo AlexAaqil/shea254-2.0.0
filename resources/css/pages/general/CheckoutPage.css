@@ -1,5 +1,4 @@
 .CheckoutPage {
-    *{border: 1px solid red}
     @apply pt-4 pb-12;
 
     .Hero {
