@@ -19,7 +19,7 @@
                 @apply lg:col-span-8;
 
                 .cart_item {
-                    @apply grid grid-cols-12 items-center gap-8 mb-2;
+                    @apply grid lg:grid-cols-12 items-center lg:gap-8 mb-2 border-b border-gray-200;
 
                     div {
                         &:first-of-type {
@@ -27,7 +27,7 @@
                         }
 
                         &:not(:first-of-type) {
-                            @apply col-span-2 justify-self-center;
+                            @apply col-span-2 lg:justify-self-center;
                         }
                     }
 

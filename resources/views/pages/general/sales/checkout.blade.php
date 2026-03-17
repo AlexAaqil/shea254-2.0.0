@@ -204,7 +204,9 @@
                                 <x-form-input-error field="additional_information" />
                             </div>
 
-                            <button type="submit">Confirm Order</button>
+                            <div class="buttons mt-4">
+                                <button type="submit">Confirm Order</button>
+                            </div>
                         </form>
                     </div>
                 </div>

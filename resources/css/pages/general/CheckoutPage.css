@@ -1,4 +1,5 @@
 .CheckoutPage {
+    *{border: 1px solid red}
     @apply pt-4 pb-12;
 
     .Hero {
@@ -14,7 +15,7 @@
             @apply grid grid-cols-1 lg:grid-cols-12 gap-8;
 
             .checkout_form {
-                @apply col-span-8;
+                @apply lg:col-span-8;
 
                 button {
                     @apply bg-[var(--theme-bg)] text-[var(--theme-bg-text)];
@@ -72,7 +73,7 @@
                     }
 
                     .custom_radio_buttons {
-                        @apply flex gap-8;
+                        @apply flex flex-col lg:flex-row gap-4 lg:gap-8;
 
                         label {
                             @apply flex gap-2 bg-blue-50 py-[8px] px-[12px] rounded-[8px];;
@@ -106,18 +107,14 @@
             }
 
             .checkout_summary {
-                @apply col-span-4 justify-self-end;
+                @apply lg:col-span-4;
 
                 h2 {
                     @apply font-bold text-2xl text-center mb-4;
                 }
 
                 .summary_item {
-                    @apply flex justify-between gap-8;
-
-                    &:last-of-type {
-                        @apply mt-4;
-                    }
+                    @apply grid grid-cols-2 gap-2 lg:gap-4;
 
                     span {
                         &:last-of-type {
