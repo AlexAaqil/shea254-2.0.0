@@ -175,7 +175,12 @@ class PayPalController extends Controller
                         ]),
 
                         'items' => $items,
-                        'shipping' => $this->formatShippingAddress($order->order_delivery)
+                        'shipping' => [
+                            'name' => [
+                                'full_name' => $order->order_delivery->full_name
+                            ],
+                            'address' => $this->formatShippingAddress($order->order_delivery)
+                        ]
                     ]
                 ],
                 'application_context' => [
