@@ -165,9 +165,9 @@ class PayPalController extends Controller
                             'rate_timestamp' => $conversionData['rate_timestamp']->format('d-m-Y H:i:s'),
                             'transaction_id' => $conversionData['transaction_id'],
                             'item_total_usd' => $item_total,
-                            'shipping_cost_usd' => $shipping_cost_usd,
-                            'shipping_cost_kes' => $shipping_cost_kes,
-                            'tax_usd' => $order->tax ?? 0 * $conversionData['rate_used'] ?? 0
+                            'shipping_cost_usd' => (float)$shipping_cost_usd,
+                            'shipping_cost_kes' => (float)$shipping_cost_kes,
+                            'tax_usd' => (float)$order->tax ?? 0 * $conversionData['rate_used'] ?? 0
                         ]),
 
                         'items' => $items,
