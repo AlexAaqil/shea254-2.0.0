@@ -222,6 +222,12 @@ class PaystackController extends Controller
      */
     private function processSuccessfulPayment($order, $payment, $data)
     {
+        // Clear stored form data on successful payment
+        session()->forget('checkout_form_data');
+        session()->forget('checkout_selected_location');
+        session()->forget('checkout_selected_area');
+        session()->forget('pending_paystack_order_id');
+
         // Update payment record
         $payment->update([
             'status' => 'paid',

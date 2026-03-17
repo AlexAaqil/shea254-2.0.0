@@ -192,6 +192,12 @@ class KCBMpesaExpressController extends Controller
 
             // Process successful payment
             if ($result_code === 0) {
+                // Clear stored form data on successful payment
+                session()->forget('checkout_form_data');
+                session()->forget('checkout_selected_location');
+                session()->forget('checkout_selected_area');
+                session()->forget('pending_paystack_order_id');
+                
                 $metadata = collect($callback['CallbackMetadata']['Item'] ?? [])
                     ->mapWithKeys(fn($item) => isset($item['Value']) ? [$item['Name'] => $item['Value']] : [$item['Name'] => null])
                     ->toArray();

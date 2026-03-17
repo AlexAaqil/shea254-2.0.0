@@ -33,8 +33,19 @@ class SaleController extends Controller
 
         $user = Auth::check() ? Auth::user() : null;
 
-        $locations = DeliveryLocation::orderby('location_name')->get();
-        $areas = DeliveryArea::orderby('area_name')->get();
+        $locations = DeliveryLocation::orderBy('location_name')->get();
+        $areas = DeliveryArea::orderBy('area_name')->get();
+
+        // Check if we have stored form data from a previous failed payment
+        if (session()->has('checkout_form_data')) {
+            // Merge stored data with old input for the view
+            $stored_data = session('checkout_form_data');
+            foreach ($stored_data as $key => $value) {
+                if (!old($key)) {
+                    request()->merge([$key => $value]);
+                }
+            }
+        }
 
         return view('pages.general.sales.checkout', compact('user', 'cart_count', 'cart_subtotal', 'locations', 'areas'));
     }
@@ -42,6 +53,15 @@ class SaleController extends Controller
     public function store(CheckoutRequest $request, CartService $cart)
     {
         $validated_data = $request->validated();
+
+        // Store form data in session before any payment processing to ensure we can repopulate the form if payment fails
+        session()->put('checkout_form_data', $validated_data);
+
+        // Store the selected delivery method details for later use
+        if ($validated_data['delivery_method'] === 'delivery') {
+            session()->put('checkout_selected_location', $validated_data['location']);
+            session()->put('checkout_selected_area', $validated_data['area']);
+        }
 
         $cart_items = $cart->getItems();
         $cart_subtotal = (float)$cart->getSubtotal();
@@ -142,6 +162,10 @@ class SaleController extends Controller
             $area_name,
             'paystack'
         );
+
+        // Store order ID in session for reference on return
+        session()->put('pending_paystack_order_id', $order->id);
+
 
         // Initialize Paystack transaction
         $paystackController = app(PaystackController::class);

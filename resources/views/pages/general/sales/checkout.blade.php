@@ -73,7 +73,7 @@
                                             <select name="location" id="location">
                                                 <option value="">Select Location</option>
                                                 @foreach($locations as $location)
-                                                    <option value="{{ $location->id }}" {{ (string)old('location') === (string)$location->id ? 'selected' : '' }}>
+                                                    <option value="{{ $location->id }}" {{ (string)old('location', session('checkout_selected_location')) === (string)$location->id ? 'selected' : '' }}>
                                                         {{ $location->location_name }}
                                                     </option>
                                                 @endforeach
@@ -86,7 +86,7 @@
                                             <select name="area" id="area">
                                                 <option value="">Select Area</option>
                                                 @foreach($areas as $area)
-                                                    <option value="{{ $area->id }}" {{ (string)old('area') === (string)$area->id ? 'selected' : '' }}>
+                                                    <option value="{{ $area->id }}" {{ (string)old('area', session('checkout_selected_area')) === (string)$area->id ? 'selected' : '' }}>
                                                         {{ $area->area_name }}
                                                     </option>
                                                 @endforeach
@@ -255,13 +255,36 @@
         }
 
         function togglePickupMethod() {
-            const selected = document.querySelector("input[name='delivery_method']:checked").value;
-            if (selected === 'delivery') {
+            // Ensure delivery details visibility matches selected radio on page load
+            const selectedDelivery = document.querySelector("input[name='delivery_method']:checked")?.value;
+            const deliveryDetails = document.getElementById("delivery_details");
+
+            if (selectedDelivery === 'delivery') {
                 deliveryDetails.style.display = 'block';
             } else {
                 deliveryDetails.style.display = 'none';
                 areaPrice = 0; // reset shipping on pickup
             }
+
+            // If we have old location/area values, trigger the area load
+            @if(old('location') || session('checkout_selected_location'))
+                setTimeout(function() {
+                    const locationSelect = document.getElementById("location");
+                    if (locationSelect) {
+                        locationSelect.dispatchEvent(new Event('change'));
+                        
+                        @if(old('area') || session('checkout_selected_area'))
+                            setTimeout(function() {
+                                const areaSelect = document.getElementById("area");
+                                if (areaSelect) {
+                                    areaSelect.value = "{{ old('area', session('checkout_selected_area')) }}";
+                                    areaSelect.dispatchEvent(new Event('change'));
+                                }
+                            }, 500);
+                        @endif
+                    }
+                }, 100);
+            @endif
             updateShippingAndTotal();
         }
 

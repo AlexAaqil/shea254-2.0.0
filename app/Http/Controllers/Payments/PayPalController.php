@@ -142,7 +142,7 @@ class PayPalController extends Controller
                             'breakdown' => [
                                 'item_total' => [
                                     'currency_code' => 'USD',
-                                    'value' => number_format($total_amount_usd, 2, '.', '')
+                                    'value' => number_format($item_total, 2, '.', '')
                                 ],
                                 // Add shipping and tax breakdown
                                 // 'shipping' => [...],
@@ -508,6 +508,11 @@ class PayPalController extends Controller
             }
         });
 
+        // 🔥 FIX: Clear stored form data on successful payment
+        session()->forget('checkout_form_data');
+        session()->forget('checkout_selected_location');
+        session()->forget('checkout_selected_area');
+        session()->forget('pending_paystack_order_id');
         // Clear cart session
         session()->forget(['cart', 'cart_count']);
         
