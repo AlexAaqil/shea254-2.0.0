@@ -5,26 +5,7 @@ namespace App\Helpers;
 class PhoneHelper
 {
     /**
-     * Example usage in blade
-        @php
-            $formattedPhone = PhoneHelper::formatForDisplay($order->order_delivery->phone_number);
-            $phoneCountry = PhoneHelper::getCountry($order->order_delivery->phone_number);
-        @endphp
-
-        <p>
-            <span>Phone Number</span>
-            <span>
-                {{ $formattedPhone }}
-                @if($phoneCountry !== 'Kenya')
-                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                        {{ $phoneCountry }}
-                    </span>
-                @endif
-            </span>
-        </p>
-     */
-    /**
-     * Format phone number for display
+     * Format phone number for display (with spaces)
      */
     public static function formatForDisplay($phoneNumber): string
     {
@@ -32,83 +13,78 @@ class PhoneHelper
             return '';
         }
 
-        // Clean the number - remove all non-numeric except +
-        $cleaned = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        // Clean the number - remove any existing spaces first
+        $cleaned = preg_replace('/\s+/', '', $phoneNumber);
         
-        // Remove duplicate plus signs
-        if (substr_count($cleaned, '+') > 1) {
-            $cleaned = '+' . preg_replace('/\+/', '', $cleaned);
+        // Handle +074... pattern (incorrectly stored Kenyan number)
+        if (preg_match('/^\+074(\d{7})$/', $cleaned, $matches)) {
+            // Convert +074XXXXXXX to +254 7XX XXX XXX
+            $number = '7' . $matches[1]; // Add the 7 back
+            return '+254 ' . substr($number, 0, 3) . ' ' . substr($number, 3, 3) . ' ' . substr($number, 6, 3);
         }
         
-        // Convert 00 to +
-        if (strpos($cleaned, '00') === 0) {
-            $cleaned = '+' . substr($cleaned, 2);
-        }
-
-        // ===== KENYAN NUMBER FORMATS =====
-        
-        // Case 1: Already has +254 (with or without formatting)
-        if (preg_match('/^\+?254(\d{9})$/', $cleaned, $matches)) {
-            return '+254 ' . substr($matches[1], 0, 3) . ' ' . substr($matches[1], 3, 3) . ' ' . substr($matches[1], 6);
+        // Handle +254... pattern (correctly stored)
+        if (preg_match('/^\+254(\d{9})$/', $cleaned, $matches)) {
+            return '+254 ' . substr($matches[1], 0, 3) . ' ' . substr($matches[1], 3, 3) . ' ' . substr($matches[1], 6, 3);
         }
         
-        // Case 2: Starts with 07 (Safaricom/Airtel) - 10 digits total
-        if (preg_match('/^07(\d{8})$/', $cleaned, $matches)) {
-            return '+254 7' . substr($matches[1], 0, 2) . ' ' . substr($matches[1], 2, 3) . ' ' . substr($matches[1], 5);
+        // Handle 254... pattern (without plus)
+        if (preg_match('/^254(\d{9})$/', $cleaned, $matches)) {
+            return '+254 ' . substr($matches[1], 0, 3) . ' ' . substr($matches[1], 3, 3) . ' ' . substr($matches[1], 6, 3);
         }
         
-        // Case 3: Starts with 01 (Telkom) - 10 digits total
-        if (preg_match('/^01(\d{8})$/', $cleaned, $matches)) {
-            return '+254 1' . substr($matches[1], 0, 2) . ' ' . substr($matches[1], 2, 3) . ' ' . substr($matches[1], 5);
+        // Handle 07... or 01... pattern (local format)
+        if (preg_match('/^0([71])(\d{8})$/', $cleaned, $matches)) {
+            return '+254 ' . $matches[1] . substr($matches[2], 0, 2) . ' ' . substr($matches[2], 2, 3) . ' ' . substr($matches[2], 5, 3);
         }
         
-        // Case 4: Starts with 7 (already has 254 but missing the +)
-        if (preg_match('/^7(\d{8})$/', $cleaned, $matches)) {
-            return '+254 7' . substr($matches[1], 0, 2) . ' ' . substr($matches[1], 2, 3) . ' ' . substr($matches[1], 5);
+        // Handle 7... or 1... pattern (without leading 0)
+        if (preg_match('/^([71])(\d{8})$/', $cleaned, $matches)) {
+            return '+254 ' . $matches[1] . substr($matches[2], 0, 2) . ' ' . substr($matches[2], 2, 3) . ' ' . substr($matches[2], 5, 3);
         }
         
-        // Case 5: Starts with 1 (Telkom, missing 254)
-        if (preg_match('/^1(\d{8})$/', $cleaned, $matches)) {
-            return '+254 1' . substr($matches[1], 0, 2) . ' ' . substr($matches[1], 2, 3) . ' ' . substr($matches[1], 5);
-        }
-        
-        // Case 6: 10-digit number starting with 0 (generic)
-        if (preg_match('/^0(\d{9})$/', $cleaned, $matches)) {
-            $firstDigit = substr($matches[1], 0, 1);
-            if ($firstDigit === '7' || $firstDigit === '1') {
-                return '+254 ' . $firstDigit . substr($matches[1], 1, 2) . ' ' . substr($matches[1], 3, 3) . ' ' . substr($matches[1], 6);
-            }
-        }
-
-        // ===== INTERNATIONAL FORMATS =====
-        
-        // Format with spaces every 3 digits after country code
+        // If it's an international number with plus
         if (strpos($cleaned, '+') === 0) {
-            // Extract country code (up to 3 digits)
-            preg_match('/^\+(\d{1,3})/', $cleaned, $codeMatches);
-            $countryCode = $codeMatches[1] ?? '';
-            $countryCodeLen = strlen($countryCode);
-            
-            $rest = substr($cleaned, $countryCodeLen + 1); // +1 for the plus sign
-            
-            // Format the rest in groups of 3
-            $rest = preg_replace('/(\d{3})(?=\d)/', '$1 ', $rest);
-            
-            return '+' . $countryCode . ' ' . $rest;
+            return self::formatInternationalNumber($cleaned);
         }
         
-        // If all else fails, return cleaned number
+        // Return as is if no pattern matches
         return $cleaned;
     }
 
     /**
-     * Get country name from phone number
+     * Get country name from stored phone number
      */
     public static function getCountry($phoneNumber): string
     {
-        $cleaned = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        $cleaned = preg_replace('/\s+/', '', $phoneNumber);
         
-        // Extract country code
+        // Fix for +074... pattern - this is actually Kenya
+        if (preg_match('/^\+074/', $cleaned)) {
+            return 'Kenya';
+        }
+        
+        // Check for +254 pattern
+        if (preg_match('/^\+254/', $cleaned)) {
+            return 'Kenya';
+        }
+        
+        // Check for 254 pattern (without plus)
+        if (preg_match('/^254/', $cleaned)) {
+            return 'Kenya';
+        }
+        
+        // Check for 07 or 01 pattern
+        if (preg_match('/^0[71]/', $cleaned)) {
+            return 'Kenya';
+        }
+        
+        // Check for 7 or 1 pattern (9 digits)
+        if (preg_match('/^[71]\d{8}$/', $cleaned)) {
+            return 'Kenya';
+        }
+        
+        // Extract country code from international format
         if (preg_match('/^\+(\d{1,3})/', $cleaned, $matches)) {
             $code = $matches[1];
             
@@ -123,60 +99,91 @@ class PhoneHelper
                 '91' => 'India',
                 '234' => 'Nigeria',
                 '27' => 'South Africa',
-                '233' => 'Ghana',
-                '20' => 'Egypt',
-                '212' => 'Morocco',
-                '27' => 'South Africa',
             ];
             
             return $countries[$code] ?? 'International';
-        }
-        
-        // Check for Kenyan numbers without +254
-        if (preg_match('/^(0?7|0?1|2547|2541)/', $cleaned)) {
-            return 'Kenya';
-        }
-        
-        // Check for other common patterns
-        if (preg_match('/^(00254|0254)/', $cleaned)) {
-            return 'Kenya';
         }
         
         return 'Unknown';
     }
 
     /**
-     * Convert any Kenyan number to +254 format
+     * Format international numbers
      */
-    public static function toInternationalFormat($phoneNumber): string
+    private static function formatInternationalNumber($number): string
+    {
+        // Extract country code
+        preg_match('/^\+(\d{1,3})/', $number, $matches);
+        $countryCode = $matches[1] ?? '';
+        $rest = substr($number, strlen($countryCode) + 1); // +1 for the plus sign
+        
+        // Format based on common patterns
+        if ($countryCode === '1') { // US/Canada
+            if (strlen($rest) === 10) {
+                return '+1 ' . substr($rest, 0, 3) . ' ' . substr($rest, 3, 3) . ' ' . substr($rest, 6, 4);
+            }
+        } elseif ($countryCode === '44') { // UK
+            if (strlen($rest) === 10) {
+                return '+44 ' . substr($rest, 0, 4) . ' ' . substr($rest, 4, 3) . ' ' . substr($rest, 7, 3);
+            }
+        }
+        
+        // Generic formatting
+        $formatted = '+' . $countryCode . ' ';
+        $remaining = $rest;
+        
+        while (strlen($remaining) > 0) {
+            $formatted .= substr($remaining, 0, 3) . ' ';
+            $remaining = substr($remaining, 3);
+        }
+        
+        return trim($formatted);
+    }
+
+    /**
+     * Normalize to +254 format for storage (optional)
+     */
+    public static function normalizeForStorage($phoneNumber): string
     {
         if (empty($phoneNumber)) {
             return '';
         }
 
-        $cleaned = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        $cleaned = preg_replace('/\s+/', '', $phoneNumber);
         
-        // If already in international format, return as is
+        // Fix +074... pattern
+        if (preg_match('/^\+074(\d{7})$/', $cleaned, $matches)) {
+            return '+2547' . $matches[1];
+        }
+        
+        // Already in correct format
         if (preg_match('/^\+254\d{9}$/', $cleaned)) {
             return $cleaned;
         }
         
-        // Remove leading 0 if present
-        $cleaned = ltrim($cleaned, '0');
-        
-        // If it starts with 254, add + if missing
+        // Add plus to 254...
         if (preg_match('/^254(\d{9})$/', $cleaned, $matches)) {
-            return '+' . $cleaned;
+            return '+254' . $matches[1];
         }
         
-        // If it's a 9-digit number starting with 7 or 1
-        if (preg_match('/^([71])(\d{8})$/', $cleaned, $matches)) {
-            return '+254' . $matches[1] . $matches[2];
+        // Convert 07... to +2547...
+        if (preg_match('/^07(\d{8})$/', $cleaned, $matches)) {
+            return '+2547' . $matches[1];
         }
         
-        // If it's a 10-digit number starting with 07 or 01
-        if (preg_match('/^0([71])(\d{8})$/', $cleaned, $matches)) {
-            return '+254' . $matches[1] . $matches[2];
+        // Convert 01... to +2541...
+        if (preg_match('/^01(\d{8})$/', $cleaned, $matches)) {
+            return '+2541' . $matches[1];
+        }
+        
+        // Convert 7... to +2547...
+        if (preg_match('/^7(\d{8})$/', $cleaned, $matches)) {
+            return '+2547' . $matches[1];
+        }
+        
+        // Convert 1... to +2541...
+        if (preg_match('/^1(\d{8})$/', $cleaned, $matches)) {
+            return '+2541' . $matches[1];
         }
         
         return $cleaned;
