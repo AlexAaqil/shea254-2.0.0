@@ -138,18 +138,18 @@ class PayPalController extends Controller
                         'description' => "Order #{$order->order_number}",
                         'amount' => [
                             'currency_code' => 'USD',
-                            'value' => number_format($total_amount_usd, 2, '.', ''),
+                            'value' => sprintf('%.2f', $total_amount_usd),
                             'breakdown' => [
                                 'item_total' => [
                                     'currency_code' => 'USD',
-                                    'value' => number_format($item_total, 2, '.', '')
+                                    'value' => sprintf('%.2f', $item_total)
                                 ],
                                 // Add shipping and tax breakdown
                                 // 'shipping' => [...],
                                 // 'tax_total' => [...]
                                 'shipping' => [
                                     'currency_code' => 'USD',
-                                    'value' => number_format($shipping_cost_usd, 2, '.', '')
+                                    'value' => sprintf('%.2f', $shipping_cost_usd)
                                 ]
                             ]
                         ],
@@ -158,9 +158,9 @@ class PayPalController extends Controller
                         'custom_id' => json_encode([
                             'order_id' => $order->id,
                             'order_number' => $order->order_number,
-                            'kes_amount' => $conversionData['kes_amount'],
-                            'usd_amount' => $conversionData['usd_amount'],
-                            'exchange_rate' => $conversionData['rate_used'],
+                            'kes' => $conversionData['kes_amount'],
+                            'usd' => $conversionData['usd_amount'],
+                            'rate' => $conversionData['rate_used'],
                             'rate_source' => $conversionData['rate_source'],
                             'rate_timestamp' => $conversionData['rate_timestamp']->format('d-m-Y H:i:s'),
                             'transaction_id' => $conversionData['transaction_id'],
