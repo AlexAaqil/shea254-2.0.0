@@ -60,12 +60,16 @@
                     </ul>
 
                     <p>
+                        <span>Items Total : </span>
+                        <span>Ksh. {{ $order->total_amount }}</span>
+                    </p>
+                    <p>
                         <span>Shipping Cost : </span>
                         <span>Ksh. {{ $order->order_delivery->shipping_cost }}</span>
                     </p>
-                    <p class="text-green-600">
+                    <p class="font-bold">
                         <span>Total Amount : </span>
-                        <span>Ksh. {{ number_format($order->total_amount, 2) }}</span>
+                        <span class="text-green-600">Ksh. {{ number_format($order->total_amount, 2) }}</span>
                     </p>
 
                     <div class="payment_details">
