@@ -1,4 +1,50 @@
-# PayPal Simplified Code
+# PayPal Payment Integration
+
+## Paypal Configurations
+
+Controller method for processing payments:
+
+```php
+private function processPayPalPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name)
+    {
+        // Create order first with 'pending' status
+        $order = $this->createOrder(
+            $validated_data,
+            $cart_items,
+            $total_amount,
+            $order_number,
+            $user_id,
+            $shipping_cost,
+            $address,
+            $location_name,
+            $area_name,
+            'paypal'
+        );
+
+        $order->load('order_delivery');
+
+        // Store order ID in session for tracking
+        session()->put('paypal_order_id', $order->id);
+
+        // Initialize PayPal payment
+        $paypalController = app(PayPalController::class);
+        return $paypalController->initializePayment($order, $total_amount);
+    }
+```
+
+.env keys
+
+```text
+PAYPAL_CLIENT_ID=your-paypal-client-id
+PAYPAL_CLIENT_SECRET=your-paypal-client-secret
+STORE_CURRENCY=KES
+PAYPAL_CURRENCY=USD
+KES_TO_USD_RATE=0.00077
+PAYPAL_MODE=sandbox  # or 'live' for production
+```
+
+## Paypal Simplified code
+
 ```php
 // PayPal Service Class
 <?php

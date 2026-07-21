@@ -138,22 +138,6 @@
                                             </div>
                                             {{-- <span>Card</span> --}}
                                         </label>
-
-                                        <label>
-                                            <input class="option_radio" type="radio" name="payment_method" value="paypal" {{ old('payment_method') === 'paypal' ? 'checked' : '' }}>
-                                            {{-- <div class="image">
-                                                <img src="{{ asset("assets/images/brand-icons/icon-paypal.svg") }}" alt="PayPal Icon">
-                                            </div> --}}
-                                            <span class="paypal_button">
-                                                <span>Pay</span>
-                                                <span>Pal</span>
-                                            </span>
-                                        </label>
-
-                                        {{-- <label>
-                                            <input class="option_radio" type="radio" name="payment_method" value="paypal" {{ old('payment_method') === 'paypal' ? 'checked' : '' }}>
-                                            <span>Paypal</span>
-                                        </label> --}}
                                     </div>
                                     <x-form-input-error field="payment_method" />
                                 </div>
@@ -185,16 +169,6 @@
                                             <span>American Express</span>
                                         </li>
                                     </ul>
-                                </div>
-
-                                <div id="paypal_info" class="payment_info_box paypal_payment_info_box" style="display: none;">
-                                    <p style="margin: 0 0 10px;">You'll be redirected to PayPal's secure payment page where you can:</p>
-                                    <ul style="margin: 5px 0 0 20px;">
-                                        <li>Pay with your PayPal balance</li>
-                                        <li>Pay with credit/debit card (Visa, MasterCard, Amex, Discover)</li>
-                                        <li>Pay with bank account</li>
-                                    </ul>
-                                    <p style="margin: 10px 0 0; font-size: 14px;">No PayPal account? You can still pay with your card.</p>
                                 </div>
                             </div>
 
@@ -243,7 +217,6 @@
         const deliveryDetails = document.getElementById("delivery_details");
         const paystackInfo = document.getElementById("paystack_info");
         const mpesaInfo = document.getElementById("mpesa_info");
-        const paypalInfo = document.getElementById("paypal_info");
 
         let areaPrice = 0;
 
@@ -356,11 +329,8 @@
 
             mpesaInfo.style.display = 'none';
             paystackInfo.style.display = 'none';
-            paypalInfo.style.display = 'none';
             
-            if (selectedPayment === 'paypal') {
-                paypalInfo.style.display = 'block';
-            } else if (selectedPayment === 'paystack') {
+            if (selectedPayment === 'paystack') {
                 paystackInfo.style.display = 'block';
             } else {
                 mpesaInfo.style.display = 'block';

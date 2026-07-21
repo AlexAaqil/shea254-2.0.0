@@ -16,7 +16,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Payments\KCBMpesaExpressController;
 use App\Http\Controllers\Payments\PaystackController;
-use App\Http\Controllers\Payments\PayPalController;
 use Throwable;
 
 class SaleController extends Controller
@@ -101,10 +100,8 @@ class SaleController extends Controller
 
         if ($payment_method === 'kcb_mpesa') {
             return $this->processKcbMpesaPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
-        } elseif ($payment_method === 'paystack') {
-            return $this->processPayStackPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
         } else {
-            return $this->processPayPalPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
+            return $this->processPayStackPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name);
         }
     }
 
@@ -170,32 +167,6 @@ class SaleController extends Controller
         // Initialize Paystack transaction
         $paystackController = app(PaystackController::class);
         return $paystackController->initializeTransaction($order, $validated_data['email'], $total_amount);
-    }
-
-    private function processPayPalPayment($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name)
-    {
-        // Create order first with 'pending' status
-        $order = $this->createOrder(
-            $validated_data,
-            $cart_items,
-            $total_amount,
-            $order_number,
-            $user_id,
-            $shipping_cost,
-            $address,
-            $location_name,
-            $area_name,
-            'paypal'
-        );
-
-        $order->load('order_delivery');
-
-        // Store order ID in session for tracking
-        session()->put('paypal_order_id', $order->id);
-
-        // Initialize PayPal payment
-        $paypalController = app(PayPalController::class);
-        return $paypalController->initializePayment($order, $total_amount);
     }
 
     private function createOrder($validated_data, $cart_items, $total_amount, $order_number, $user_id, $shipping_cost, $address, $location_name, $area_name, $payment_method)
@@ -268,10 +239,8 @@ class SaleController extends Controller
 
         if ($order->payment_method === 'kcb_mpesa') {
             return view('pages.general.sales.success-mpesa', compact('order_number', 'order'));
-        } elseif ($order->payment_method === 'paystack') {
-            return view('pages.general.sales.success-paystack', compact('order_number', 'order'));
         } else {
-            return view('pages.general.sales.success-paypal', compact('order_number', 'order'));
+            return view('pages.general.sales.success-paystack', compact('order_number', 'order'));
         }
     }
 
