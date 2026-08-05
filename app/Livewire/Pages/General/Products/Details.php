@@ -9,6 +9,7 @@ use App\Services\CartService;
 class Details extends Component
 {
     public $productId;
+    public $product;
 
     public function mount($slug)
     {
@@ -30,6 +31,7 @@ class Details extends Component
             ->firstOrFail();
 
         $this->productId = $product->id;
+        $this->product = $product;
 
         // DISPATCH VIEWCONTENT EVENT
         // This sends an event to JavaScript which will trigger the Pixel
