@@ -33,30 +33,40 @@ class Details extends Component
         $this->productId = $product->id;
         $this->product = $product;
 
+        $price = $product->discount_price ?? $product->selling_price;
+
         // DISPATCH VIEWCONTENT EVENT
         // This sends an event to JavaScript which will trigger the Pixel
         $this->dispatch('track-view-content', [
             'content_name' => $this->product->title,           // Product name
             'content_ids' => [(string) $this->product->id],   // Product ID as string
             'content_type' => 'product',                      // Type of content
-            'value' => $this->product->selling_price,         // Product price
+            'value' => $price,         // Product price
             'currency' => 'KES'                                // Your currency
         ]);
     }
 
-    public function addToCart(int $product_id): void
+    public function addToCart(int $product_id, int $quantity = 1): void
     {
-        app(CartService::class)->add($product_id);
+        $cart_service = app(CartService::class);
+
+        // Add to cart
+        $cart_service->add($product_id, $quantity);
+
+        // Get the product with price tiers for accurate pricing
+        $product = Product::with('priceTiers')->find($product_id);
+        $unit_price = $product->getEffectivePriceForQuantity($quantity);
+        $total_value = $unit_price * $quantity;
 
         // DISPATCH ADDTOCART EVENT
         // This tells Meta someone added a product to cart
         $this->dispatch('track-add-to-cart', [
-            'content_name' => $this->product->name,
+            'content_name' => $this->product->title,
             'content_ids' => [(string) $this->product->id],
             'content_type' => 'product',
-            'value' => $this->product->price * $this->quantity,  // Total value of items added
+            'value' => $total_value,  // Total value of items added
             'currency' => 'KES',
-            'quantity' => $this->quantity                         // Number of items
+            'quantity' => $this->quantity
         ]);
 
         $this->dispatch('cart-updated');
