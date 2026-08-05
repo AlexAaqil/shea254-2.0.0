@@ -66,7 +66,7 @@ class Details extends Component
             'content_type' => 'product',
             'value' => $total_value,  // Total value of items added
             'currency' => 'KES',
-            'quantity' => $this->quantity
+            'quantity' => $quantity
         ]);
 
         $this->dispatch('cart-updated');
