@@ -162,6 +162,15 @@ class MetaConversionsApiService
     }
 
     /**
+     * Public method to normalize phone number
+     * (Wrapper for protected normalizePhone)
+     */
+    public function normalizePhoneNumber(string $phone): string
+    {
+        return $this->normalizePhone($phone);
+    }
+
+    /**
      * Track ViewContent event
      */
     public function trackViewContent($product, $price): bool
@@ -227,7 +236,7 @@ class MetaConversionsApiService
     /**
      * Track InitiateCheckout event
      */
-    public function trackInitiateCheckout($cartItems, float $total): bool
+    public function trackInitiateCheckout($cartItems, float $total, ?array $userData = null): bool
     {
         // Convert to array if it's a Collection
         if ($cartItems instanceof \Illuminate\Support\Collection) {
@@ -272,15 +281,17 @@ class MetaConversionsApiService
             'currency' => 'KES',
             'content_ids' => $productIds,
             'num_items' => count($cartItems),
-        ]);
+        ], $userData);
     }
 
     /**
      * Track Purchase event (MOST IMPORTANT)
      */
-    public function trackPurchase($order, array $productIds): bool
+    public function trackPurchase($order, array $productIds, ?array $userData = null): bool
     {
         $eventId = 'purchase_' . $order->id . '_' . time();
+
+        $finalUserData = $userData ?? $this->prepareUserData();
         
         return $this->sendEvent('Purchase', [
             'value' => (float) $order->total_amount,
@@ -289,6 +300,6 @@ class MetaConversionsApiService
             'content_type' => 'product',
             'num_items' => count($productIds),
             'order_id' => $order->order_number,
-        ], null, $eventId);
+        ], $finalUserData, $eventId);
     }
 }

@@ -65,6 +65,18 @@ class SaleController extends Controller
             $product_ids[] = (string) $item->product->id;
         }
 
+        $userData = [];
+        $userData['client_ip_address'] = request()->ip();
+        $userData['client_user_agent'] = request()->header('User-Agent');
+
+        if (request()->has('fbclid')) {
+            $userData['fbclid'] = request()->input('fbclid');
+        }
+        
+        if (isset($_COOKIE['_fbp'])) {
+            $userData['fbp'] = $_COOKIE['_fbp'];
+        }
+
         // Send initiatecheckout directly from server
         try {
             $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal);
@@ -276,8 +288,30 @@ class SaleController extends Controller
             return (string) $id;
         })->toArray();
 
+        $userData = [];
+
+        if ($order->order_delivery && $order->order_delivery->email) {
+            $userData['em'] = hash('sha256', strtolower($order->order_delivery->email));
+        }
+
+        if ($order->order_delivery && $order->order_delivery->phone_number) {
+            $userData['ph'] = hash('sha256', $this->capi->normalizePhoneNumber($order->order_delivery->phone_number));
+        }
+
+        // Add standard data
+        $userData['client_ip_address'] = request()->ip();
+        $userData['client_user_agent'] = request()->header('User-Agent');
+        
+        if (request()->has('fbclid')) {
+            $userData['fbclid'] = request()->input('fbclid');
+        }
+        
+        if (isset($_COOKIE['_fbp'])) {
+            $userData['fbp'] = $_COOKIE['_fbp'];
+        }
+
         try {
-            $this->capi->trackPurchase($order, $product_ids);
+            $this->capi->trackPurchase($order, $product_ids, $userData);
             Log::info('CAPI purchase sent for order ' . $order->order_number);
         } catch (Exception $e) {
             Log::error('CAPI purchase failed: ' . $e->getMessage());
