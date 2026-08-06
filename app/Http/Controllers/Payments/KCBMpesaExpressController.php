@@ -275,6 +275,14 @@ class KCBMpesaExpressController extends Controller
                         return (string) $id;
                     })->toArray();
 
+                    try {
+                        $capi = app(\App\Services\MetaConversionsApiService::class);
+                        $capi->trackPurchase($order, $product_ids);
+                        Log::info('CAPI Purchase sent from KCB callback for order ' . $order->order_number);
+                    } catch (\Exception $e) {
+                        Log::error('CAPI Purchase from KCB callback failed: ' . $e->getMessage());
+                    }
+
                     session()->put('meta_purchase', [
                         'value' => $order->total_amount,
                         'currency' => 'KES',

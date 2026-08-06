@@ -11,15 +11,25 @@ use App\Models\Deliveries\DeliveryArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\CartService;
+use App\Services\MetaConversionsApiService;
 use App\Http\Requests\Sales\CheckoutRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Payments\KCBMpesaExpressController;
 use App\Http\Controllers\Payments\PaystackController;
+use Illuminate\Support\Facades\Log;
 use Throwable;
+use Exception;
 
 class SaleController extends Controller
 {
+    protected MetaConversionsApiService $capi;
+
+    public function __construct(MetaConversionsApiService $capi)
+    {
+        $this->capi = $capi;
+    }
+
     public function checkout(CartService $cart)
     {
         if ($cart->count() === 0) {
@@ -53,6 +63,14 @@ class SaleController extends Controller
 
         foreach($cart_items as $item) {
             $product_ids[] = (string) $item->product->id;
+        }
+
+        // Send initiatecheckout directly from server
+        try {
+            $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal);
+            Log::info('CAPI intiate checkout sent for checkout page.');
+        } catch (Exception $e) {
+            Log::error('CAPI initiate checkout failed: ' . $e->getMessage());
         }
 
         // Dispatch the event to JavaScript
@@ -257,6 +275,13 @@ class SaleController extends Controller
         $product_ids = $order->order_items->pluck('product_id')->map(function($id) {
             return (string) $id;
         })->toArray();
+
+        try {
+            $this->capi->trackPurchase($order, $product_ids);
+            Log::info('CAPI purchase sent for order ' . $order->order_number);
+        } catch (Exception $e) {
+            Log::error('CAPI purchase failed: ' . $e->getMessage());
+        }
 
         session()->put('meta_purchase', [
             'value' => $order->total_amount,

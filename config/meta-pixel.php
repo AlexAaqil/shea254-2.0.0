@@ -6,4 +6,8 @@ return [
     'app_secret' => env('META_APP_SECRET'),
     'enabled' => env('META_PIXEL_ENABLED', false),
     'test_code' => env('META_TEST_EVENT_CODE'),
+
+    // CAPI
+    'capi_enabled' => env('META_CAPI_ENABLED', false),
+    'api_version' => env('META_API_VERSION', 'v18.0'),
 ];

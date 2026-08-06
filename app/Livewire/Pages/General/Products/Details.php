@@ -5,11 +5,19 @@ namespace App\Livewire\Pages\General\Products;
 use Livewire\Component;
 use App\Models\Products\Product;
 use App\Services\CartService;
+use App\Services\MetaConversionsApiService;
+use Illuminate\Support\Facades\Log;
 
 class Details extends Component
 {
     public $productId;
     public $product;
+    protected MetaConversionsApiService $capi;
+
+    public function boot(MetaConversionsApiService $capi)
+    {
+        $this->capi = $capi;
+    }
 
     public function mount($slug)
     {
@@ -35,6 +43,14 @@ class Details extends Component
 
         $price = $product->discount_price ?? $product->selling_price;
 
+        // CAPI: send viewcontent from server
+        try {
+            $this->capi->trackViewContent($product, $price);
+            Log::info('CAPI ViewContent sent for product ' . $product->id);
+        } catch (\Exception $e) {
+            Log::error('CAPI ViewContent failed: ' . $e->getMessage());
+        }
+
         // DISPATCH VIEWCONTENT EVENT
         // This sends an event to JavaScript which will trigger the Pixel
         $this->dispatch('track-view-content', [
@@ -57,6 +73,14 @@ class Details extends Component
         $product = Product::with('priceTiers')->find($product_id);
         $unit_price = $product->getEffectivePriceForQuantity($quantity);
         $total_value = $unit_price * $quantity;
+
+        // CAPI: send AddToCart from server
+        try {
+            $this->capi->trackAddToCart($product, $quantity, $total_value);
+            Log::info('CAPI AddToCart sent for product ' . $product->id);
+        } catch (\Exception $e) {
+            Log::error('CAPI AddToCart failed: ' . $e->getMessage());
+        }
 
         // DISPATCH ADDTOCART EVENT
         // This tells Meta someone added a product to cart
