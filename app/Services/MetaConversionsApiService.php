@@ -167,8 +167,16 @@ class MetaConversionsApiService
     public function trackViewContent($product, $price): bool
     {
         // Get product data safely
-        $productId = is_object($product) ? $product->id : $product['id'] ?? null;
-        $productName = is_object($product) ? $product->title : $product['title'] ?? 'Product';
+        $productId = null;
+        $productName = 'Product';
+        
+        if (is_object($product)) {
+            $productId = $product->id ?? null;
+            $productName = $product->title ?? $product->name ?? 'Product';
+        } elseif (is_array($product)) {
+            $productId = $product['id'] ?? null;
+            $productName = $product['title'] ?? $product['name'] ?? 'Product';
+        }
         
         if (!$productId) {
             Log::error('trackViewContent: Invalid product data');
@@ -190,8 +198,16 @@ class MetaConversionsApiService
     public function trackAddToCart($product, int $quantity, float $total): bool
     {
         // Get product data safely
-        $productId = is_object($product) ? $product->id : $product['id'] ?? null;
-        $productName = is_object($product) ? $product->title : $product['title'] ?? 'Product';
+        $productId = null;
+        $productName = 'Product';
+        
+        if (is_object($product)) {
+            $productId = $product->id ?? null;
+            $productName = $product->title ?? $product->name ?? 'Product';
+        } elseif (is_array($product)) {
+            $productId = $product['id'] ?? null;
+            $productName = $product['title'] ?? $product['name'] ?? 'Product';
+        }
         
         if (!$productId) {
             Log::error('trackAddToCart: Invalid product data');
@@ -211,7 +227,7 @@ class MetaConversionsApiService
     /**
      * Track InitiateCheckout event
      */
-    public function trackInitiateCheckout(array $cartItems, float $total): bool
+    public function trackInitiateCheckout($cartItems, float $total): bool
     {
         // Convert to array if it's a Collection
         if ($cartItems instanceof \Illuminate\Support\Collection) {
@@ -244,6 +260,13 @@ class MetaConversionsApiService
             }
         }
 
+        if (empty($productIds)) {
+            Log::warning('trackInitiateCheckout: No product IDs found', [
+                'cart_items' => $cartItems
+            ]);
+            return false;
+        }
+
         return $this->sendEvent('InitiateCheckout', [
             'value' => $total,
             'currency' => 'KES',
@@ -260,11 +283,12 @@ class MetaConversionsApiService
         $eventId = 'purchase_' . $order->id . '_' . time();
         
         return $this->sendEvent('Purchase', [
-            'value' => $order->total_amount,
+            'value' => (float) $order->total_amount,
             'currency' => 'KES',
             'content_ids' => $productIds,
             'content_type' => 'product',
             'num_items' => count($productIds),
+            'order_id' => $order->order_number,
         ], null, $eventId);
     }
 }
