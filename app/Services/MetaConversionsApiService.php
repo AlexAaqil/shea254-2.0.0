@@ -166,11 +166,20 @@ class MetaConversionsApiService
      */
     public function trackViewContent($product, $price): bool
     {
+        // Get product data safely
+        $productId = is_object($product) ? $product->id : $product['id'] ?? null;
+        $productName = is_object($product) ? $product->title : $product['title'] ?? 'Product';
+        
+        if (!$productId) {
+            Log::error('trackViewContent: Invalid product data');
+            return false;
+        }
+
         return $this->sendEvent('ViewContent', [
-            'content_name' => $product->title,
-            'content_ids' => [(string) $product->id],
+            'content_name' => $productName,
+            'content_ids' => [(string) $productId],
             'content_type' => 'product',
-            'value' => $price,
+            'value' => (float) $price,
             'currency' => 'KES',
         ]);
     }
@@ -180,13 +189,22 @@ class MetaConversionsApiService
      */
     public function trackAddToCart($product, int $quantity, float $total): bool
     {
+        // Get product data safely
+        $productId = is_object($product) ? $product->id : $product['id'] ?? null;
+        $productName = is_object($product) ? $product->title : $product['title'] ?? 'Product';
+        
+        if (!$productId) {
+            Log::error('trackAddToCart: Invalid product data');
+            return false;
+        }
+
         return $this->sendEvent('AddToCart', [
-            'content_name' => $product->title,
-            'content_ids' => [(string) $product->id],
+            'content_name' => $productName,
+            'content_ids' => [(string) $productId],
             'content_type' => 'product',
-            'value' => $total,
+            'value' => (float) $total,
             'currency' => 'KES',
-            'quantity' => $quantity,
+            'quantity' => (int) $quantity,
         ]);
     }
 
@@ -195,9 +213,36 @@ class MetaConversionsApiService
      */
     public function trackInitiateCheckout(array $cartItems, float $total): bool
     {
-        $productIds = array_map(function($item) {
-            return (string) $item['product_id'] ?? (string) $item->product->id;
-        }, $cartItems);
+        // Convert to array if it's a Collection
+        if ($cartItems instanceof \Illuminate\Support\Collection) {
+            $cartItems = $cartItems->toArray();
+        }
+        
+        // If it's not an array, try to convert it
+        if (!is_array($cartItems)) {
+            Log::error('trackInitiateCheckout: cartItems is not an array or Collection', [
+                'type' => gettype($cartItems)
+            ]);
+            return false;
+        }
+        
+        $productIds = [];
+        foreach ($cartItems as $item) {
+            // Handle different item types
+            if (is_object($item) && isset($item->product) && isset($item->product->id)) {
+                // It's a CartItem object with product relationship
+                $productIds[] = (string) $item->product->id;
+            } elseif (is_array($item) && isset($item['product_id'])) {
+                // It's an array with product_id
+                $productIds[] = (string) $item['product_id'];
+            } elseif (is_array($item) && isset($item['id'])) {
+                // It's an array with id
+                $productIds[] = (string) $item['id'];
+            } elseif (is_object($item) && isset($item->id)) {
+                // It's an object with id
+                $productIds[] = (string) $item->id;
+            }
+        }
 
         return $this->sendEvent('InitiateCheckout', [
             'value' => $total,
