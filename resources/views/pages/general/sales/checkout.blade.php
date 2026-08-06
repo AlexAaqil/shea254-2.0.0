@@ -369,5 +369,23 @@
         }
     });
     </script>
+
+    @if(session()->has('meta_initiate_checkout'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const checkoutData = @json(session('meta_initiate_checkout'));
+                
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'InitiateCheckout', checkoutData);
+                    console.log('Meta Pixel: InitiateCheckout tracked', checkoutData);
+                } else {
+                    console.warn('Meta Pixel not loaded for InitiateCheckout');
+                }
+            });
+        </script>
+        @php
+            session()->forget('meta_initiate_checkout');
+        @endphp
+    @endif
     @endpush
 </x-guest-layout>

@@ -148,6 +148,20 @@ class PaystackController extends Controller
 
             // Process based on payment status
             if ($data['status'] === 'success') {
+                // META TRACKING PURCHASE EVENT
+                // Get all product ids for Meta Ads!
+                $product_ids = $order->order_items->pluck('product_id')->map(function($id) {
+                    return (string) $id;
+                })->toArray();
+
+                session()->put('meta_purchase', [
+                    'value' => $order->total_amount,
+                    'currency' => 'KES',
+                    'content_ids' => $product_ids,
+                    'content_type' => 'product',
+                    'num_items' => $order->order_items->count()
+                ]);
+
                 return $this->processSuccessfulPayment($order, $payment, $data);
             } else {
                 return $this->processFailedPayment($order, $payment, $data);

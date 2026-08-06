@@ -15,4 +15,24 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        @if(session()->has('meta_purchase'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const purchaseData = @json(session('meta_purchase'));
+                    
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Purchase', purchaseData);
+                        console.log('Meta Pixel: Purchase tracked', purchaseData);
+                    } else {
+                        console.warn('Meta Pixel not loaded for Purchase');
+                    }
+                });
+            </script>
+            @php
+                session()->forget('meta_purchase');
+            @endphp
+        @endif
+    @endpush
 </x-guest-layout>

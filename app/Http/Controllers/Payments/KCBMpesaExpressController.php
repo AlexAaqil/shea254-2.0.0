@@ -268,6 +268,20 @@ class KCBMpesaExpressController extends Controller
                         'response_code' => $payment->response_code,
                         'customer_message' => $payment->customer_message
                     ]));
+
+                    // META TRACKING PURCHASE EVENT
+                    // Get all product ids for Meta Ads!
+                    $product_ids = $order->order_items->pluck('product_id')->map(function($id) {
+                        return (string) $id;
+                    })->toArray();
+
+                    session()->put('meta_purchase', [
+                        'value' => $order->total_amount,
+                        'currency' => 'KES',
+                        'content_ids' => $product_ids,
+                        'content_type' => 'product',
+                        'num_items' => $order->order_items->count()
+                    ]);
                 });
             } else {
                 // Payment failed

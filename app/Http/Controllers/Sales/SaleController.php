@@ -46,6 +46,23 @@ class SaleController extends Controller
             }
         }
 
+        // META TRACKING INITIATECHECKOUT EVENT
+        // Get cart items for tracking
+        $cart_items = $cart->getItems();
+        $product_ids = [];
+
+        foreach($cart_items as $item) {
+            $product_ids[] = (string) $item->product->id;
+        }
+
+        // Dispatch the event to JavaScript
+        session()->put('meta_initiate_checkout', [
+            'value' => $cart_subtotal,
+            'currency' => 'KES',
+            'content_ids' => $product_ids,
+            'num_items' => $cart_count
+        ]);
+
         return view('pages.general.sales.checkout', compact('user', 'cart_count', 'cart_subtotal', 'locations', 'areas'));
     }
 
