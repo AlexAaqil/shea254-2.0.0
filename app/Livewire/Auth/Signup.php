@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class Signup extends Component
 {
     public string $uuid = '';
@@ -54,6 +56,6 @@ class Signup extends Component
 
     public function render()
     {
-        return view('livewire.auth.signup')->layout('layouts.guest');
+        return view('livewire.auth.signup');
     }
 }

@@ -9,7 +9,9 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class Login extends Component
 {
     public string $email = '';
@@ -90,6 +92,6 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.auth.login')->layout('layouts.guest');
+        return view('livewire.auth.login');
     }
 }

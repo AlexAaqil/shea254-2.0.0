@@ -7,7 +7,9 @@ use App\Models\Products\Product;
 use App\Services\CartService;
 use App\Services\MetaConversionsApiService;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class Details extends Component
 {
     public $productId;
@@ -148,6 +150,6 @@ class Details extends Component
         return view('livewire.pages.general.products.details', [
             'product' => $product,
             'related_products' => $related_products,
-        ])->layout('layouts.guest');
+        ]);
     }
 }

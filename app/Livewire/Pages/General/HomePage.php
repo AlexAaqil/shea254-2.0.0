@@ -4,14 +4,26 @@ namespace App\Livewire\Pages\General;
 use Illuminate\Support\Facades\Cache;
 
 use Livewire\Component;
+use App\Models\Sales\Sale;
 use App\Models\Products\Product;
 use App\Models\Products\ProductReview;
 use App\Services\CartService;
-use App\Models\Sales\Sale;
+use App\Services\MetaConversionsApiService;
+use Illuminate\Support\Facades\Log;
+use Exception;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class HomePage extends Component
 {
     public $testimonials = [];
+
+    protected MetaConversionsApiService $capi;
+
+    public function boot(MetaConversionsApiService $capi)
+    {
+        $this->capi = $capi;
+    }
 
     public function loadTestimonials()
     {
@@ -25,10 +37,37 @@ class HomePage extends Component
 
     public function addToCart(int $product_id): void
     {
+        // Get product details before adding to cart
+        $product = Product::find($product_id);
+        
+        if (!$product) {
+            $this->dispatch('notify', 'Product not found', 'error');
+            return;
+        }
+
+        // Add to cart
         app(CartService::class)->add($product_id);
 
-        $this->dispatch('cart-updated');
+        // CAPI: Send AddToCart from server
+        try {
+            $price = $product->discount_price ?? $product->selling_price;
+            $this->capi->trackAddToCart($product, 1, $price);
+            Log::info('CAPI AddToCart sent for product ' . $product->id . ' from Home page');
+        } catch (Exception $e) {
+            Log::error('CAPI AddToCart failed from Home page: ' . $e->getMessage());
+        }
 
+        // Client-side tracking (backup)
+        $this->dispatch('track-add-to-cart', [
+            'content_name' => $product->title,
+            'content_ids' => [(string) $product->id],
+            'content_type' => 'product',
+            'value' => $price,
+            'currency' => 'KES',
+            'quantity' => 1
+        ]);
+
+        $this->dispatch('cart-updated');
         $this->dispatch('notify', 'Added to cart', 'success');
     }
 
@@ -55,6 +94,6 @@ class HomePage extends Component
             ->take(10)
             ->get();
 
-        return view('livewire.pages.general.home-page', compact('featured_products', 'latest_orders'))->layout('layouts.guest');
+        return view('livewire.pages.general.home-page', compact('featured_products', 'latest_orders'));
     }
 }

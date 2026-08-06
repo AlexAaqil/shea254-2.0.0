@@ -4,7 +4,9 @@ namespace App\Livewire\Pages\General\Blogs;
 
 use Livewire\Component;
 use App\Models\Blogs\Blog;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class Details extends Component
 {
     public $blog;
@@ -16,6 +18,6 @@ class Details extends Component
 
     public function render()
     {
-        return view('livewire.pages.general.blogs.details')->layout('layouts.guest');
+        return view('livewire.pages.general.blogs.details');
     }
 }

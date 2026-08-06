@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class ResetPassword extends Component
 {
     #[Locked]
@@ -64,6 +66,6 @@ class ResetPassword extends Component
 
     public function render()
     {
-        return view('livewire.auth.reset-password')->layout('layouts.guest');
+        return view('livewire.auth.reset-password');
     }
 }

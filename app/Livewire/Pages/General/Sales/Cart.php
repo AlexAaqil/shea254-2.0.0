@@ -4,7 +4,9 @@ namespace App\Livewire\Pages\General\Sales;
 
 use Livewire\Component;
 use App\Services\CartService;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.guest')]
 class Cart extends Component
 {
     public $cart_items;
@@ -62,6 +64,6 @@ class Cart extends Component
 
     public function render()
     {
-        return view('livewire.pages.general.sales.cart')->layout('layouts.guest');
+        return view('livewire.pages.general.sales.cart');
     }
 }
