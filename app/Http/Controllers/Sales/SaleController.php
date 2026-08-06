@@ -255,7 +255,7 @@ class SaleController extends Controller
         session()->forget('order_number');
 
         if ($order->payment_method === 'kcb_mpesa') {
-            return view('pages.general.sales.success-mpesa', compact('order_number', 'order'));
+            return view('pages.general.sales.success', compact('order_number', 'order'));
         } else {
             return view('pages.general.sales.success-paystack', compact('order_number', 'order'));
         }
