@@ -373,11 +373,14 @@
     @if(session()->has('meta_initiate_checkout'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const checkoutData = @json(session('meta_initiate_checkout'));
+                const eventData = @json(session('meta_initiate_checkout'));
                 
                 if (typeof fbq !== 'undefined') {
-                    fbq('track', 'InitiateCheckout', checkoutData);
-                    console.log('Meta Pixel: InitiateCheckout tracked', checkoutData);
+                    const eventId = eventData.event_id;
+                    delete eventData.event_id;
+
+                    fbq('track', 'InitiateCheckout', eventData, {eventID: eventId});
+                    console.log('Meta Pixel: InitiateCheckout tracked with event_id:', eventId);
                 } else {
                     console.warn('Meta Pixel not loaded for InitiateCheckout');
                 }

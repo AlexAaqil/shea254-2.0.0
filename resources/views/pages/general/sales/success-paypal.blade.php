@@ -15,4 +15,29 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        @if(session()->has('meta_purchase'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const purchaseData = @json(session('meta_purchase'));
+                    
+                    if (typeof fbq !== 'undefined') {
+                        // Extract event_id
+                        const eventId = purchaseData.event_id;
+                        delete purchaseData.event_id; // remove from custom data
+
+                        // pass event id for deduplication
+                        fbq('track', 'Purchase', purchaseData, {eventID: eventId});
+                        console.log('Meta Pixel: Purchase tracked with event_id:', eventId);
+                    } else {
+                        console.warn('Meta Pixel not loaded for Purchase');
+                    }
+                });
+            </script>
+            @php
+                session()->forget('meta_purchase');
+            @endphp
+        @endif
+    @endpush
 </x-guest-layout>

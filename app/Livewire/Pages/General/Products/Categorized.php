@@ -43,13 +43,16 @@ class Categorized extends Component
         // Add to cart
         app(CartService::class)->add($product_id);
 
+        $price = $product->discount_price ?? $product->selling_price;
+
+        $eventId = 'add_to_cart_' . $product->id . '_' . time();
+
         // CAPI: Send AddToCart from server
         try {
-            $price = $product->discount_price ?? $product->selling_price;
-            $this->capi->trackAddToCart($product, 1, $price);
-            Log::info('CAPI AddToCart sent for product ' . $product->id . ' from Category page');
+            $this->capi->trackAddToCart($product, 1, $price, $eventId);
+            Log::info('CAPI AddToCart sent for product ' . $product->id);
         } catch (Exception $e) {
-            Log::error('CAPI AddToCart failed from Category page: ' . $e->getMessage());
+            Log::error('CAPI AddToCart failed: ' . $e->getMessage());
         }
 
         // Client-side tracking (backup)
@@ -59,7 +62,8 @@ class Categorized extends Component
             'content_type' => 'product',
             'value' => $price,
             'currency' => 'KES',
-            'quantity' => 1
+            'quantity' => 1,
+            'event_id' => $eventId
         ]);
 
         $this->dispatch('cart-updated');

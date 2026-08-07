@@ -8,8 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Listen for ViewContent event (when someone views a product)
     window.addEventListener('track-view-content', function(event) {
         if (typeof fbq !== 'undefined') {
-            fbq('track', 'ViewContent', event.detail);
-            console.log('Meta Pixel: ViewContent tracked', event.detail);
+            const eventData = event.detail;
+            const eventId = eventData.event_id;
+            delete eventData.event_id;
+
+            fbq('track', 'ViewContent', eventData, {eventID: eventId});
+            console.log('Meta Pixel: ViewContent tracked with event_id:', eventId);
         } else {
             console.warn('Meta Pixel not loaded');
         }
@@ -18,8 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Listen for AddToCart event (when someone adds to cart)
     window.addEventListener('track-add-to-cart', function(event) {
         if (typeof fbq !== 'undefined') {
-            fbq('track', 'AddToCart', event.detail);
-            console.log('Meta Pixel: AddToCart tracked', event.detail);
+            const eventData = event.detail;
+            const eventId = eventData.event_id;
+            delete eventData.event_id;
+
+            fbq('track', 'AddToCart', eventData, {eventID: eventId});
+            console.log('Meta Pixel: AddToCart tracked with event_id:', eventId);
         } else {
             console.warn('Meta Pixel not loaded');
         }

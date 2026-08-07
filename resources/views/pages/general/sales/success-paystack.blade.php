@@ -23,8 +23,13 @@
                     const purchaseData = @json(session('meta_purchase'));
                     
                     if (typeof fbq !== 'undefined') {
-                        fbq('track', 'Purchase', purchaseData);
-                        console.log('Meta Pixel: Purchase tracked', purchaseData);
+                        // Extract event_id
+                        const eventId = purchaseData.event_id;
+                        delete purchaseData.event_id; // remove from custom data
+
+                        // pass event id for deduplication
+                        fbq('track', 'Purchase', purchaseData, {eventID: eventId});
+                        console.log('Meta Pixel: Purchase tracked with event_id:', eventId);
                     } else {
                         console.warn('Meta Pixel not loaded for Purchase');
                     }

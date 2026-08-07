@@ -44,20 +44,27 @@ class Shop extends Component
 
     public function addToCart(int $product_id): void
     {
+        // Get product details before adding to cart
         $product = Product::find($product_id);
-
+        
         if (!$product) {
             $this->dispatch('notify', 'Product not found', 'error');
             return;
         }
 
-        // CAPI: send AddToCart from server
+        // Add to cart
+        app(CartService::class)->add($product_id);
+
+        $price = $product->discount_price ?? $product->selling_price;
+
+        $eventId = 'add_to_cart_' . $product->id . '_' . time();
+
+        // CAPI: Send AddToCart from server
         try {
-            $price = $product->discount_price ?? $product->selling_price;
-            $this->capi->trackAddToCart($product, 1, $price);
-            Log::info('CAPI AddToCart sent for product ' . $product->id . ' from Shop page');
+            $this->capi->trackAddToCart($product, 1, $price, $eventId);
+            Log::info('CAPI AddToCart sent for product ' . $product->id);
         } catch (Exception $e) {
-            Log::error('CAPI AddToCart failed from Shop page: ' . $e->getMessage());
+            Log::error('CAPI AddToCart failed: ' . $e->getMessage());
         }
 
         // Client-side tracking (backup)
@@ -67,13 +74,11 @@ class Shop extends Component
             'content_type' => 'product',
             'value' => $price,
             'currency' => 'KES',
-            'quantity' => 1
+            'quantity' => 1,
+            'event_id' => $eventId
         ]);
 
-        app(CartService::class)->add($product_id);
-
         $this->dispatch('cart-updated');
-
         $this->dispatch('notify', 'Added to cart', 'success');
     }
 

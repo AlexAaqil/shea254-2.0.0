@@ -65,6 +65,8 @@ class SaleController extends Controller
             $product_ids[] = (string) $item->product->id;
         }
 
+        $eventId = 'initiate_checkout_' . md5(json_encode($product_ids) . time());
+
         $userData = [];
         $userData['client_ip_address'] = request()->ip();
         $userData['client_user_agent'] = request()->header('User-Agent');
@@ -96,7 +98,7 @@ class SaleController extends Controller
 
         // Send initiatecheckout directly from server
         try {
-            $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal, $userData);
+            $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal, $userData, $eventId);
             Log::info('CAPI intiate checkout sent for checkout page.');
         } catch (Exception $e) {
             Log::error('CAPI initiate checkout failed: ' . $e->getMessage());
@@ -107,7 +109,8 @@ class SaleController extends Controller
             'value' => $cart_subtotal,
             'currency' => 'KES',
             'content_ids' => $product_ids,
-            'num_items' => $cart_count
+            'num_items' => $cart_count,
+            'event_id' => $eventId
         ]);
 
         return view('pages.general.sales.checkout', compact('user', 'cart_count', 'cart_subtotal', 'locations', 'areas'));
@@ -305,6 +308,8 @@ class SaleController extends Controller
             return (string) $id;
         })->toArray();
 
+        $eventId = 'purchase_' . $order->id . '_' . time();
+
         $userData = [];
 
         if ($order->order_delivery) {
@@ -352,7 +357,7 @@ class SaleController extends Controller
         }
 
         try {
-            $this->capi->trackPurchase($order, $product_ids, $userData);
+            $this->capi->trackPurchase($order, $product_ids, $userData, $eventId);
             Log::info('CAPI purchase sent for order ' . $order->order_number);
         } catch (Exception $e) {
             Log::error('CAPI purchase failed: ' . $e->getMessage());
@@ -363,7 +368,8 @@ class SaleController extends Controller
             'currency' => 'KES',
             'content_ids' => $product_ids,
             'content_type' => 'product',
-            'num_items' => $order->order_items->count()
+            'num_items' => $order->order_items->count(),
+            'event_id' => $eventId,
         ]);
 
         session()->forget('order_number');

@@ -183,8 +183,10 @@ class MetaConversionsApiService
     /**
      * Track ViewContent event
      */
-    public function trackViewContent($product, $price): bool
+    public function trackViewContent($product, $price, ?string $eventId = null): bool
     {
+        $eventId = $eventId ?? 'view_content_' . $product->id . '_' . time();
+
         // Get product data safely
         $productId = null;
         $productName = 'Product';
@@ -208,14 +210,16 @@ class MetaConversionsApiService
             'content_type' => 'product',
             'value' => (float) $price,
             'currency' => 'KES',
-        ]);
+        ], null, $eventId);
     }
 
     /**
      * Track AddToCart event
      */
-    public function trackAddToCart($product, int $quantity, float $total): bool
+    public function trackAddToCart($product, int $quantity, float $total, ?string $eventId = null): bool
     {
+        $eventId = $eventId ?? 'add_to_cart_' . $product->id . '_' . time();
+        
         // Get product data safely
         $productId = null;
         $productName = 'Product';
@@ -240,14 +244,17 @@ class MetaConversionsApiService
             'value' => (float) $total,
             'currency' => 'KES',
             'quantity' => (int) $quantity,
-        ]);
+        ], null, $eventId);
     }
 
     /**
      * Track InitiateCheckout event
      */
-    public function trackInitiateCheckout($cartItems, float $total, ?array $userData = null): bool
+    public function trackInitiateCheckout($cartItems, float $total, ?array $userData = null, ?string $eventId = null): bool
     {
+        // Use provided event_id or generate one
+        $eventId = $eventId ?? 'initiate_checkout_' . md5(json_encode($cartItems) . time());
+
         // Convert to array if it's a Collection
         if ($cartItems instanceof \Illuminate\Support\Collection) {
             $cartItems = $cartItems->toArray();
@@ -291,13 +298,13 @@ class MetaConversionsApiService
             'currency' => 'KES',
             'content_ids' => $productIds,
             'num_items' => count($cartItems),
-        ], $userData);
+        ], $userData, $eventId);
     }
 
     /**
      * Track Purchase event (MOST IMPORTANT)
      */
-    public function trackPurchase($order, array $productIds, ?array $userData = null): bool
+    public function trackPurchase($order, array $productIds, ?array $userData = null, ?string $eventId = null): bool
     {
         $eventId = 'purchase_' . $order->id . '_' . time();
 

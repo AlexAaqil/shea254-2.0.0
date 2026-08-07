@@ -45,9 +45,11 @@ class Details extends Component
 
         $price = $product->discount_price ?? $product->selling_price;
 
+        $viewEventId = 'view_content_' . $product->id . '_' . time();
+
         // CAPI: send viewcontent from server
         try {
-            $this->capi->trackViewContent($product, $price);
+            $this->capi->trackViewContent($product, $price, $viewEventId);
             Log::info('CAPI ViewContent sent for product ' . $product->id);
         } catch (\Exception $e) {
             Log::error('CAPI ViewContent failed: ' . $e->getMessage());
@@ -60,7 +62,8 @@ class Details extends Component
             'content_ids' => [(string) $this->product->id],   // Product ID as string
             'content_type' => 'product',                      // Type of content
             'value' => $price,         // Product price
-            'currency' => 'KES'                                // Your currency
+            'currency' => 'KES',                             // Your currency
+            'event_id' => $viewEventId
         ]);
     }
 
@@ -76,9 +79,11 @@ class Details extends Component
         $unit_price = $product->getEffectivePriceForQuantity($quantity);
         $total_value = $unit_price * $quantity;
 
+        $addToCartEventId = 'add_to_cart_' . $product->id . '_' . time();
+
         // CAPI: send AddToCart from server
         try {
-            $this->capi->trackAddToCart($product, $quantity, $total_value);
+            $this->capi->trackAddToCart($product, $quantity, $total_value, $addToCartEventId);
             Log::info('CAPI AddToCart sent for product ' . $product->id);
         } catch (\Exception $e) {
             Log::error('CAPI AddToCart failed: ' . $e->getMessage());
@@ -92,7 +97,8 @@ class Details extends Component
             'content_type' => 'product',
             'value' => $total_value,  // Total value of items added
             'currency' => 'KES',
-            'quantity' => $quantity
+            'quantity' => $quantity,
+            'event_id' => $addToCartEventId
         ]);
 
         $this->dispatch('cart-updated');
