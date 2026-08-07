@@ -77,9 +77,26 @@ class SaleController extends Controller
             $userData['fbp'] = $_COOKIE['_fbp'];
         }
 
+        // If user is logged in, add their data
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->email) {
+                $userData['em'] = hash('sha256', strtolower($user->email));
+            }
+            if ($user->phone) {
+                $userData['ph'] = hash('sha256', $this->capi->normalizePhoneNumber($user->phone));
+            }
+            if ($user->first_name) {
+                $userData['fn'] = hash('sha256', strtolower($user->first_name));
+            }
+            if ($user->last_name) {
+                $userData['ln'] = hash('sha256', strtolower($user->last_name));
+            }
+        }
+
         // Send initiatecheckout directly from server
         try {
-            $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal);
+            $this->capi->trackInitiateCheckout($cart_items, $cart_subtotal, $userData);
             Log::info('CAPI intiate checkout sent for checkout page.');
         } catch (Exception $e) {
             Log::error('CAPI initiate checkout failed: ' . $e->getMessage());
@@ -290,12 +307,36 @@ class SaleController extends Controller
 
         $userData = [];
 
-        if ($order->order_delivery && $order->order_delivery->email) {
-            $userData['em'] = hash('sha256', strtolower($order->order_delivery->email));
-        }
+        if ($order->order_delivery) {
+            $delivery = $order->order_delivery;
 
-        if ($order->order_delivery && $order->order_delivery->phone_number) {
-            $userData['ph'] = hash('sha256', $this->capi->normalizePhoneNumber($order->order_delivery->phone_number));
+            if ($delivery->email) {
+                $userData['em'] = hash('sha256', strtolower($delivery->email));
+            }
+
+            if ($delivery->phone_number) {
+                $userData['ph'] = hash('sha256', $this->capi->normalizePhoneNumber($delivery->phone_number));
+            }
+
+            if ($delivery->full_name) {
+                $nameParts = explode(' ', $delivery->full_name, 2);
+                $firstName = $nameParts[0];
+                $lastName = $nameParts[1] ?? '';
+                
+                if ($firstName) {
+                    $userData['fn'] = hash('sha256', strtolower($firstName));
+                }
+                if ($lastName) {
+                    $userData['ln'] = hash('sha256', strtolower($lastName));
+                }
+            }
+
+            if ($delivery->location && ($delivery->location !== 'Shop')) {
+                $userData['ct'] = hash('sha256', strtolower($delivery->location));
+            }
+            if ($delivery->area && $delivery->area !== 'Shop') {
+                $userData['zp'] = hash('sha256', strtolower($delivery->area));
+            }
         }
 
         // Add standard data
