@@ -171,6 +171,16 @@ class MetaConversionsApiService
     }
 
     /**
+     * Track PageView event
+     */
+    public function trackPageView(): bool
+    {
+        return $this->sendEvent('PageView', [
+            'url' => url()->current(),
+        ]);
+    }
+
+    /**
      * Track ViewContent event
      */
     public function trackViewContent($product, $price): bool

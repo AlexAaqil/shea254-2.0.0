@@ -51,6 +51,16 @@
             </a>
         </main>
 
+        @if(config('meta-pixel.capi_enabled'))
+            @php
+                try {
+                    app(\App\Services\MetaConversionsApiService::class)->trackPageView();
+                } catch (\Exception $e) {
+                    \Illuminate\Facades\Log::error('Failed to send CAPI PageView event');
+                }
+            @endphp
+        @endif
+
         @livewireScripts
 
         @stack('scripts')
