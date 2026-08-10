@@ -25,7 +25,7 @@ class MetaConversionsApiService
     /**
      * Send an event to Meta Conversions API
      */
-    public function sendEvent(string $eventName, array $customData = [], ?array $userData = null, ?string $eventId = null): bool
+    public function sendEvent(string $eventName, array $customData = [], ?string $eventId = null, ?array $userData = null): bool
     {
         if (!$this->enabled || !$this->accessToken) {
             Log::info('CAPI disabled or missing token', [
@@ -60,7 +60,8 @@ class MetaConversionsApiService
             Log::info('Sending CAPI event', [
                 'event_name' => $eventName,
                 'event_id' => $eventId,
-                'payload' => $payload
+                'user_data_has_ip' => isset($userData['client_ip_address']),
+                'user_data_has_ua' => isset($userData['client_user_agent']),
             ]);
 
             // Send to Meta
@@ -101,8 +102,8 @@ class MetaConversionsApiService
     protected function prepareUserData(): array
     {
         $userData = [
-            'client_ip_address' => request()->ip(),
-            'client_user_agent' => request()->header('User-Agent'),
+            'client_ip_address' => request()->ip() ?? '0.0.0.0',
+            'client_user_agent' => request()->header('User-Agent') ?? 'unknown',
         ];
 
         // Get user if authenticated
@@ -187,7 +188,6 @@ class MetaConversionsApiService
     {
         $eventId = $eventId ?? 'view_content_' . $product->id . '_' . time();
 
-        // Get product data safely
         $productId = null;
         $productName = 'Product';
         
@@ -210,7 +210,7 @@ class MetaConversionsApiService
             'content_type' => 'product',
             'value' => (float) $price,
             'currency' => 'KES',
-        ], null, $eventId);
+        ], $eventId);  // Only pass eventId - userData uses prepareUserData()
     }
 
     /**
@@ -220,7 +220,6 @@ class MetaConversionsApiService
     {
         $eventId = $eventId ?? 'add_to_cart_' . $product->id . '_' . time();
         
-        // Get product data safely
         $productId = null;
         $productName = 'Product';
         
@@ -237,14 +236,20 @@ class MetaConversionsApiService
             return false;
         }
 
-        return $this->sendEvent('AddToCart', [
+        $customData = [
             'content_name' => $productName,
             'content_ids' => [(string) $productId],
             'content_type' => 'product',
             'value' => (float) $total,
             'currency' => 'KES',
             'quantity' => (int) $quantity,
-        ], null, $eventId);
+        ];
+
+        Log::info('AddToCart custom_data', [
+            'data' => $customData
+        ]);
+
+        return $this->sendEvent('AddToCart', $customData, $eventId);  // Only pass eventId - userData uses prepareUserData()
     }
 
     /**
@@ -298,11 +303,11 @@ class MetaConversionsApiService
             'currency' => 'KES',
             'content_ids' => $productIds,
             'num_items' => count($cartItems),
-        ], $userData, $eventId);
+        ], $eventId, $userData);
     }
 
     /**
-     * Track Purchase event (MOST IMPORTANT)
+     * Track Purchase event
      */
     public function trackPurchase($order, array $productIds, ?array $userData = null, ?string $eventId = null): bool
     {
@@ -317,6 +322,6 @@ class MetaConversionsApiService
             'content_type' => 'product',
             'num_items' => count($productIds),
             'order_id' => $order->order_number,
-        ], $finalUserData, $eventId);
+        ], $eventId, $finalUserData);
     }
 }
