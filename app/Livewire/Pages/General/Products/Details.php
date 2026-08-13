@@ -48,12 +48,12 @@ class Details extends Component
         $viewEventId = 'view_content_' . $product->id . '_' . time();
 
         // CAPI: send viewcontent from server
-        try {
-            $this->capi->trackViewContent($product, $price, $viewEventId);
-            Log::info('CAPI ViewContent sent for product ' . $product->id);
-        } catch (\Exception $e) {
-            Log::error('CAPI ViewContent failed: ' . $e->getMessage());
-        }
+        // try {
+        //     $this->capi->trackViewContent($product, $price, $viewEventId);
+        //     Log::info('CAPI ViewContent sent for product ' . $product->id);
+        // } catch (\Exception $e) {
+        //     Log::error('CAPI ViewContent failed: ' . $e->getMessage());
+        // }
 
         // DISPATCH VIEWCONTENT EVENT
         // This sends an event to JavaScript which will trigger the Pixel
@@ -82,12 +82,12 @@ class Details extends Component
         $addToCartEventId = 'add_to_cart_' . $product->id . '_' . time();
 
         // CAPI: send AddToCart from server
-        try {
-            $this->capi->trackAddToCart($product, $quantity, $total_value, $addToCartEventId);
-            Log::info('CAPI AddToCart sent for product ' . $product->id);
-        } catch (\Exception $e) {
-            Log::error('CAPI AddToCart failed: ' . $e->getMessage());
-        }
+        // try {
+        //     $this->capi->trackAddToCart($product, $quantity, $total_value, $addToCartEventId);
+        //     Log::info('CAPI AddToCart sent for product ' . $product->id);
+        // } catch (\Exception $e) {
+        //     Log::error('CAPI AddToCart failed: ' . $e->getMessage());
+        // }
 
         // DISPATCH ADDTOCART EVENT
         // This tells Meta someone added a product to cart

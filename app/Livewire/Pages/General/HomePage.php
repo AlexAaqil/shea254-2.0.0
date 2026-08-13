@@ -53,12 +53,12 @@ class HomePage extends Component
         $eventId = 'add_to_cart_' . $product->id . '_' . time();
 
         // CAPI: Send AddToCart from server
-        try {
-            $this->capi->trackAddToCart($product, 1, $price, $eventId);
-            Log::info('CAPI AddToCart sent for product ' . $product->id);
-        } catch (Exception $e) {
-            Log::error('CAPI AddToCart failed: ' . $e->getMessage());
-        }
+        // try {
+        //     $this->capi->trackAddToCart($product, 1, $price, $eventId);
+        //     Log::info('CAPI AddToCart sent for product ' . $product->id);
+        // } catch (Exception $e) {
+        //     Log::error('CAPI AddToCart failed: ' . $e->getMessage());
+        // }
 
         // Client-side tracking (backup)
         $this->dispatch('track-add-to-cart', [
